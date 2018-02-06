@@ -1,0 +1,41 @@
+{
+    "name": "fortrabbit/craft-sync",
+    "description": "Tooling for Craft on fortrabbit",
+    "type": "craft-plugin",
+    "version": "0.1.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "queue"
+    ],
+    "support": {
+        "docs": "https://github.com/fortrabbit/craft-deploy-tools/blob/master/README.md",
+        "issues": "https://github.com/fortrabbit/craft-deploy-tools/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Oliver Stark",
+            "homepage": "https://www.fortrabbit.com"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC1",
+        "spatie/db-dumper": "^2.8",
+        "albertofem/rsync-lib": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "fortrabbit\\Sync\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "FortrabbitSync",
+        "handle": "sync",
+        "hasCpSettings": false,
+        "hasCpSection": false,
+        "changelogUrl": "https://raw.githubusercontent.com/ostark/craft-async-queue/master/CHANGELOG.md"
+    }
+}
