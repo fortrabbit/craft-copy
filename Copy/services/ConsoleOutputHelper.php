@@ -1,4 +1,4 @@
-<?php namespace fortrabbit\Sync;
+<?php namespace fortrabbit\Copy\services;
 
 trait ConsoleOutputHelper
 {

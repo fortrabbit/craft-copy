@@ -1,10 +1,6 @@
-# CRAFT ENVIRONMENT
-.env.php
-.env.sh
-.env
-
 # COMPOSER
 /vendor
+composer.lock
 
 # BUILD FILES
 /bower_components/*

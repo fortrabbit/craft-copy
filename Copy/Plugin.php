@@ -1,18 +1,18 @@
-<?php namespace fortrabbit\Sync;
+<?php namespace fortrabbit\Copy;
 
 use Craft;
 use craft\base\Plugin as BasePlugin;
-use fortrabbit\Sync\commands\SetupAction;
+use fortrabbit\Copy\commands\SetupAction;
 use yii\console\Application as ConsoleApplication;
 
-use fortrabbit\Sync\services\Ssh as SshService;
-use fortrabbit\Sync\services\Dump as DumpService;
-use fortrabbit\Sync\services\Rsync as RsyncService;
+use fortrabbit\Copy\services\Ssh as SshService;
+use fortrabbit\Copy\services\Dump as DumpService;
+use fortrabbit\Copy\services\Rsync as RsyncService;
 
 /**
  * Class Plugin
  *
- * @package fortrabbit\Sync
+ * @package fortrabbit\Copy
  *
  * @property  SshService   $ssh
  * @property  DumpService  $dump
@@ -32,7 +32,7 @@ class Plugin extends BasePlugin
         if (Craft::$app instanceof ConsoleApplication) {
 
             // Register console commands
-            Craft::$app->controllerMap['sync'] = SyncCommands::class;
+            Craft::$app->controllerMap['sync'] = CopyCommands::class;
 
             // Register services
 

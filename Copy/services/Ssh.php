@@ -1,20 +1,15 @@
-<?php namespace fortrabbit\Sync\services;
+<?php namespace fortrabbit\Copy\services;
 
 use craft\base\Component;
 use Symfony\Component\Process\Process;
+use yii\base\InvalidConfigException;
 use yii\console\Exception;
 
 /**
  * Ssh Service
  *
- * All of your plugin’s business logic should go in services, including saving data,
- * retrieving data, etc. They provide APIs that your controllers, template variables,
- * and other plugins can interact with.
- *
- * https://craftcms.com/docs/plugins/services
- *
  * @author    Oliver Stark
- * @package   Sync
+ * @package   Copy
  * @since     1.0.0
  */
 class Ssh extends Component
@@ -35,7 +30,15 @@ class Ssh extends Component
             return true;
         }
 
-        throw new Exception($process->getExitCodeText());
+        if ("Could not open input file: craft" == trim($process->getOutput())) {
+            throw new InvalidConfigException("Craft is not installed on remote.");
+        }
+
+        if (stristr($process->getOutput(), "unknown command")) {
+            throw new InvalidConfigException("Plugin is not installed on remote.");
+        }
+
+        throw new Exception("SSH Remote error: " . $process->getOutput());
 
     }
 
@@ -50,5 +53,9 @@ class Ssh extends Component
 
         throw new Exception($process->getExitCodeText());
 
+    }
+
+    public function checkPlugin() {
+        $this->exec("php craft help sync");
     }
 }

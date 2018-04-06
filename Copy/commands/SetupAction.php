@@ -1,6 +1,8 @@
-<?php namespace fortrabbit\Sync\commands;
+<?php namespace fortrabbit\Copy\commands;
+
 use craft\helpers\Console;
 use Symfony\Component\Process\Process;
+use fortrabbit\Copy\services\ConsoleOutputHelper;
 
 
 /**

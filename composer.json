@@ -1,5 +1,5 @@
 {
-    "name": "fortrabbit/craft-sync",
+    "name": "fortrabbit/craft-copy",
     "description": "Tooling for Craft on fortrabbit",
     "type": "craft-plugin",
     "version": "0.1.0",
@@ -22,20 +22,26 @@
         }
     ],
     "require": {
-        "craftcms/cms": "^3.0.0-RC1",
-        "spatie/db-dumper": "^2.8",
-        "albertofem/rsync-lib": "dev-master"
+        "craftcms/cms": "^3.0.0",
+        "albertofem/rsync-lib": "^1.0.0"
     },
+    "require-dev": {
+        "phpstan/phpstan": "^0.9.2"
+    }
     "autoload": {
         "psr-4": {
-            "fortrabbit\\Sync\\": "src/"
+            "fortrabbit\\Copy\\": "src/"
         }
     },
     "extra": {
-        "name": "FortrabbitSync",
-        "handle": "sync",
+        "name": "Copy",
+        "handle": "copy",
         "hasCpSettings": false,
         "hasCpSection": false,
-        "changelogUrl": "https://raw.githubusercontent.com/ostark/craft-async-queue/master/CHANGELOG.md"
+        "changelogUrl": "https://raw.githubusercontent.com/fortrabbit/craft-copy/master/CHANGELOG.md"
+    },
+    "scripts": {
+        "ps": "vendor/bin/phpstan analyse src --level=5 -c phpstan.neon",
+        "stan": "@ps"
     }
 }

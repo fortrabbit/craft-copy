@@ -1,14 +1,12 @@
 <?php
 /**
- * sync plugin for Craft CMS 3.x
- *
- * ss
- *
+ * Copy plugin for Craft CMS 3.x
+ **
  * @link      http://www.fortrabbit.com
  * @copyright Copyright (c) 2018 Oliver Stark
  */
 
-namespace fortrabbit\Sync\services;
+namespace fortrabbit\Copy\services;
 
 use craft\base\Component;
 use craft\helpers\FileHelper;
@@ -16,14 +14,8 @@ use craft\helpers\FileHelper;
 /**
  * Dump Service
  *
- * All of your plugin’s business logic should go in services, including saving data,
- * retrieving data, etc. They provide APIs that your controllers, template variables,
- * and other plugins can interact with.
- *
- * https://craftcms.com/docs/plugins/services
- *
  * @author    Oliver Stark
- * @package   Sync
+ * @package   Copy
  * @since     1.0.0
  */
 class Dump extends Component

@@ -1,8 +1,8 @@
-<?php namespace fortrabbit\Sync\commands;
+<?php namespace fortrabbit\Copy\commands;
 
 
 use craft\errors\ActionCancelledException;
-use fortrabbit\Sync\ConsoleOutputHelper;
+use fortrabbit\Copy\services\ConsoleOutputHelper;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use yii\base\Action;
 

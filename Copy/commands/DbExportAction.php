@@ -1,6 +1,7 @@
-<?php namespace fortrabbit\Sync\commands;
+<?php namespace fortrabbit\Copy\commands;
 
-use fortrabbit\Sync\Plugin;
+use fortrabbit\Copy\Plugin;
+use fortrabbit\Copy\services\ConsoleOutputHelper;
 
 
 /**

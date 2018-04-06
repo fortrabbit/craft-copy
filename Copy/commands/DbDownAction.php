@@ -1,12 +1,13 @@
-<?php namespace fortrabbit\Sync\commands;
+<?php namespace fortrabbit\Copy\commands;
 
+use fortrabbit\Copy\services\ConsoleOutputHelper;
 
 /**
- * Class DbImportAction
+ * Class DbDownAction
  *
  * @package fortrabbit\DeployTools\commands
  */
-class DbImportAction extends ConsoleBaseAction
+class DbDownAction extends ConsoleBaseAction
 {
 
     /**
@@ -16,8 +17,6 @@ class DbImportAction extends ConsoleBaseAction
      */
     public function run(string $file = null)
     {
-        $this->isForcedOrConfirmed("Do you really dump your local DB");
-
         die('SOME CALLED ME!!');
         return true;
     }

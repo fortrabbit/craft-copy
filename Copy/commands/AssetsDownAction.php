@@ -1,4 +1,4 @@
-<?php namespace fortrabbit\Sync\commands;
+<?php namespace fortrabbit\Copy\commands;
 
 
 /**

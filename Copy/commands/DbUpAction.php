@@ -1,7 +1,8 @@
-<?php namespace fortrabbit\Sync\commands;
+<?php namespace fortrabbit\Copy\commands;
 
 use \Craft;
-use fortrabbit\Sync\Plugin;
+use fortrabbit\Copy\Plugin;
+use fortrabbit\Copy\services\ConsoleOutputHelper;
 use yii\console\Exception;
 use ZipArchive;
 
@@ -21,11 +22,14 @@ class DbUpAction extends ConsoleBaseAction
      */
     public function run()
     {
-        $this->isForcedOrConfirmed("Do you really want to sync your local DB with the remote?");
-
         $plugin       = Plugin::getInstance();
         $localFile    = $remoteFile = '/tmp/db/' . date('Ymd-his') . '.sql';
         $remoteBackup = '/tmp/db/recent.sql';
+
+        // Step 0:
+        $plugin->ssh->checkPlugin();
+
+        $this->isForcedOrConfirmed("Do you really want to sync your local DB with the remote?");
 
         // Step 1: Create dump of the current database
         if ($plugin->dump->export($localFile)) {
