@@ -13,6 +13,8 @@ class DbExportAction extends ConsoleBaseAction
 {
 
     /**
+     * Export database
+     *
      * @param string|null $file Create a sql dump
      *
      * @return bool

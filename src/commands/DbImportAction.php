@@ -12,6 +12,8 @@ class DbImportAction extends ConsoleBaseAction
 {
 
     /**
+     * Import database
+     *
      * @param string|null $file Import a sql dump
      *
      * @return bool

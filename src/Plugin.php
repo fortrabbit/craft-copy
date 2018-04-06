@@ -32,7 +32,7 @@ class Plugin extends BasePlugin
         if (Craft::$app instanceof ConsoleApplication) {
 
             // Register console commands
-            Craft::$app->controllerMap['sync'] = CopyCommands::class;
+            Craft::$app->controllerMap['copy'] = CopyCommands::class;
 
             // Register services
 

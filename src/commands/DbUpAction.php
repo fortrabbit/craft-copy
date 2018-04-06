@@ -15,7 +15,7 @@ use ZipArchive;
 class DbUpAction extends ConsoleBaseAction
 {
     /**
-     * Dump
+     * Upload database
      *
      * @return bool
      * @throws \craft\errors\ActionCancelledException

@@ -3,6 +3,7 @@
 namespace fortrabbit\Copy;
 
 use fortrabbit\Copy\commands\AssetsDownAction;
+use fortrabbit\Copy\commands\AssetsUpAction;
 use fortrabbit\Copy\commands\DbDownAction;
 use fortrabbit\Copy\commands\DbExportAction;
 use fortrabbit\Copy\commands\DbImportAction;
@@ -23,7 +24,7 @@ use yii\console\Controller as BaseConsoleController;
  */
 
 /**
- * fortrabbit Sync - a tool belt for easy deployment
+ * Copy -  move Craft effortlessly
  */
 class CopyCommands extends BaseConsoleController
 {
@@ -54,7 +55,7 @@ class CopyCommands extends BaseConsoleController
             'db/from-file' => DbImportAction::class,
             'db/to-file'   => DbExportAction::class,
             'assets/down'  => AssetsDownAction::class,
-            'assets/up'    => AssetsDownAction::class,
+            'assets/up'    => AssetsUpAction::class,
         ];
     }
 

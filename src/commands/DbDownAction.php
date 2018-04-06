@@ -11,6 +11,7 @@ class DbDownAction extends ConsoleBaseAction
 {
 
     /**
+     * Download database
      * @param string|null $file Import a sql dump
      *
      * @return bool

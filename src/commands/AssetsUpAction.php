@@ -1,16 +1,15 @@
 <?php namespace fortrabbit\Copy\commands;
 
-
 /**
- * Class AssetsDownAction
+ * Class AssetsUpAction
  *
  * @package fortrabbit\Copy\commands
  */
-class AssetsDownAction extends ConsoleBaseAction
+class AssetsUpAction extends ConsoleBaseAction
 {
 
     /**
-     * Download Assets
+     * Upload Assets
      *
      * @param string|null $app
      *
