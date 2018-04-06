@@ -27,7 +27,7 @@
     },
     "require-dev": {
         "phpstan/phpstan": "^0.9.2"
-    }
+    },
     "autoload": {
         "psr-4": {
             "fortrabbit\\Copy\\": "src/"
