@@ -14,9 +14,9 @@
 ```
 cd your/craft-project
 
-composer require fortrabbit/craft-sync
+composer require fortrabbit/craft-copy
 
-./craft plugin/install sync
+./craft plugin/install copy
 ./craft sync/setup
 ```
 
@@ -24,22 +24,28 @@ composer require fortrabbit/craft-sync
 ## Usage 
 ```
 # Get help
-./craft help sync
+./craft help copy
 
 # Tell the plugin with fortrabbit App to use
-./craft sync/setup
+./craft copy/setup
 
 # Dump local DB and import it on remote 
-./craft sync/db/up --force
+./craft copy/db/up --force
 
 # Dump remote DB and import it locally 
-./craft sync/db/down --force
+./craft copy/db/down --force
+
+# Export db 
+./craft copy/db/to-file
+
+# Import db 
+./craft copy/db/from-file
 
 # Rsync local assets with remote 
-./craft sync/assets/up --force
+./craft copy/assets/up --force
 
 # Rsync remote assets with local
-./craft sync/db/down --force
+./craft copy/db/down --force
 
 
 ```
