@@ -42,37 +42,14 @@ class DbUpAction extends ConsoleBaseAction
         }
 
         // Step 3: Backup the remote database before importing the uploaded dump
-        if ($plugin->ssh->exec("php craft sync/db/export {$remoteBackup} --force")) {
+        if ($plugin->ssh->exec("php craft copy/db/to-file {$remoteBackup} --force")) {
             $this->info("DB Backup created on remote ({$remoteBackup})");
         }
 
         // Step 4: Import on remote
-        if ($plugin->ssh->exec("php craft sync/db/import {$remoteFile} --force")) {
+        if ($plugin->ssh->exec("php craft copy/db/from-file {$remoteFile} --force")) {
             $this->info('Dump imported');
         }
-
-        /*
-                $zipPath = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . 'latest-backup.zip';
-
-                if (is_file($zipPath)) {
-                    try {
-                        FileHelper::removeFile($zipPath);
-                    } catch (ErrorException $e) {
-                        Craft::warning("Unable to delete the file \"{$zipPath}\": " . $e->getMessage(), __METHOD__);
-                    }
-                }
-
-                $zip = new ZipArchive();
-
-                if ($zip->open($zipPath, ZipArchive::CREATE) !== true) {
-                    throw new Exception('Cannot create zip at ' . $zipPath);
-                }
-
-                $filename = pathinfo($backupPath, PATHINFO_BASENAME);
-                $zip->addFile($backupPath, $filename);
-                $zip->close();
-
-        */
 
         return true;
     }

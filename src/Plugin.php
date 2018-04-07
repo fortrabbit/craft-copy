@@ -20,8 +20,6 @@ use fortrabbit\Copy\services\Rsync as RsyncService;
  */
 class Plugin extends BasePlugin
 {
-    public $version = '0.2.0';
-
     /**
      * Initialize Plugins
      */
@@ -32,7 +30,7 @@ class Plugin extends BasePlugin
         if (Craft::$app instanceof ConsoleApplication) {
 
             // Register console commands
-            Craft::$app->controllerMap['copy'] = CopyCommands::class;
+            Craft::$app->controllerMap['copy'] = Commands::class;
 
             // Register services
 

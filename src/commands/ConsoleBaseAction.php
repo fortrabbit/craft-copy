@@ -3,6 +3,7 @@
 
 use craft\errors\ActionCancelledException;
 use fortrabbit\Copy\services\ConsoleOutputHelper;
+use GuzzleHttp\Promise\CancellationException;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use yii\base\Action;
 
@@ -40,7 +41,7 @@ abstract class ConsoleBaseAction extends Action
      * @param $question
      *
      * @return bool
-     * @throws \craft\errors\ActionCancelledException
+     * @throws \craft\errors\CancellationException
      */
     public function isForcedOrConfirmed($question)
     {
@@ -51,7 +52,7 @@ abstract class ConsoleBaseAction extends Action
             return true;
         }
 
-        throw new ActionCancelledException("Cancelled. Action was not executed.");
+        throw new CancellationException("Cancelled. Action was not executed.");
     }
 }
 

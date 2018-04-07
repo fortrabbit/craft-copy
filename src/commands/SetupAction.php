@@ -8,7 +8,7 @@ use fortrabbit\Copy\services\ConsoleOutputHelper;
 /**
  * Class SetupAction
  *
- * @package fortrabbit\Sync\commands
+ * @package fortrabbit\Copy\commands
  */
 class SetupAction extends ConsoleBaseAction
 {
@@ -22,6 +22,7 @@ class SetupAction extends ConsoleBaseAction
 
     protected $app;
     protected $region;
+    protected $sshUrl;
 
 
     /**
@@ -53,6 +54,7 @@ class SetupAction extends ConsoleBaseAction
 
                 $this->app   = $app;
                 $this->region = $region;
+                $this->sshUrl = "{$this->app}@deploy.{$this->region}.frbit.com";
 
                 return true;
             }
@@ -69,7 +71,7 @@ class SetupAction extends ConsoleBaseAction
         $this->write($rsync = $this->canExecBinary("rsync --help") ? "OK" : "<error>⚠ Error</error>");
 
         $this->info(PHP_EOL . "Testing ssh access ", false);
-        $this->write($mysqldump = $this->canExecBinary("ssh {$this->app}@deploy.{$this->region}.frbit.com secrets") ? "OK" : "<error>⚠ Error</error>");
+        $this->write($ssh = $this->canExecBinary("ssh {$this->app}@deploy.{$this->region}.frbit.com secrets") ? "OK" : "<error>⚠ Error</error>");
         $this->write(PHP_EOL);
 
 
@@ -89,13 +91,13 @@ class SetupAction extends ConsoleBaseAction
 
             $this->controller->stdout(PHP_EOL . "Now you can run these commands:" . PHP_EOL . PHP_EOL, Console::FG_GREY);
 
-            $this->controller->stdout("./craft sync/db/up ", Console::FG_BLUE);
+            $this->controller->stdout("./craft copy/db/up ", Console::FG_BLUE);
             $this->controller->stdout("to dump your local db" . PHP_EOL);
 
-            $this->controller->stdout("./craft sync/db/down ", Console::FG_BLUE);
+            $this->controller->stdout("./craft copy/db/down ", Console::FG_BLUE);
             $this->controller->stdout("to import your dump to the remote db" . PHP_EOL);
 
-            $this->controller->stdout("./craft sync/assets/up ", Console::FG_BLUE);
+            $this->controller->stdout("./craft copy/assets/up ", Console::FG_BLUE);
             $this->controller->stdout("to rsync your assets with the remote" . PHP_EOL);
 
         }
@@ -140,7 +142,7 @@ class SetupAction extends ConsoleBaseAction
         $vars = [
             self::ENV_NAME_APP        => $this->app,
             self::ENV_NAME_REGION     => $this->region,
-            self::ENV_NAME_SSH_REMOTE => "{$this->app}@deploy.{$this->region}.frbit.com"
+            self::ENV_NAME_SSH_REMOTE => $this->sshUrl
         ];
 
         $config = \Craft::$app->getConfig();

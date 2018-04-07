@@ -70,7 +70,7 @@ class Dump extends Component
 
         $file = ($file)
             ? $file
-            : '/tmp/sync/db-' . date('Ymd-His') . '.sql';
+            : '/tmp/copy/db-' . date('Ymd-His') . '.sql';
 
         $file = FileHelper::normalizePath($file);
         $dir  = dirname($file);

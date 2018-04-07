@@ -11,22 +11,11 @@ use fortrabbit\Copy\commands\DbUpAction;
 use fortrabbit\Copy\commands\SetupAction;
 use yii\console\Controller as BaseConsoleController;
 
-/**
- *
- * copy/setup
- * copy/db/up
- * copy/db/down
- * copy/db/to-file
- * copy/db/from-file
- * copy/assets/up (folder || ALL)
- * copy/assets/down (folder || ALL)
- *
- */
 
 /**
- * Copy -  move Craft effortlessly
+ * Copy Craft effortlessly
  */
-class CopyCommands extends BaseConsoleController
+class Commands extends BaseConsoleController
 {
 
     public $defaultAction = 'setup';

@@ -1,6 +1,7 @@
 <?php namespace fortrabbit\Copy\commands;
 
 
+use fortrabbit\Copy\Plugin;
 use fortrabbit\Copy\services\ConsoleOutputHelper;
 
 /**
@@ -22,7 +23,9 @@ class DbImportAction extends ConsoleBaseAction
     {
         $this->isForcedOrConfirmed("Do you really dump your local DB");
 
-        die('SOME CALLED ME!!');
-        return true;
+        if ($file = Plugin::getInstance()->dump->import($file)) {
+            $this->info("DB Dump created in '{$file}'");
+            return true;
+        }
     }
 }

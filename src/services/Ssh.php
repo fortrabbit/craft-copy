@@ -56,6 +56,6 @@ class Ssh extends Component
     }
 
     public function checkPlugin() {
-        $this->exec("php craft help sync");
+        $this->exec("php craft help copy");
     }
 }
