@@ -2,6 +2,10 @@
 
 
 use craft\errors\ActionCancelledException;
+use fortrabbit\Copy\exceptions\CraftNotInstalledException;
+use fortrabbit\Copy\exceptions\PluginNotInstalledException;
+use fortrabbit\Copy\exceptions\RemoteException;
+use fortrabbit\Copy\Plugin;
 use fortrabbit\Copy\services\ConsoleOutputHelper;
 use GuzzleHttp\Promise\CancellationException;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -53,6 +57,20 @@ abstract class ConsoleBaseAction extends Action
         }
 
         throw new CancellationException("Cancelled. Action was not executed.");
+    }
+
+    public function remotePreCheck()
+    {
+        $plugin = Plugin::getInstance();
+        try {
+            $plugin->ssh->checkPlugin();
+        } catch (CraftNotInstalledException $e) {
+            $this->error($e->getMessage());
+        } catch (PluginNotInstalledException $e) {
+            $plugin->ssh->installPlugin();
+        } catch (RemoteException $e) {
+            $this->error($e->getMessage());
+        }
     }
 }
 

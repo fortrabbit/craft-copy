@@ -43,5 +43,7 @@
     "scripts": {
         "ps": "vendor/bin/phpstan analyse src --level=5 -c phpstan.neon",
         "stan": "@ps"
-    }
+    },
+    "bin": ["bin/craft-copy-installer.php"]
+
 }

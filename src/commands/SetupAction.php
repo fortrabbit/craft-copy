@@ -1,9 +1,10 @@
 <?php namespace fortrabbit\Copy\commands;
 
+use Craft;
 use craft\helpers\Console;
+use fortrabbit\Copy\Plugin;
 use Symfony\Component\Process\Process;
 use fortrabbit\Copy\services\ConsoleOutputHelper;
-
 
 /**
  * Class SetupAction
@@ -32,6 +33,7 @@ class SetupAction extends ConsoleBaseAction
      */
     public function run()
     {
+
         // Ask for App name
         $this->controller->prompt(PHP_EOL . 'What\'s the name of your App?', ['error' => '', 'validator' => function ($app) {
 
@@ -43,6 +45,7 @@ class SetupAction extends ConsoleBaseAction
 
             if (!$region = $this->guessRegion($app)) {
                 $this->error('⚠  App not found');
+
                 return false;
             }
 
@@ -52,7 +55,7 @@ class SetupAction extends ConsoleBaseAction
                 $this->write('OK');
                 $this->write(PHP_EOL . "<info>Region detected </info>" . self::REGIONS[$region], true);
 
-                $this->app   = $app;
+                $this->app    = $app;
                 $this->region = $region;
                 $this->sshUrl = "{$this->app}@deploy.{$this->region}.frbit.com";
 
@@ -65,7 +68,7 @@ class SetupAction extends ConsoleBaseAction
 
         // Perform exec checks
         $this->info(PHP_EOL . "Testing mysqldump ", false);
-        $this->write($mysqldump = $this->canExecBinary("mysqldump --help")  ? "OK" : "<error>⚠ Error</error>");
+        $this->write($mysqldump = $this->canExecBinary("mysqldump --help") ? "OK" : "<error>⚠ Error</error>");
 
         $this->info(PHP_EOL . "Testing rsync ", false);
         $this->write($rsync = $this->canExecBinary("rsync --help") ? "OK" : "<error>⚠ Error</error>");
@@ -103,6 +106,8 @@ class SetupAction extends ConsoleBaseAction
         }
 
         $this->controller->stdout(PHP_EOL);
+
+        return $this->setupRemote();
 
         return true;
     }
@@ -151,6 +156,20 @@ class SetupAction extends ConsoleBaseAction
             $config->setDotEnvVar($name, $value);
             putenv("$name=$value");
         }
+    }
+
+    protected function setupRemote()
+    {
+
+        $this->isForcedOrConfirmed("Do you want initialize the plugin on the remote?");
+
+        $plugin = Plugin::getInstance();
+
+        $plugin->ssh->exec('php vendor/bin/craft-copy-installer.php');
+
+        Craft::$app->runAction('copy/db/up', ['force' => false]);
+
+
     }
 
 }

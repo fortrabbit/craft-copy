@@ -1,6 +1,9 @@
 <?php namespace fortrabbit\Copy\services;
 
 use craft\base\Component;
+use fortrabbit\Copy\exceptions\CraftNotInstalledException;
+use fortrabbit\Copy\exceptions\PluginNotInstalledException;
+use fortrabbit\Copy\exceptions\RemoteException;
 use Symfony\Component\Process\Process;
 use yii\base\InvalidConfigException;
 use yii\console\Exception;
@@ -19,7 +22,14 @@ class Ssh extends Component
     // Public Methods
     // =========================================================================
 
-
+    /**
+     * @param $cmd
+     *
+     * @return bool
+     * @throws \fortrabbit\Copy\exceptions\CraftNotInstalledException
+     * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
+     * @throws \fortrabbit\Copy\exceptions\RemoteException
+     */
     public function exec($cmd)
     {
 
@@ -30,15 +40,15 @@ class Ssh extends Component
             return true;
         }
 
-        if ("Could not open input file: craft" == trim($process->getOutput())) {
-            throw new InvalidConfigException("Craft is not installed on remote.");
+        if ("Could not open input file: craft" == trim($process->getErrorOutput())) {
+            throw new CraftNotInstalledException("Craft is not installed on remote.");
         }
 
-        if (stristr($process->getOutput(), "unknown command")) {
-            throw new InvalidConfigException("Plugin is not installed on remote.");
+        if (stristr($process->getErrorOutput(), "unknown command")) {
+            throw new PluginNotInstalledException("Plugin is not installed on remote.");
         }
 
-        throw new Exception("SSH Remote error: " . $process->getOutput());
+        throw new RemoteException("SSH Remote error: " . $process->getErrorOutput());
 
     }
 
@@ -51,11 +61,20 @@ class Ssh extends Component
             return true;
         }
 
-        throw new Exception($process->getExitCodeText());
+        throw new RemoteException($process->getExitCodeText());
 
     }
 
+    /**
+     * @throws \fortrabbit\Copy\exceptions\CraftNotInstalledException
+     * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
+     * @throws \fortrabbit\Copy\exceptions\RemoteException
+     */
     public function checkPlugin() {
         $this->exec("php craft help copy");
+    }
+
+    public function installPlugin() {
+        $this->exec("php craft install/plugin copy");
     }
 }

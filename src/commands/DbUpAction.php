@@ -1,6 +1,7 @@
 <?php namespace fortrabbit\Copy\commands;
 
 use \Craft;
+use fortrabbit\Copy\exceptions\RemoteException;
 use fortrabbit\Copy\Plugin;
 use fortrabbit\Copy\services\ConsoleOutputHelper;
 use yii\console\Exception;
@@ -27,7 +28,7 @@ class DbUpAction extends ConsoleBaseAction
         $remoteBackup = '/tmp/db/recent.sql';
 
         // Step 0:
-        $plugin->ssh->checkPlugin();
+        $this->remotePreCheck($plugin);
 
         $this->isForcedOrConfirmed("Do you really want to sync your local DB with the remote?");
 
