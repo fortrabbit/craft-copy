@@ -27,7 +27,7 @@ class DbImportAction extends ConsoleBaseAction
 
         if ($file = Plugin::getInstance()->dump->import($file)) {
             $this->info("OK");
-            return true;
+            return 0;
         }
     }
 }

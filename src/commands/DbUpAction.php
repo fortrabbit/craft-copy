@@ -52,6 +52,6 @@ class DbUpAction extends ConsoleBaseAction
             $this->info('Dump imported');
         }
 
-        return true;
+        return 0;
     }
 }

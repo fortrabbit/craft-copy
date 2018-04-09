@@ -19,6 +19,6 @@ class DbDownAction extends ConsoleBaseAction
     public function run(string $file = null)
     {
         die('SOME CALLED ME!!');
-        return true;
+        return 0;
     }
 }

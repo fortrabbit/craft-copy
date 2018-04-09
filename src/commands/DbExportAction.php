@@ -27,7 +27,7 @@ class DbExportAction extends ConsoleBaseAction
 
         if ($file = $plugin->dump->export($file)) {
             $this->info("OK");
-            return true;
+            return 0;
         }
 
     }
