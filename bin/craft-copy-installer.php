@@ -1,8 +1,8 @@
 #!/usr/bin/env php
 <?php
 
-// Project root path (assumes we are in /vendor/bin)
-$root = __DIR__ . '/../..';
+// Project root path (assumes we are in vendor/fortrabbit/craft-copy/bin)
+$root = __DIR__ . '/../../../..';
 
 // Composer autoloader
 require_once $root . '/vendor/autoload.php';
