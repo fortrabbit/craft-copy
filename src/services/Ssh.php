@@ -19,6 +19,8 @@ class Ssh extends Component
 {
     public $remote;
 
+    protected $output;
+
     // Public Methods
     // =========================================================================
 
@@ -37,6 +39,7 @@ class Ssh extends Component
         $process->run();
 
         if ($process->isSuccessful()) {
+            $this->output = $process->getOutput();
             return true;
         }
 
@@ -76,5 +79,9 @@ class Ssh extends Component
 
     public function installPlugin() {
         $this->exec("php craft install/plugin copy");
+    }
+
+    public function getOutput() {
+        return $this->output;
     }
 }

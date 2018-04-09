@@ -40,10 +40,12 @@ class Plugin extends BasePlugin
                 'rsync' => RsyncService::class
             ]);
 
-            // Inject $remote and $db Connection
+            // Inject $db Connection
+            $this->dump->db = \Craft::$app->getDb();
+
+            // Inject $remote
             if (getenv(SetupAction::ENV_NAME_SSH_REMOTE)) {
                 $this->ssh->remote = getenv(SetupAction::ENV_NAME_SSH_REMOTE);
-                $this->dump->db    = \Craft::$app->getDb();
             }
 
         }

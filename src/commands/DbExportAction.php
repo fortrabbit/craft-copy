@@ -22,8 +22,12 @@ class DbExportAction extends ConsoleBaseAction
      */
     public function run(string $file = null)
     {
-        if ($file = Plugin::getInstance()->dump->export($file)) {
-            $this->info("DB Dump created in '{$file}'");
+        $plugin = Plugin::getInstance();
+        $this->info("Create DB Dump in '{$file}'");
+
+        if ($file = $plugin->dump->export($file)) {
+            $this->success("Success");
+
             return true;
         }
 

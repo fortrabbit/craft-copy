@@ -165,7 +165,9 @@ class SetupAction extends ConsoleBaseAction
 
         $plugin = Plugin::getInstance();
 
-        $plugin->ssh->exec('php vendor/bin/craft-copy-installer.php');
+        if ($plugin->ssh->exec('php vendor/bin/craft-copy-installer.php')) {
+           $this->write($plugin->ssh->getOutput());
+        };
 
         Craft::$app->runAction('copy/db/up', ['force' => false]);
 

@@ -24,8 +24,8 @@ class DbUpAction extends ConsoleBaseAction
     public function run()
     {
         $plugin       = Plugin::getInstance();
-        $localFile    = $remoteFile = '/tmp/db/' . date('Ymd-his') . '.sql';
-        $remoteBackup = '/tmp/db/recent.sql';
+        $localFile    = $remoteFile = './storage/copy-' . date('Ymd-his') . '.sql';
+        $remoteBackup = './storage/copy-recent.sql';
 
         // Step 0:
         $this->remotePreCheck($plugin);
