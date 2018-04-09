@@ -26,8 +26,7 @@ class DbExportAction extends ConsoleBaseAction
         $this->info("Create DB Dump in '{$file}'");
 
         if ($file = $plugin->dump->export($file)) {
-            $this->success("Success");
-
+            $this->info("OK");
             return true;
         }
 

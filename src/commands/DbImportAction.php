@@ -23,8 +23,10 @@ class DbImportAction extends ConsoleBaseAction
     {
         $this->isForcedOrConfirmed("Do you really dump your local DB");
 
+        $this->info("Import DB Dump from '{$file}'");
+
         if ($file = Plugin::getInstance()->dump->import($file)) {
-            $this->info("DB Dump created in '{$file}'");
+            $this->info("OK");
             return true;
         }
     }
