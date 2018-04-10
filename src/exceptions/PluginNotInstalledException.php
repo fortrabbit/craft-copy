@@ -11,5 +11,5 @@ namespace fortrabbit\Copy\exceptions;
 
 class PluginNotInstalledException extends RemoteException
 {
-
+    public $message = 'The plugin is not installed in the remote environment.';
 }

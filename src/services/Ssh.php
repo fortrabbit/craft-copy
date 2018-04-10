@@ -77,10 +77,6 @@ class Ssh extends Component
         $this->exec("php craft help copy");
     }
 
-    public function installPlugin() {
-        $this->exec("php craft install/plugin copy");
-    }
-
     public function getOutput() {
         return $this->output;
     }

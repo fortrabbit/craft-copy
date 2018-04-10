@@ -21,7 +21,7 @@ class DbImportAction extends ConsoleBaseAction
      */
     public function run(string $file = null)
     {
-        $this->isForcedOrConfirmed("Do you really dump your local DB");
+        $this->isForcedOrConfirmed("Do you really want to overwrite your DB with the dump?");
 
         $this->info("Import DB Dump from '{$file}'");
 

@@ -1,13 +1,11 @@
 <?php namespace fortrabbit\Copy\commands;
 
 
-use craft\errors\ActionCancelledException;
 use fortrabbit\Copy\exceptions\CraftNotInstalledException;
 use fortrabbit\Copy\exceptions\PluginNotInstalledException;
 use fortrabbit\Copy\exceptions\RemoteException;
 use fortrabbit\Copy\Plugin;
 use fortrabbit\Copy\services\ConsoleOutputHelper;
-use GuzzleHttp\Promise\CancellationException;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use yii\base\Action;
 
@@ -45,7 +43,7 @@ abstract class ConsoleBaseAction extends Action
      * @param $question
      *
      * @return bool
-     * @throws \craft\errors\CancellationException
+     * @throws \yii\console\Exception
      */
     public function isForcedOrConfirmed($question)
     {
@@ -56,7 +54,7 @@ abstract class ConsoleBaseAction extends Action
             return true;
         }
 
-        throw new CancellationException("Cancelled. Action was not executed.");
+        throw new \yii\console\Exception("Cancelled. Action was not executed.");
     }
 
     public function remotePreCheck()
@@ -67,7 +65,7 @@ abstract class ConsoleBaseAction extends Action
         } catch (CraftNotInstalledException $e) {
             $this->error($e->getMessage());
         } catch (PluginNotInstalledException $e) {
-            $plugin->ssh->installPlugin();
+            $this->error($e->getMessage());
         } catch (RemoteException $e) {
             $this->error($e->getMessage());
         }

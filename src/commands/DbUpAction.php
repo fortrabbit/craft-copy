@@ -19,7 +19,12 @@ class DbUpAction extends ConsoleBaseAction
      * Upload database
      *
      * @return bool
-     * @throws \craft\errors\ActionCancelledException
+     * @throws \craft\errors\ShellCommandException
+     * @throws \fortrabbit\Copy\exceptions\CraftNotInstalledException
+     * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
+     * @throws \fortrabbit\Copy\exceptions\RemoteException
+     * @throws \yii\base\Exception
+     * @throws \yii\console\Exception
      */
     public function run()
     {
