@@ -1,6 +1,5 @@
 <?php namespace fortrabbit\Copy\commands;
 
-
 use fortrabbit\Copy\exceptions\CraftNotInstalledException;
 use fortrabbit\Copy\exceptions\PluginNotInstalledException;
 use fortrabbit\Copy\exceptions\RemoteException;
@@ -8,6 +7,7 @@ use fortrabbit\Copy\Plugin;
 use fortrabbit\Copy\services\ConsoleOutputHelper;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use yii\base\Action;
+use yii\helpers\Console;
 
 abstract class ConsoleBaseAction extends Action
 {
@@ -69,6 +69,10 @@ abstract class ConsoleBaseAction extends Action
         } catch (RemoteException $e) {
             $this->error($e->getMessage());
         }
+    }
+
+    public function markdown($markdown) {
+        return Console::markdownToAnsi($markdown);
     }
 }
 
