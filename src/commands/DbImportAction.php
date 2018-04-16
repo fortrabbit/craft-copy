@@ -1,15 +1,17 @@
-<?php namespace fortrabbit\Copy\commands;
+<?php
 
+namespace fortrabbit\Copy\commands;
 
+use fortrabbit\Copy\ArtisanConsoleBridge\base\Action;
 use fortrabbit\Copy\Plugin;
-use fortrabbit\Copy\services\ConsoleOutputHelper;
+use yii\console\ExitCode;
 
 /**
  * Class DbImportAction
  *
  * @package fortrabbit\DeployTools\commands
  */
-class DbImportAction extends ConsoleBaseAction
+class DbImportAction extends Action
 {
 
     /**
@@ -21,7 +23,9 @@ class DbImportAction extends ConsoleBaseAction
      */
     public function run(string $file = null)
     {
-        $this->isForcedOrConfirmed("Do you really want to overwrite your DB with the dump?");
+        if (!$this->pleaseConfirm("Do you really want to overwrite your DB with the dump?")) {
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
 
         $this->info("Import DB Dump from '{$file}'");
 

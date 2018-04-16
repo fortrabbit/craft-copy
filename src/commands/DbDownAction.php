@@ -1,13 +1,16 @@
-<?php namespace fortrabbit\Copy\commands;
+<?php
 
-use fortrabbit\Copy\services\ConsoleOutputHelper;
+namespace fortrabbit\Copy\commands;
+
+use fortrabbit\Copy\ArtisanConsoleBridge\base\Action;
+
 
 /**
  * Class DbDownAction
  *
  * @package fortrabbit\DeployTools\commands
  */
-class DbDownAction extends ConsoleBaseAction
+class DbDownAction extends Action
 {
 
     /**

@@ -1,34 +1,38 @@
-<?php namespace fortrabbit\Copy\commands;
+<?php namespace fortrabbit\Copy\ArtisanConsoleBridge\base;
 
 use fortrabbit\Copy\exceptions\CraftNotInstalledException;
 use fortrabbit\Copy\exceptions\PluginNotInstalledException;
 use fortrabbit\Copy\exceptions\RemoteException;
 use fortrabbit\Copy\Plugin;
 use fortrabbit\Copy\services\ConsoleOutputHelper;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use yii\base\Action;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use yii\base\Action as YiiBaseAction;
 use yii\helpers\Console;
 
-abstract class ConsoleBaseAction extends Action
+abstract class Action extends YiiBaseAction
 {
-    const OPTIONS = [];
-
-    protected $success = true;
 
     protected $args = [];
 
     protected $options = [];
+
+    protected $style;
 
     /**
      * @var \Symfony\Component\Console\Output\ConsoleOutputInterface
      */
     protected $output;
 
-    use ConsoleOutputHelper;
+    use ArtisanTrait;
 
     public function __construct($id, \yii\base\Controller $controller, array $config = [])
     {
-        $this->output = $this->output = new ConsoleOutput();
+        $this->output = new ConsoleOutput();
+        $this->style = new SymfonyStyle(new ArrayInput([]), $this->output);
+
 
         parent::__construct($id, $controller, $config);
     }
@@ -45,7 +49,7 @@ abstract class ConsoleBaseAction extends Action
      * @return bool
      * @throws \yii\console\Exception
      */
-    public function isForcedOrConfirmed($question)
+    public function pleaseConfirm($question)
     {
         if ($this->getOption('force')) {
             return true;
@@ -54,7 +58,9 @@ abstract class ConsoleBaseAction extends Action
             return true;
         }
 
-        throw new \yii\console\Exception("Cancelled. Action was not executed.");
+        $this->block('Action was not executed.', 'error');
+
+        return false;
     }
 
     public function remotePreCheck()
@@ -71,8 +77,5 @@ abstract class ConsoleBaseAction extends Action
         }
     }
 
-    public function markdown($markdown) {
-        return Console::markdownToAnsi($markdown);
-    }
 }
 

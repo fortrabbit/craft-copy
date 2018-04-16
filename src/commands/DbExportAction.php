@@ -1,7 +1,9 @@
-<?php namespace fortrabbit\Copy\commands;
+<?php
 
+namespace fortrabbit\Copy\commands;
+
+use fortrabbit\Copy\ArtisanConsoleBridge\base\Action;
 use fortrabbit\Copy\Plugin;
-use fortrabbit\Copy\services\ConsoleOutputHelper;
 
 
 /**
@@ -9,8 +11,11 @@ use fortrabbit\Copy\services\ConsoleOutputHelper;
  *
  * @package fortrabbit\DeployTools\commands
  */
-class DbExportAction extends ConsoleBaseAction
+class DbExportAction extends Action
 {
+
+    var $name = 'bar';
+
 
     /**
      * Export database

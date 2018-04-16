@@ -1,20 +1,22 @@
-<?php namespace fortrabbit\Copy\commands;
+<?php
+
+namespace fortrabbit\Copy\commands;
 
 use Craft;
 use craft\helpers\Console;
+use fortrabbit\Copy\ArtisanConsoleBridge\base\Action;
 use fortrabbit\Copy\Plugin;
 use Symfony\Component\Process\Process;
-use fortrabbit\Copy\services\ConsoleOutputHelper;
+use yii\console\ExitCode;
 
 /**
  * Class SetupAction
  *
  * @package fortrabbit\Copy\commands
  */
-class SetupAction extends ConsoleBaseAction
+class SetupAction extends Action
 {
     const ENV_NAME_APP = 'APP_NAME';
-    const ENV_NAME_REGION = 'APP_REGION';
     const ENV_NAME_SSH_REMOTE = 'APP_SSH_REMOTE';
     const REGIONS = [
         'us1' => 'US (AWS US-EAST-1 / Virginia)',
@@ -22,9 +24,23 @@ class SetupAction extends ConsoleBaseAction
     ];
 
     protected $app;
-    protected $region;
     protected $sshUrl;
 
+    /**
+     * @var bool Verbose output
+     */
+    public $verbose = false;
+
+
+    public function __construct($id, \yii\base\Controller $controller, array $config = [])
+    {
+        parent::__construct($id, $controller, $config);
+    }
+
+    public function __destruct()
+    {
+        // TODO: Implement __destruct() method.
+    }
 
     /**
      * Setup your App
@@ -33,6 +49,10 @@ class SetupAction extends ConsoleBaseAction
      */
     public function run()
     {
+
+        \Craft::dd($this->verbose);
+
+        $this->block('Setup', 'header');
 
         // Ask for App name
         $this->controller->prompt(PHP_EOL . 'What\'s the name of your App?', ['error' => '', 'validator' => function ($app) {
@@ -45,7 +65,6 @@ class SetupAction extends ConsoleBaseAction
 
             if (!$region = $this->guessRegion($app)) {
                 $this->error('⚠  App not found');
-
                 return false;
             }
 
@@ -56,8 +75,7 @@ class SetupAction extends ConsoleBaseAction
                 $this->write(PHP_EOL . "<info>Region detected </info>" . self::REGIONS[$region], true);
 
                 $this->app    = $app;
-                $this->region = $region;
-                $this->sshUrl = "{$this->app}@deploy.{$this->region}.frbit.com";
+                $this->sshUrl = "{$this->app}@deploy.{$region}.frbit.com";
 
                 return true;
             }
@@ -107,9 +125,12 @@ class SetupAction extends ConsoleBaseAction
 
         $this->controller->stdout(PHP_EOL);
 
+        if (!$this->pleaseConfirm("Do you want initialize the plugin on the remote?")) {
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+
         return $this->setupRemote();
 
-        return true;
     }
 
     /**
@@ -146,7 +167,6 @@ class SetupAction extends ConsoleBaseAction
     {
         $vars = [
             self::ENV_NAME_APP        => $this->app,
-            self::ENV_NAME_REGION     => $this->region,
             self::ENV_NAME_SSH_REMOTE => $this->sshUrl
         ];
 
@@ -160,17 +180,19 @@ class SetupAction extends ConsoleBaseAction
 
     protected function setupRemote()
     {
-
-        $this->isForcedOrConfirmed("Do you want initialize the plugin on the remote?");
-
         $plugin = Plugin::getInstance();
 
         if ($plugin->ssh->exec('php vendor/bin/craft-copy-installer.php')) {
-           $this->write($plugin->ssh->getOutput());
+            $this->write($plugin->ssh->getOutput());
         };
 
         Craft::$app->runAction('copy/db/up', ['force' => false]);
 
+        $this->write(PHP_EOL);
+        $this->write("Check it the browser: http://{$this->app}.frb.io", true);
+        $this->write(PHP_EOL);
+
+        return true;
 
     }
 

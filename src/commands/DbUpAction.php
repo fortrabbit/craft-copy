@@ -1,10 +1,14 @@
-<?php namespace fortrabbit\Copy\commands;
+<?php
+
+namespace fortrabbit\Copy\commands;
 
 use \Craft;
+use fortrabbit\Copy\ArtisanConsoleBridge\base\Action;
 use fortrabbit\Copy\exceptions\RemoteException;
 use fortrabbit\Copy\Plugin;
 use fortrabbit\Copy\services\ConsoleOutputHelper;
 use yii\console\Exception;
+use yii\console\ExitCode;
 use yii\helpers\Console;
 use ZipArchive;
 
@@ -14,7 +18,7 @@ use ZipArchive;
  *
  * @package fortrabbit\DeployTools\commands
  */
-class DbUpAction extends ConsoleBaseAction
+class DbUpAction extends Action
 {
     /**
      * Upload database
@@ -35,38 +39,46 @@ class DbUpAction extends ConsoleBaseAction
         $steps = 4;
 
         // Step 0:
-        $this->remotePreCheck($plugin);
+        //$this->remotePreCheck($plugin);
 
-        $this->isForcedOrConfirmed("Do you really want to sync your local DB with the remote?");
+        if (!$this->pleaseConfirm("Do you really want to sync your local DB with the remote?")) {
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+
+        $this->write(PHP_EOL . PHP_EOL);
 
         Console::startProgress(0, $steps);
 
         // Step 1: Create dump of the current database
         if ($plugin->dump->export($localFile)) {
-            $this->info('Local dump created');
+            Console::clearLine();
+            Console::moveCursorPrevLine();
             Console::updateProgress(1, $steps);
-
+            $this->info('Local dump created', false);
         }
 
         // Step 2: Upload that dump to remote
         if ($plugin->ssh->upload($localFile, $remoteFile, true)) {
-            $this->info("Dump uploaded $localFile > $remoteFile");
+            Console::clearLine();
+            Console::moveCursorPrevLine();
             Console::updateProgress(2, $steps);
-
+            $this->info("Dump uploaded $localFile > $remoteFile", false);
         }
 
         // Step 3: Backup the remote database before importing the uploaded dump
         if ($plugin->ssh->exec("php craft copy/db/to-file {$remoteBackup} --force")) {
-            $this->info("DB Backup created on remote ({$remoteBackup})");
+            Console::clearLine();
+            Console::moveCursorPrevLine();
             Console::updateProgress(3, $steps);
-
+            $this->info("DB Backup created on remote ({$remoteBackup})", false);
         }
 
         // Step 4: Import on remote
         if ($plugin->ssh->exec("php craft copy/db/from-file {$remoteFile} --force")) {
-            $this->info('Dump imported');
+            Console::clearLine();
+            Console::moveCursorPrevLine();
             Console::updateProgress(4, $steps);
-
+            $this->info('Dump imported', false);
         }
 
         Console::endProgress();

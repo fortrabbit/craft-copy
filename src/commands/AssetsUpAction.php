@@ -1,11 +1,16 @@
-<?php namespace fortrabbit\Copy\commands;
+<?php
+
+namespace fortrabbit\Copy\commands;
+
+use fortrabbit\Copy\ArtisanConsoleBridge\base\Action;
+use yii\console\ExitCode;
 
 /**
  * Class AssetsUpAction
  *
  * @package fortrabbit\Copy\commands
  */
-class AssetsUpAction extends ConsoleBaseAction
+class AssetsUpAction extends Action
 {
 
     /**
@@ -18,7 +23,10 @@ class AssetsUpAction extends ConsoleBaseAction
     public function run(string $app = null)
     {
         // Ask if not forced
-        $this->isForcedOrConfirmed("Do you really want to sync upload your local assets? to ...");
+        if (!$this->pleaseConfirm("Do you really want to sync upload your local assets? to ...")) {
+            return ExitCode::UNSPECIFIED_ERROR;
+
+        }
 
 
         die('SOME CALLED ME!!');
