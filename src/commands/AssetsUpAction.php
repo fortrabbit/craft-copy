@@ -22,6 +22,17 @@ class AssetsUpAction extends Action
      */
     public function run(string $app = null)
     {
+        $this->cautionBlock('Foo Bar ...');
+        $this->title('Foo dsf sdf sfs');
+        $this->successBlock('Foo Bar ...');
+
+        $this->section('some section');
+        $this->listing(['dog','cat','elephant']);
+
+        $this->choice('Really', ['yes','no','maybe']);
+
+
+
         // Ask if not forced
         if (!$this->pleaseConfirm("Do you really want to sync upload your local assets? to ...")) {
             return ExitCode::UNSPECIFIED_ERROR;

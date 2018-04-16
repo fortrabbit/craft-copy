@@ -52,7 +52,7 @@ class Plugin extends BasePlugin
                 'db/from-file' => DbImportAction::class,
                 'setup'        => SetupAction::class
             ], 'db/from-file');
-            Commands::registerOptions([
+            Commands::registerOptions('copy', [
                 'v' => 'verbose',
                 'n' => 'name',
                 'option-without-alias'

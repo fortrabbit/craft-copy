@@ -4,6 +4,7 @@ namespace fortrabbit\Copy\ArtisanConsoleBridge\base;
 
 use fortrabbit\Copy\ArtisanConsoleBridge\ArtisanConsoleBehavior;
 use Symfony\Component\Console\Question\ChoiceQuestion;
+use Yii;
 use yii\base\ActionEvent;
 use yii\base\Event;
 use yii\console\Controller as BaseConsoleController;
@@ -22,14 +23,9 @@ class Commands extends BaseConsoleController
 
     public $defaultAction;
 
-    /**
-     * Force execution
-     *
-     * @var bool
-     */
-    public $force = false;
-
     public $options = [];
+
+    public $optionAliases = [];
 
     /**
      * @return array
@@ -39,9 +35,19 @@ class Commands extends BaseConsoleController
         return $this->actions;
     }
 
+    public function optionAliases()
+    {
+        return $this->optionAliases;
+    }
+
+    /**
+     * @param string $prefix
+     * @param array  $actions
+     * @param null   $defaultAction
+     */
     public static function registerCommands($prefix = '', $actions = [], $defaultAction = null)
     {
-        \Yii::$app->controllerMap[$prefix] = [
+        Yii::$app->controllerMap[$prefix] = [
             'class'         => get_called_class(),
             'actions'       => $actions,
             'defaultAction' => $defaultAction
@@ -49,19 +55,20 @@ class Commands extends BaseConsoleController
 
     }
 
-    public static function registerOptions($optionNames = [])
+    public static function registerOptions($prefix = '', $optionNames = [])
     {
+
+        Yii::$app->controllerMap[$prefix]['optionAliases'] = $optionNames;
 
         Event::on(Controller::class, Controller::EVENT_BEFORE_ACTION, function (ActionEvent $event) use ($optionNames) {
 
             // Standalone Action
             $event->action->attachBehavior('artisan', ArtisanConsoleBehavior::class);
 
-            // too early
             foreach (array_values($optionNames) as $name) {
                 if (in_array($name, array_values($optionNames))) {
                     if (isset($event->action->controller->options[$name])) {
-                        $event->action->$name  = $event->action->controller->options[$name];
+                        $event->action->$name = $event->action->controller->options[$name];
                     }
                 }
             }
@@ -151,6 +158,7 @@ class Commands extends BaseConsoleController
      * the properties corresponding to the action options.
      *
      * @param Action $action
+     *
      * @return array the help information of the action options
      */
     public function getActionOptionsHelp($action)
@@ -160,7 +168,7 @@ class Commands extends BaseConsoleController
             return [];
         }
 
-        $class = new \ReflectionClass($action);
+        $class   = new \ReflectionClass($action);
         $options = [];
 
         foreach ($class->getProperties() as $property) {
@@ -169,7 +177,7 @@ class Commands extends BaseConsoleController
                 continue;
             }
             $defaultValue = $property->getValue($action);
-            $tags = $this->parseDocCommentTags($property);
+            $tags         = $this->parseDocCommentTags($property);
 
             // Display camelCase options in kebab-case
             $name = Inflector::camel2id($name, '-', true);
@@ -180,20 +188,20 @@ class Commands extends BaseConsoleController
                     $doc = reset($doc);
                 }
                 if (preg_match('/^(\S+)(.*)/s', $doc, $matches)) {
-                    $type = $matches[1];
+                    $type    = $matches[1];
                     $comment = $matches[2];
                 } else {
-                    $type = null;
+                    $type    = null;
                     $comment = $doc;
                 }
                 $options[$name] = [
-                    'type' => $type,
+                    'type'    => $type,
                     'default' => $defaultValue,
                     'comment' => $comment,
                 ];
             } else {
                 $options[$name] = [
-                    'type' => null,
+                    'type'    => null,
                     'default' => $defaultValue,
                     'comment' => '',
                 ];

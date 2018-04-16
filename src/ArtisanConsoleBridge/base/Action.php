@@ -4,43 +4,18 @@ use fortrabbit\Copy\exceptions\CraftNotInstalledException;
 use fortrabbit\Copy\exceptions\PluginNotInstalledException;
 use fortrabbit\Copy\exceptions\RemoteException;
 use fortrabbit\Copy\Plugin;
-use fortrabbit\Copy\services\ConsoleOutputHelper;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Style\SymfonyStyle;
+
 use yii\base\Action as YiiBaseAction;
-use yii\helpers\Console;
 
 abstract class Action extends YiiBaseAction
 {
 
-    protected $args = [];
-
-    protected $options = [];
-
-    protected $style;
-
-    /**
-     * @var \Symfony\Component\Console\Output\ConsoleOutputInterface
-     */
-    protected $output;
-
-    use ArtisanTrait;
-
-    public function __construct($id, \yii\base\Controller $controller, array $config = [])
-    {
-        $this->output = new ConsoleOutput();
-        $this->style = new SymfonyStyle(new ArrayInput([]), $this->output);
-
-
-        parent::__construct($id, $controller, $config);
-    }
-
+    use ArtisanOutputTrait;
+    use BlockOutputTrait;
 
     public function getOption($name, $defaultValue = null)
     {
-        return $this->controller->$name ?? $defaultValue;
+        return $this->controller->options[$name] ?? $defaultValue;
     }
 
     /**
