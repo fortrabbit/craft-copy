@@ -2,7 +2,7 @@
     "name": "fortrabbit/craft-copy",
     "description": "Tooling for Craft on fortrabbit",
     "type": "craft-plugin",
-    "version": "0.7.1",
+    "version": "0.7.2",
     "keywords": [
         "craft",
         "cms",
@@ -23,7 +23,8 @@
     ],
     "require": {
         "craftcms/cms": "^3.0.0",
-        "albertofem/rsync-lib": "^1.0.0"
+        "albertofem/rsync-lib": "^1.0.0",
+        "ostark/yii2-artisan-bridge": "^0.1.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^0.9.2"
@@ -44,6 +45,12 @@
         "ps": "vendor/bin/phpstan analyse src --level=5 -c phpstan.neon",
         "stan": "@ps"
     },
-    "bin": ["bin/craft-copy-installer.php"]
+    "bin": ["bin/craft-copy-installer.php"],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*"
+        }
+    ]
 
 }

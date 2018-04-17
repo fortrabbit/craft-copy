@@ -22,15 +22,17 @@ class AssetsUpAction extends Action
      */
     public function run(string $app = null)
     {
-        $this->cautionBlock('Foo Bar ...');
-        $this->title('Foo dsf sdf sfs');
-        $this->successBlock('Foo Bar ...');
+        $this->title("Hello {$app}");
 
-        $this->section('some section');
-        $this->listing(['dog','cat','elephant']);
+        $answer = $this->choice("What's your favorite animal?", ['Dog','Cat','Elephant']);
 
-        $this->choice('Really', ['yes','no','maybe']);
-
+        if ($answer === 'Elephant') {
+            $this->successBlock("Yes, '$answer' is correct.");
+            return ExitCode::OK;
+        } else {
+            $this->errorBlock("No, '$answer' is the wrong.");
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
 
 
         // Ask if not forced

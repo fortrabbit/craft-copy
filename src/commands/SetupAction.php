@@ -50,8 +50,6 @@ class SetupAction extends Action
     public function run()
     {
 
-        \Craft::dd($this->verbose);
-
         $this->block('Setup', 'header');
 
         // Ask for App name

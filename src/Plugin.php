@@ -2,7 +2,6 @@
 
 use Craft;
 use craft\base\Plugin as BasePlugin;
-use fortrabbit\Copy\ArtisanConsoleBridge\base\Commands;
 use fortrabbit\Copy\commands\AssetsDownAction;
 use fortrabbit\Copy\commands\AssetsUpAction;
 use fortrabbit\Copy\commands\DbDownAction;
@@ -11,6 +10,7 @@ use fortrabbit\Copy\commands\DbImportAction;
 use fortrabbit\Copy\commands\DbUpAction;
 use fortrabbit\Copy\commands\SetupAction;
 use fortrabbit\Copy\ArtisanConsoleBridge\ArtisanConsoleBehavior;
+use ostark\Yii2ArtisanBridge\base\Commands;
 use yii\base\ActionEvent;
 use yii\base\Event;
 use yii\console\Application as ConsoleApplication;
@@ -43,7 +43,7 @@ class Plugin extends BasePlugin
             // Register console commands
             //Craft::$app->controllerMap['copy'] = Commands::class;
 
-            Commands::registerCommands('copy', [
+            Commands::register('copy', [
                 'assets/up'    => AssetsUpAction::class,
                 'assets/down'  => AssetsDownAction::class,
                 'db/up'        => DbUpAction::class,
@@ -51,12 +51,14 @@ class Plugin extends BasePlugin
                 'db/to-file'   => DbExportAction::class,
                 'db/from-file' => DbImportAction::class,
                 'setup'        => SetupAction::class
-            ], 'db/from-file');
-            Commands::registerOptions('copy', [
-                'v' => 'verbose',
-                'n' => 'name',
-                'option-without-alias'
-            ]);
+            ], [
+                    'v' => 'verbose',
+                    'n' => 'name',
+                    'option-without-alias'
+                ]
+            );
+
+            Commands::setDefaultAction('copy', 'setup');
 
 
             // Register services
