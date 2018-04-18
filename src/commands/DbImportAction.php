@@ -2,7 +2,7 @@
 
 namespace fortrabbit\Copy\commands;
 
-use fortrabbit\Copy\ArtisanConsoleBridge\base\Action;
+use ostark\Yii2ArtisanBridge\base\Action;
 use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
 

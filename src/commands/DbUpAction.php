@@ -3,14 +3,10 @@
 namespace fortrabbit\Copy\commands;
 
 use \Craft;
-use fortrabbit\Copy\ArtisanConsoleBridge\base\Action;
-use fortrabbit\Copy\exceptions\RemoteException;
+use ostark\Yii2ArtisanBridge\base\Action as BaseAction;
 use fortrabbit\Copy\Plugin;
-use fortrabbit\Copy\services\ConsoleOutputHelper;
-use yii\console\Exception;
 use yii\console\ExitCode;
-use yii\helpers\Console;
-use ZipArchive;
+
 
 
 /**
@@ -18,7 +14,7 @@ use ZipArchive;
  *
  * @package fortrabbit\DeployTools\commands
  */
-class DbUpAction extends Action
+class DbUpAction extends BaseAction
 {
     /**
      * Upload database
@@ -41,47 +37,47 @@ class DbUpAction extends Action
         // Step 0:
         //$this->remotePreCheck($plugin);
 
-        if (!$this->pleaseConfirm("Do you really want to sync your local DB with the remote?")) {
+        if (!$this->confirm("Do you really want to sync your local DB with the remote?")) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        $this->write(PHP_EOL . PHP_EOL);
+        $bar = $this->output->createProgressBar($steps);
 
-        Console::startProgress(0, $steps);
+        // Custom format
+        $bar->setFormat('%message%' . PHP_EOL . '%bar% %percent:3s% %' . PHP_EOL . 'time:  %elapsed:6s%/%estimated:-6s%' . PHP_EOL.PHP_EOL);
+        $bar->setBarCharacter('<info>'.$bar->getBarCharacter().'</info>');
+        $bar->setBarWidth(70);
+
 
         // Step 1: Create dump of the current database
+        $bar->setMessage("Creating local dump");
         if ($plugin->dump->export($localFile)) {
-            Console::clearLine();
-            Console::moveCursorPrevLine();
-            Console::updateProgress(1, $steps);
-            $this->info('Local dump created', false);
+            $bar->advance();
         }
 
         // Step 2: Upload that dump to remote
+        $bar->setMessage("Uploading dump to remote {$remoteFile}");
         if ($plugin->ssh->upload($localFile, $remoteFile, true)) {
-            Console::clearLine();
-            Console::moveCursorPrevLine();
-            Console::updateProgress(2, $steps);
-            $this->info("Dump uploaded $localFile > $remoteFile", false);
+            $bar->advance();
         }
 
         // Step 3: Backup the remote database before importing the uploaded dump
+        $bar->setMessage("Creating DB Backup on remote ({$remoteBackup})");
         if ($plugin->ssh->exec("php craft copy/db/to-file {$remoteBackup} --force")) {
-            Console::clearLine();
-            Console::moveCursorPrevLine();
-            Console::updateProgress(3, $steps);
-            $this->info("DB Backup created on remote ({$remoteBackup})", false);
+            $bar->advance();
         }
 
         // Step 4: Import on remote
+        $bar->setMessage("Importing dump on remote");
         if ($plugin->ssh->exec("php craft copy/db/from-file {$remoteFile} --force")) {
-            Console::clearLine();
-            Console::moveCursorPrevLine();
-            Console::updateProgress(4, $steps);
-            $this->info('Dump imported', false);
+            sleep(1);
+            $bar->advance();
+            $bar->setMessage("Dump imported");
         }
 
-        Console::endProgress();
+        $bar->finish();
+
+        $this->info("Revert?");
 
         return 0;
     }

@@ -8,9 +8,11 @@ use fortrabbit\Copy\commands\DbDownAction;
 use fortrabbit\Copy\commands\DbExportAction;
 use fortrabbit\Copy\commands\DbImportAction;
 use fortrabbit\Copy\commands\DbUpAction;
+use fortrabbit\Copy\commands\InfoAction;
 use fortrabbit\Copy\commands\SetupAction;
-use fortrabbit\Copy\ArtisanConsoleBridge\ArtisanConsoleBehavior;
 use ostark\Yii2ArtisanBridge\base\Commands;
+
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use yii\base\ActionEvent;
 use yii\base\Event;
 use yii\console\Application as ConsoleApplication;
@@ -31,6 +33,13 @@ use yii\console\Controller;
  */
 class Plugin extends BasePlugin
 {
+    const ENV_NAME_APP = "APP_NAME";
+    const ENV_NAME_SSH_REMOTE = "APP_SSH_REMOTE";
+    const REGIONS = [
+        'us1' => 'US (AWS US-EAST-1 / Virginia)',
+        'eu2' => 'EU (AWS EU-WEST-1 / Ireland)'
+    ];
+
     /**
      * Initialize Plugins
      */
@@ -50,7 +59,8 @@ class Plugin extends BasePlugin
                 'db/down'      => DbDownAction::class,
                 'db/to-file'   => DbExportAction::class,
                 'db/from-file' => DbImportAction::class,
-                'setup'        => SetupAction::class
+                'setup'        => SetupAction::class,
+                'info'         => InfoAction::class
             ], [
                     'v' => 'verbose',
                     'n' => 'name',
@@ -58,7 +68,16 @@ class Plugin extends BasePlugin
                 ]
             );
 
-            Commands::setDefaultAction('copy', 'setup');
+            Commands::setDefaultAction('copy', 'info');
+
+            \yii\base\Event::on(
+                Commands::class,
+                Commands::EVENT_BEFORE_ACTION,
+                function (ActionEvent $event) {
+                    $style = new OutputFormatterStyle('white', 'cyan');
+                    $event->action->output->getFormatter()->setStyle('ocean', $style);
+                }
+             );
 
 
             // Register services
@@ -73,8 +92,8 @@ class Plugin extends BasePlugin
             $this->dump->db = \Craft::$app->getDb();
 
             // Inject $remote
-            if (getenv(SetupAction::ENV_NAME_SSH_REMOTE)) {
-                $this->ssh->remote = getenv(SetupAction::ENV_NAME_SSH_REMOTE);
+            if (getenv(self::ENV_NAME_SSH_REMOTE)) {
+                $this->ssh->remote = getenv(self::ENV_NAME_SSH_REMOTE);
             }
 
         }

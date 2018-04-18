@@ -3,8 +3,7 @@
 namespace fortrabbit\Copy\commands;
 
 use Craft;
-use craft\helpers\Console;
-use fortrabbit\Copy\ArtisanConsoleBridge\base\Action;
+use ostark\Yii2ArtisanBridge\base\Action;
 use fortrabbit\Copy\Plugin;
 use Symfony\Component\Process\Process;
 use yii\console\ExitCode;
@@ -16,31 +15,14 @@ use yii\console\ExitCode;
  */
 class SetupAction extends Action
 {
-    const ENV_NAME_APP = 'APP_NAME';
-    const ENV_NAME_SSH_REMOTE = 'APP_SSH_REMOTE';
-    const REGIONS = [
-        'us1' => 'US (AWS US-EAST-1 / Virginia)',
-        'eu2' => 'EU (AWS EU-WEST-1 / Ireland)'
-    ];
-
-    protected $app;
-    protected $sshUrl;
 
     /**
      * @var bool Verbose output
      */
     public $verbose = false;
 
-
-    public function __construct($id, \yii\base\Controller $controller, array $config = [])
-    {
-        parent::__construct($id, $controller, $config);
-    }
-
-    public function __destruct()
-    {
-        // TODO: Implement __destruct() method.
-    }
+    protected $app;
+    protected $sshUrl;
 
     /**
      * Setup your App
@@ -49,85 +31,50 @@ class SetupAction extends Action
      */
     public function run()
     {
+        $this->app = $this->ask("What's the name of your App?");
 
-        $this->block('Setup', 'header');
+        if (strlen($this->app) < 3 || strlen($this->app) > 16) {
+            $this->errorBlock("Invalid App name.");
 
-        // Ask for App name
-        $this->controller->prompt(PHP_EOL . 'What\'s the name of your App?', ['error' => '', 'validator' => function ($app) {
-
-            if (strlen($app) < 3 || strlen($app) > 16) {
-                return false;
-            }
-
-            $this->info(PHP_EOL . "Performing DNS check for '$app' ", false);
-
-            if (!$region = $this->guessRegion($app)) {
-                $this->error('⚠  App not found');
-                return false;
-            }
-
-
-            if (in_array($region, array_keys(self::REGIONS))) {
-
-                $this->write('OK');
-                $this->write(PHP_EOL . "<info>Region detected </info>" . self::REGIONS[$region], true);
-
-                $this->app    = $app;
-                $this->sshUrl = "{$this->app}@deploy.{$region}.frbit.com";
-
-                return true;
-            }
-
-            return false;
-        }]);
-
-
-        // Perform exec checks
-        $this->info(PHP_EOL . "Testing mysqldump ", false);
-        $this->write($mysqldump = $this->canExecBinary("mysqldump --help") ? "OK" : "<error>⚠ Error</error>");
-
-        $this->info(PHP_EOL . "Testing rsync ", false);
-        $this->write($rsync = $this->canExecBinary("rsync --help") ? "OK" : "<error>⚠ Error</error>");
-
-        $this->info(PHP_EOL . "Testing ssh access ", false);
-        $this->write($ssh = $this->canExecBinary("ssh {$this->app}@deploy.{$this->region}.frbit.com secrets") ? "OK" : "<error>⚠ Error</error>");
-        $this->write(PHP_EOL);
-
-
-        // Write .env
-        if ($this->controller->confirm(PHP_EOL . "Update .env file?", true)) {
-
-            try {
-                $this->writeDotEnv();
-            } catch (\Exception $e) {
-                $this->controller->stderr($e->getMessage() . PHP_EOL, Console::FG_RED);
-            }
-        }
-
-
-        // Show summary
-        if (getenv(self::ENV_NAME_SSH_REMOTE)) {
-
-            $this->controller->stdout(PHP_EOL . "Now you can run these commands:" . PHP_EOL . PHP_EOL, Console::FG_GREY);
-
-            $this->controller->stdout("./craft copy/db/up ", Console::FG_BLUE);
-            $this->controller->stdout("to dump your local db" . PHP_EOL);
-
-            $this->controller->stdout("./craft copy/db/down ", Console::FG_BLUE);
-            $this->controller->stdout("to import your dump to the remote db" . PHP_EOL);
-
-            $this->controller->stdout("./craft copy/assets/up ", Console::FG_BLUE);
-            $this->controller->stdout("to rsync your assets with the remote" . PHP_EOL);
-
-        }
-
-        $this->controller->stdout(PHP_EOL);
-
-        if (!$this->pleaseConfirm("Do you want initialize the plugin on the remote?")) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        return $this->setupRemote();
+        if (!$region = $this->guessRegion($this->app)) {
+            $this->errorBlock('⚠  App not found');
+
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+
+        $this->sshUrl = "{$this->app}@deploy.{$region}.frbit.com";
+
+        // Perform exec checks
+        $dns   = $this->checkAndWrite("Testing DNS - " . Plugin::REGIONS[$region], true);
+        $mysql = $this->checkAndWrite("Testing mysqldump", $this->canExecBinary("mysqldump --help"));
+        $rsync = $this->checkAndWrite("Testing rsync", $this->canExecBinary("rsync --help"));
+        $ssh   = $this->checkAndWrite("Testing ssh access", $this->canExecBinary("ssh {$this->sshUrl} secrets"));
+
+        if ($this->confirm("Update .env file?")) {
+            try {
+                $this->writeDotEnv();
+            } catch (\Exception $e) {
+                $this->errorBlock($e->getMessage());
+            }
+        }
+
+        getenv(Plugin::ENV_NAME_SSH_REMOTE);
+
+        if ($mysql && $ssh) {
+
+            if (!$this->confirm("Do you want initialize the plugin on the remote?")) {
+                $this->noteBlock('Abort');
+                return ExitCode::UNSPECIFIED_ERROR;
+            }
+
+            return $this->setupRemote();
+        }
+
+
+
 
     }
 
@@ -159,13 +106,14 @@ class SetupAction extends Action
 
 
     /**
+     *
      * @throws \yii\base\Exception
      */
     protected function writeDotEnv()
     {
         $vars = [
-            self::ENV_NAME_APP        => $this->app,
-            self::ENV_NAME_SSH_REMOTE => $this->sshUrl
+            Plugin::ENV_NAME_APP        => $this->app,
+            Plugin::ENV_NAME_SSH_REMOTE => $this->sshUrl
         ];
 
         $config = \Craft::$app->getConfig();
@@ -179,19 +127,27 @@ class SetupAction extends Action
     protected function setupRemote()
     {
         $plugin = Plugin::getInstance();
+        $plugin->ssh->remote = $this->sshUrl;
 
         if ($plugin->ssh->exec('php vendor/bin/craft-copy-installer.php')) {
-            $this->write($plugin->ssh->getOutput());
+            $this->output->write($plugin->ssh->getOutput());
         };
 
-        Craft::$app->runAction('copy/db/up', ['force' => false]);
+        Craft::$app->runAction('copy/db/up');
 
-        $this->write(PHP_EOL);
-        $this->write("Check it the browser: http://{$this->app}.frb.io", true);
-        $this->write(PHP_EOL);
+        $this->commentBlock("Check it the browser: http://{$this->app}.frb.io");
+
 
         return true;
 
+    }
+
+    protected function checkAndWrite($message, $success)
+    {
+        $this->output->write(PHP_EOL . $message);
+        $this->output->write($success ? " <info>OK</info>" : " <error>⚠ Error</error>");
+
+        return $success;
     }
 
 }
