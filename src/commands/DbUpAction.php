@@ -30,8 +30,8 @@ class DbUpAction extends BaseAction
     public function run()
     {
         $plugin       = Plugin::getInstance();
-        $localFile    = $remoteFile = 'copy-' . date('Ymd-his') . '.sql';
-        $remoteBackup = 'copy-recent.sql';
+        $localFile    = 'dump-' . date('Ymd-his') . '.sql';
+        $remoteBackup = 'dump-recent.sql';
         $steps = 4;
 
         // Step 0:
@@ -51,8 +51,9 @@ class DbUpAction extends BaseAction
 
         // Step 1: Create dump of the current database
         $bar->setMessage("Creating local dump");
-        if ($plugin->dump->export($localFile)) {
+        if ($fullPath = $plugin->dump->export($localFile)) {
             $bar->advance();
+            $localFile = $remoteFile = $fullPath;
         }
 
         // Step 2: Upload that dump to remote
@@ -70,7 +71,6 @@ class DbUpAction extends BaseAction
         // Step 4: Import on remote
         $bar->setMessage("Importing dump on remote");
         if ($plugin->ssh->exec("php craft copy/db/from-file {$remoteFile} --interactive=0")) {
-            sleep(1);
             $bar->advance();
             $bar->setMessage("Dump imported");
         }

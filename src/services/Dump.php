@@ -32,7 +32,7 @@ class Dump extends Component
     {
         parent::__construct($config);
 
-        $this->dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'craft-copy';
+        $this->dir = \Craft::$app->getPath()->getStoragePath() . DIRECTORY_SEPARATOR . 'craft-copy';
     }
 
     /**
