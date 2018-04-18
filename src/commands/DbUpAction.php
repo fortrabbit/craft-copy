@@ -8,7 +8,6 @@ use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
 
 
-
 /**
  * Class DbDownAction
  *
@@ -30,11 +29,10 @@ class DbUpAction extends BaseAction
     public function run()
     {
         $plugin       = Plugin::getInstance();
-        $path         = './storage/craft-copy/';
-        $localFile    = $remoteFile = $path . './storage/craft-copy/dump-' . date('Ymd-his') . '.sql';
-        $remoteBackup = $path . 'dump-recent.sql';
+        $path         = './storage/';
+        $localFile    = $remoteFile = $path . 'craft-copy-dump-' . date('Ymd-his') . '.sql';
+        $remoteBackup = $path . 'craft-copy-dump-recent.sql';
         $steps        = 4;
-
         // Step 0:
         //$this->remotePreCheck($plugin);
 
@@ -45,8 +43,8 @@ class DbUpAction extends BaseAction
         $bar = $this->output->createProgressBar($steps);
 
         // Custom format
-        $bar->setFormat('%message%' . PHP_EOL . '%bar% %percent:3s% %' . PHP_EOL . 'time:  %elapsed:6s%/%estimated:-6s%' . PHP_EOL.PHP_EOL);
-        $bar->setBarCharacter('<info>'.$bar->getBarCharacter().'</info>');
+        $bar->setFormat('%message%' . PHP_EOL . '%bar% %percent:3s% %' . PHP_EOL . 'time:  %elapsed:6s%/%estimated:-6s%' . PHP_EOL . PHP_EOL);
+        $bar->setBarCharacter('<info>' . $bar->getBarCharacter() . '</info>');
         $bar->setBarWidth(70);
 
 

@@ -57,14 +57,15 @@ class Ssh extends Component
 
     public function upload($src, $target, $gzip = false)
     {
-        $process = new Process("cat {$src} | gzip | ssh {$this->remote} 'zcat > {$target}'");
+        $cmd = "cat {$src} | gzip | ssh {$this->remote} 'zcat > {$target}'";
+        $process = new Process($cmd);
         $process->run();
 
         if ($process->isSuccessful()) {
             return true;
         }
 
-        throw new RemoteException($process->getExitCodeText());
+        throw new RemoteException($cmd . PHP_EOL . $process->getErrorOutput());
 
     }
 
