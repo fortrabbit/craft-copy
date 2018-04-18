@@ -33,6 +33,7 @@ class DbUpAction extends BaseAction
         $localFile    = $remoteFile = $path . 'craft-copy-dump-' . date('Ymd-his') . '.sql';
         $remoteBackup = $path . 'craft-copy-dump-recent.sql';
         $steps        = 4;
+        $messages     = [];
         // Step 0:
         //$this->remotePreCheck($plugin);
 
@@ -49,25 +50,25 @@ class DbUpAction extends BaseAction
 
 
         // Step 1: Create dump of the current database
-        $bar->setMessage("Creating local dump");
+        $bar->setMessage($messages[] = "Creating local dump");
         if ($plugin->dump->export($localFile)) {
             $bar->advance();
         }
 
         // Step 2: Upload that dump to remote
-        $bar->setMessage("Uploading dump to remote {$remoteFile}");
+        $bar->setMessage($messages[] = "Uploading dump to remote {$remoteFile}");
         if ($plugin->ssh->upload($localFile, $remoteFile, true)) {
             $bar->advance();
         }
 
         // Step 3: Backup the remote database before importing the uploaded dump
-        $bar->setMessage("Creating DB Backup on remote ({$remoteBackup})");
+        $bar->setMessage($messages[] = "Creating DB Backup on remote ({$remoteBackup})");
         if ($plugin->ssh->exec("php craft copy/db/to-file {$remoteBackup} --interactive=0")) {
             $bar->advance();
         }
 
         // Step 4: Import on remote
-        $bar->setMessage("Importing dump on remote");
+        $bar->setMessage($messages[] = "Importing dump on remote");
         if ($plugin->ssh->exec("php craft copy/db/from-file {$remoteFile} --interactive=0")) {
             $bar->advance();
             $bar->setMessage("Dump imported");
@@ -75,7 +76,11 @@ class DbUpAction extends BaseAction
 
         $bar->finish();
 
-        $this->info("Revert?");
+        $this->section('Performed steps:');
+        $this->listing($messages);
+
+        $this->section('Rollback?');
+        $this->line("ssh {$plugin->ssh->remote} 'php craft copy/db/from-file {$remoteBackup}'" . PHP_EOL);
 
         return 0;
     }
