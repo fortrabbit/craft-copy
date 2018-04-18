@@ -35,25 +35,24 @@ class SetupAction extends Action
 
         if (strlen($this->app) < 3 || strlen($this->app) > 16) {
             $this->errorBlock("Invalid App name.");
-
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
         if (!$region = $this->guessRegion($this->app)) {
             $this->errorBlock('⚠  App not found');
-
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
         $this->sshUrl = "{$this->app}@deploy.{$region}.frbit.com";
 
         // Perform exec checks
-        $dns   = $this->checkAndWrite("Testing DNS - " . Plugin::REGIONS[$region], true);
+        $this->checkAndWrite("Testing DNS - " . Plugin::REGIONS[$region], true);
+        $this->checkAndWrite("Testing rsync", $this->canExecBinary("rsync --help"));
+
         $mysql = $this->checkAndWrite("Testing mysqldump", $this->canExecBinary("mysqldump --help"));
-        $rsync = $this->checkAndWrite("Testing rsync", $this->canExecBinary("rsync --help"));
         $ssh   = $this->checkAndWrite("Testing ssh access", $this->canExecBinary("ssh {$this->sshUrl} secrets"));
 
-        if ($this->confirm("Update .env file?")) {
+        if ($ssh && $this->confirm("Update .env file?", true)) {
             try {
                 $this->writeDotEnv();
             } catch (\Exception $e) {
@@ -61,20 +60,24 @@ class SetupAction extends Action
             }
         }
 
-        getenv(Plugin::ENV_NAME_SSH_REMOTE);
-
-        if ($mysql && $ssh) {
-
-            if (!$this->confirm("Do you want initialize the plugin on the remote?")) {
-                $this->noteBlock('Abort');
-                return ExitCode::UNSPECIFIED_ERROR;
-            }
-
-            return $this->setupRemote();
+        if (!$this->confirm("Do you want initialize the plugin on the remote?", true)) {
+            $this->noteBlock('Abort');
+            return ExitCode::UNSPECIFIED_ERROR;
         }
 
+        if (!$mysql) {
+            $this->errorBlock('Mysqldump is required.');
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
 
+        if (!$ssh) {
+            $this->errorBlock('SSH is required.');
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
 
+        return ($this->setupRemote())
+            ? ExitCode::OK
+            : ExitCode::UNSPECIFIED_ERROR;
 
     }
 
@@ -124,16 +127,33 @@ class SetupAction extends Action
         }
     }
 
+    /**
+     * @return bool
+     * @throws \fortrabbit\Copy\exceptions\CraftNotInstalledException
+     * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
+     * @throws \fortrabbit\Copy\exceptions\RemoteException
+     */
     protected function setupRemote()
     {
         $plugin = Plugin::getInstance();
         $plugin->ssh->remote = $this->sshUrl;
 
+
+        if ($plugin->ssh->exec("ls vendor/bin/craft-copy-installer.php | wc -l")) {
+          if (trim($plugin->ssh->getOutput()) != "1") {
+              $this->errorBlock([
+                  "The plugin is not installed on the remote!"
+              ]);
+              return false;
+          }
+        }
+
+
         if ($plugin->ssh->exec('php vendor/bin/craft-copy-installer.php')) {
             $this->output->write($plugin->ssh->getOutput());
         };
 
-        Craft::$app->runAction('copy/db/up');
+        Craft::$app->runAction('copy/db/up', ['interactive' => 0]);
 
         $this->commentBlock("Check it the browser: http://{$this->app}.frb.io");
 
