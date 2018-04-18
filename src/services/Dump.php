@@ -2,6 +2,7 @@
 /**
  * Copy plugin for Craft CMS 3.x
  **
+ *
  * @link      http://www.fortrabbit.com
  * @copyright Copyright (c) 2018 Oliver Stark
  */
@@ -24,6 +25,15 @@ class Dump extends Component
      * @var \craft\db\Connection
      */
     public $db;
+
+    public $dir;
+
+    public function __construct(array $config = [])
+    {
+        parent::__construct($config);
+
+        $this->dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'craft-copy';
+    }
 
     /**
      * @param string|null $file
@@ -66,12 +76,9 @@ class Dump extends Component
      *
      * @return string
      */
-    protected function prepareFile($file) {
-
-        $file = ($file)
-            ? $file
-            : './storage/copy-' . date('Ymd-His') . '.sql';
-
+    protected function prepareFile($file)
+    {
+        $file = $this->dir . DIRECTORY_SEPARATOR . $file;
         $file = FileHelper::normalizePath($file);
         $dir  = dirname($file);
 

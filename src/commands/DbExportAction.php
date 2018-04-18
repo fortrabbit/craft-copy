@@ -14,9 +14,6 @@ use fortrabbit\Copy\Plugin;
 class DbExportAction extends Action
 {
 
-    var $name = 'bar';
-
-
     /**
      * Export database
      *

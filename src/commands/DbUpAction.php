@@ -30,8 +30,8 @@ class DbUpAction extends BaseAction
     public function run()
     {
         $plugin       = Plugin::getInstance();
-        $localFile    = $remoteFile = './storage/copy-' . date('Ymd-his') . '.sql';
-        $remoteBackup = './storage/copy-recent.sql';
+        $localFile    = $remoteFile = 'copy-' . date('Ymd-his') . '.sql';
+        $remoteBackup = 'copy-recent.sql';
         $steps = 4;
 
         // Step 0:
