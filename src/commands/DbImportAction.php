@@ -23,7 +23,7 @@ class DbImportAction extends Action
      */
     public function run(string $file = null)
     {
-        if (!$this->pleaseConfirm("Do you really want to overwrite your DB with the dump?")) {
+        if (!$this->confirm("Do you really want to overwrite your DB with the dump?", true)) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 

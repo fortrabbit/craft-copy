@@ -63,13 +63,13 @@ class DbUpAction extends BaseAction
 
         // Step 3: Backup the remote database before importing the uploaded dump
         $bar->setMessage("Creating DB Backup on remote ({$remoteBackup})");
-        if ($plugin->ssh->exec("php craft copy/db/to-file {$remoteBackup} --force")) {
+        if ($plugin->ssh->exec("php craft copy/db/to-file {$remoteBackup} --interactive=0")) {
             $bar->advance();
         }
 
         // Step 4: Import on remote
         $bar->setMessage("Importing dump on remote");
-        if ($plugin->ssh->exec("php craft copy/db/from-file {$remoteFile} --force")) {
+        if ($plugin->ssh->exec("php craft copy/db/from-file {$remoteFile} --interactive=0")) {
             sleep(1);
             $bar->advance();
             $bar->setMessage("Dump imported");
