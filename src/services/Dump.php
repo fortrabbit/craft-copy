@@ -26,13 +26,9 @@ class Dump extends Component
      */
     public $db;
 
-    public $dir;
-
     public function __construct(array $config = [])
     {
         parent::__construct($config);
-
-        $this->dir = \Craft::$app->getPath()->getStoragePath() . DIRECTORY_SEPARATOR . 'craft-copy';
     }
 
     /**
@@ -78,7 +74,6 @@ class Dump extends Component
      */
     protected function prepareFile($file)
     {
-        $file = $this->dir . DIRECTORY_SEPARATOR . $file;
         $file = FileHelper::normalizePath($file);
         $dir  = dirname($file);
 

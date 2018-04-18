@@ -30,9 +30,10 @@ class DbUpAction extends BaseAction
     public function run()
     {
         $plugin       = Plugin::getInstance();
-        $localFile    = 'dump-' . date('Ymd-his') . '.sql';
-        $remoteBackup = 'dump-recent.sql';
-        $steps = 4;
+        $path         = './storage/craft-copy/';
+        $localFile    = $remoteFile = $path . './storage/craft-copy/dump-' . date('Ymd-his') . '.sql';
+        $remoteBackup = $path . 'dump-recent.sql';
+        $steps        = 4;
 
         // Step 0:
         //$this->remotePreCheck($plugin);
@@ -51,9 +52,8 @@ class DbUpAction extends BaseAction
 
         // Step 1: Create dump of the current database
         $bar->setMessage("Creating local dump");
-        if ($fullPath = $plugin->dump->export($localFile)) {
+        if ($plugin->dump->export($localFile)) {
             $bar->advance();
-            $localFile = $remoteFile = $fullPath;
         }
 
         // Step 2: Upload that dump to remote
