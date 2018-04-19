@@ -4,6 +4,7 @@ use Craft;
 use craft\base\Plugin as BasePlugin;
 use fortrabbit\Copy\commands\AssetsDownAction;
 use fortrabbit\Copy\commands\AssetsUpAction;
+use fortrabbit\Copy\commands\CodeUpAction;
 use fortrabbit\Copy\commands\DbDownAction;
 use fortrabbit\Copy\commands\DbExportAction;
 use fortrabbit\Copy\commands\DbImportAction;
@@ -55,6 +56,7 @@ class Plugin extends BasePlugin
             Commands::register('copy', [
                 'assets/up'    => AssetsUpAction::class,
                 'assets/down'  => AssetsDownAction::class,
+                'code/up'      => CodeUpAction::class,
                 'db/up'        => DbUpAction::class,
                 'db/down'      => DbDownAction::class,
                 'db/to-file'   => DbExportAction::class,
@@ -77,7 +79,7 @@ class Plugin extends BasePlugin
                     $style = new OutputFormatterStyle('white', 'cyan');
                     $event->action->output->getFormatter()->setStyle('ocean', $style);
                 }
-             );
+            );
 
 
             // Register services
