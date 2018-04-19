@@ -21,8 +21,6 @@ class CodeUpAction extends Action
         $gitWrapper = new GitWrapper();
         $git = $gitWrapper->workingCopy(\Craft::getAlias('@root'));
 
-        \Craft::dd(\Craft::getAlias('@baseUrl'));
-
 
         $localBranches = [];
         foreach (explode(PHP_EOL, trim($git->run('branch'))) as $branch) {
