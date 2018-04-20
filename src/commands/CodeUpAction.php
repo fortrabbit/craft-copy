@@ -39,6 +39,7 @@ class CodeUpAction extends Action
             if (!$this->confirm("No changes detected. Push anyways?", true)) {
                 return ExitCode::OK;
             }
+            $msg = 'empty commit';
         }
 
         // Ask for remote
@@ -61,12 +62,13 @@ class CodeUpAction extends Action
             }
 
             // Add and commit
+            $git->getWorkingCopy()->add('.');
             $git->getWorkingCopy()->commit($msg);
         }
 
 
         try {
-            $this->section('git push');
+            $this->section("git push ($msg)");
             $git->getWorkingCopy()->getWrapper()->streamOutput();
             $git->push($upstream, 'master');
         } catch (GitException $exception) {
