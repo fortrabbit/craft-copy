@@ -11,6 +11,11 @@
 * MacOS or Linux (no Windows support so far) 
 * Craft and composer installed locally 
 
+## Demo setup
+
+![demo](https://github.com/fortrabbit/craft-copy/blob/master/demo_setup.gif "Demo")
+
+
 ## Installation
 
 ```
