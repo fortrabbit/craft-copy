@@ -31,7 +31,7 @@ class CodeUpAction extends Action
         $branch        = $git->getLocalHead();
 
         if (count($localBranches) > 1) {
-            $branch = $this->choice('Select a local branch:', $localBranches, $branch);
+            $branch = str_replace('* ', '', $this->choice('Select a local branch:', $localBranches, $branch));
             $git->run('checkout', $branch);
         }
 
@@ -52,8 +52,9 @@ class CodeUpAction extends Action
 
             // Changed files
             $this->noteBlock("Uncommitted changes:" . PHP_EOL . $status);
+            $defaultMessage = ($this->interactive) ? null : 'init Craft';
 
-            if (!$msg = $this->ask("Enter a commit message, or leave it empty to abort the commit")) {
+            if (!$msg = $this->ask("Enter a commit message, or leave it empty to abort the commit", $defaultMessage)) {
                 $this->errorBlock('Abort');
 
                 return ExitCode::UNSPECIFIED_ERROR;
@@ -77,7 +78,7 @@ class CodeUpAction extends Action
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-
+        $this->output->write(PHP_EOL);
         $this->successBlock('Code deployed successfully.');
 
         return ExitCode::OK;
@@ -99,6 +100,7 @@ class CodeUpAction extends Action
             if ($this->confirm("No remotes configured. Do you want to add fortrabbit?")) {
                 return $git->addRemote(getenv(Plugin::ENV_NAME_SSH_REMOTE));
             }
+
             return false;
         }
 
