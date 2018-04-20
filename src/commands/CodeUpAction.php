@@ -1,18 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: os
- * Date: 18.04.18
- * Time: 21:32
- */
 
 namespace fortrabbit\Copy\commands;
-
 
 use fortrabbit\Copy\Plugin;
 use fortrabbit\Copy\services\Git;
 use GitWrapper\GitException;
-use GitWrapper\GitWrapper;
 use ostark\Yii2ArtisanBridge\base\Action;
 use yii\console\ExitCode;
 
