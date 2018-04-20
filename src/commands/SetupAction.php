@@ -31,7 +31,9 @@ class SetupAction extends Action
      */
     public function run()
     {
+        $this->input->setInteractive(true);
         $this->app = $this->ask("What's the name of your App?", getenv(Plugin::ENV_NAME_APP));
+        $this->input->setInteractive($this->interactive);
 
         if (strlen($this->app) < 3 || strlen($this->app) > 16) {
             $this->errorBlock("Invalid App name.");
