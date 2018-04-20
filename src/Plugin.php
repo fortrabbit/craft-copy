@@ -11,6 +11,7 @@ use fortrabbit\Copy\commands\DbImportAction;
 use fortrabbit\Copy\commands\DbUpAction;
 use fortrabbit\Copy\commands\InfoAction;
 use fortrabbit\Copy\commands\SetupAction;
+use fortrabbit\Copy\services\Git;
 use ostark\Yii2ArtisanBridge\base\Commands;
 
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -21,7 +22,8 @@ use yii\console\Application as ConsoleApplication;
 use fortrabbit\Copy\services\Ssh as SshService;
 use fortrabbit\Copy\services\Dump as DumpService;
 use fortrabbit\Copy\services\Rsync as RsyncService;
-use yii\console\Controller;
+use fortrabbit\Copy\services\Git as GitService;
+
 
 /**
  * Class Plugin
@@ -31,6 +33,8 @@ use yii\console\Controller;
  * @property  SshService   $ssh
  * @property  DumpService  $dump
  * @property  RsyncService $rsync
+ * @property  GitService   $git
+ *
  */
 class Plugin extends BasePlugin
 {
@@ -65,8 +69,7 @@ class Plugin extends BasePlugin
                 'info'         => InfoAction::class
             ], [
                     'v' => 'verbose',
-                    'n' => 'name',
-                    'option-without-alias'
+                    'd' => 'directory'
                 ]
             );
 
@@ -83,11 +86,13 @@ class Plugin extends BasePlugin
 
 
             // Register services
-
             $this->setComponents([
                 'ssh'   => SshService::class,
                 'dump'  => DumpService::class,
-                'rsync' => RsyncService::class
+                'rsync' => RsyncService::class,
+                'git'   => function () {
+                    return Git::fromDirectory(\Craft::getAlias('@root'));
+                }
             ]);
 
             // Inject $db Connection

@@ -9,91 +9,105 @@
 namespace fortrabbit\Copy\commands;
 
 
+use fortrabbit\Copy\Plugin;
+use fortrabbit\Copy\services\Git;
 use GitWrapper\GitException;
 use GitWrapper\GitWrapper;
 use ostark\Yii2ArtisanBridge\base\Action;
+use yii\console\ExitCode;
 
 class CodeUpAction extends Action
 {
 
+    /**
+     * @return int
+     */
     public function run()
     {
-        $gitWrapper = new GitWrapper();
-        $git = $gitWrapper->workingCopy(\Craft::getAlias('@root'));
+        $git = Plugin::getInstance()->git;
+        $git->getWorkingCopy()->init();
 
+        $localBranches = $git->getLocalBranches();
+        $branch        = $git->getLocalHead();
 
-        $localBranches = [];
-        foreach (explode(PHP_EOL, trim($git->run('branch'))) as $branch) {
-            $localBranches[trim(ltrim($branch ,'*'))] = $branch;
-        };
         if (count($localBranches) > 1) {
-            $branch = $this->choice('Select a local branch:', $localBranches, 'master');
-            $git->checkout($branch);
+            $branch = $this->choice('Select a local branch:', $localBranches, $branch);
+            $git->run('checkout', $branch);
         }
 
-        if (!$remotes = $git->getRemotes()) {
-            $this->errorBlock('No remotes configured.');
-        }
-        if (count($remotes) > 1) {
-            foreach ($remotes as $name => $upstreams) {
-                $remotes[$name] = $upstreams['push'];
+        if (!$git->getWorkingCopy()->hasChanges()) {
+            if (!$this->confirm("Push anyways?", true)) {
+                return ExitCode::OK;
             }
-            $upstream = $this->choice('Select a remote', $remotes);
-        } else {
-            $upstream = array_keys($remotes)[0];
         }
 
+        // Ask for remote
+        // or create one
+        // or pick the only one
+        if (!$upstream = $this->getUpstream($git)) {
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
 
+        if ($status = $git->getWorkingCopy()->getStatus()) {
 
+            // Changed files
+            $this->noteBlock("Uncommitted changes:" . PHP_EOL . $status);
+
+            if (!$msg = $this->ask("Enter a commit message, or leave it empty to abort the commit")) {
+                $this->errorBlock('Abort');
+
+                return ExitCode::UNSPECIFIED_ERROR;
+            }
+
+            // Add and commit
+            $git->getWorkingCopy()->commit($msg);
+        }
 
 
         try {
             $this->section('git push');
-            $git->push('proprod','master');
-        }
-        catch(GitException $e) {
-            $this->errorBlock($e->getMessage());
-        }
+            $git->getWorkingCopy()->getWrapper()->streamOutput();
+            $git->push($upstream, 'master');
+        } catch (GitException $exception) {
+            $lines = count(explode(PHP_EOL, $exception->getMessage()));
+            $this->output->write(str_repeat("\x1B[1A\x1B[2K", $lines));
+            $this->errorBlock('Ooops.');
+            $this->output->write("<fg=red>{$exception->getMessage()}</>");
 
-
-/*
-        try {
-            //$git->push();
-        } catch (\Exception $exception) {
-            $this->errorBlock($exception->getMessage());
-        }
-*/
-        //var_dump($git->getRemotes());
-        //var_dump($git->getBranches()->all(['verbose' => true]));
-        /*foreach($git->getBranches()->remote() as $remote) {
-            var_dump([
-                $remote,
-                $git->getRemoteUrl(explode("/", $remote)[0])
-            ]);
-        }*/
-        //var_dump($git->fetchAll());
-
-
-        //var_dump($git->isBehind());
-
-        //var_dump($git->getDirectory());
-        //var_dump($git->getRemoteUrl('proprod'));
-
-
-
-        // Stream output of subsequent Git commands in real time to STDOUT and STDERR.
-        //$gitWrapper->streamOutput();
-
-        if ($git->hasChanges()) {
-            var_dump(explode(PHP_EOL,trim($git->getStatus())));
-            var_dump($git->add('.', ['verbose' => true]));
-            var_dump($git->commit('testing GitWrapper'));
-
-            //$this->line($git->getStatus());
-
+            return ExitCode::UNSPECIFIED_ERROR;
         }
 
 
+        $this->successBlock('All good!');
 
+        return ExitCode::OK;
+
+    }
+
+
+    /**
+     * Dialog helper to choose the Remote
+     *
+     * @param \fortrabbit\Copy\services\Git $git
+     *
+     * @return string upstream
+     */
+    protected function getUpstream(Git $git): string
+    {
+        // Non
+        if (!$remotes = $git->getRemotes()) {
+            if ($this->confirm("No remotes configured. Do you want to add fortrabbit?")) {
+                return $git->addRemote(getenv(Plugin::ENV_NAME_SSH_REMOTE));
+            }
+            return false;
+        }
+
+        // There is just one
+        if (count($remotes) == 1) {
+            return array_keys($remotes)[0];
+        }
+
+        // Multiple
+        return $this->choice('Select a remote', $remotes, $git->getTracking());
     }
 }

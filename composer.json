@@ -22,6 +22,7 @@
         }
     ],
     "require": {
+        "php": "^7.1.3",
         "craftcms/cms": "^3.0.0",
         "albertofem/rsync-lib": "^1.0.0",
         "ostark/yii2-artisan-bridge": "dev-master",

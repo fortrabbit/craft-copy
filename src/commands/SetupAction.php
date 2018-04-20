@@ -142,7 +142,8 @@ class SetupAction extends Action
         if ($plugin->ssh->exec("ls vendor/bin/craft-copy-installer.php | wc -l")) {
           if (trim($plugin->ssh->getOutput()) != "1") {
               $this->errorBlock([
-                  "The plugin is not installed on the remote!"
+                  "The plugin is not installed on the remote! Run this command first:",
+                  "php craft copy/code/up"
               ]);
               return false;
           }
