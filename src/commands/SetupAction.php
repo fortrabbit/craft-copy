@@ -31,7 +31,7 @@ class SetupAction extends Action
      */
     public function run()
     {
-        $this->app = $this->ask("What's the name of your App?");
+        $this->app = $this->ask("What's the name of your App?", getenv(Plugin::ENV_NAME_APP));
 
         if (strlen($this->app) < 3 || strlen($this->app) > 16) {
             $this->errorBlock("Invalid App name.");
@@ -140,13 +140,16 @@ class SetupAction extends Action
 
 
         if ($plugin->ssh->exec("ls vendor/bin/craft-copy-installer.php | wc -l")) {
-          if (trim($plugin->ssh->getOutput()) != "1") {
-              $this->errorBlock([
-                  "The plugin is not installed on the remote! Run this command first:",
-                  "php craft copy/code/up"
-              ]);
-              return false;
-          }
+            if (trim($plugin->ssh->getOutput()) != "1") {
+
+                if ($this->confirm("The plugin is not installed on the remote! Do you want to deploy now?", true)) {
+                    if (0 != Craft::$app->runAction('copy/code/up', ['interactive' => $this->interactive])) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
         }
 
 
@@ -154,9 +157,11 @@ class SetupAction extends Action
             $this->output->write($plugin->ssh->getOutput());
         };
 
-        Craft::$app->runAction('copy/db/up', ['interactive' => 0]);
+        if (0 != Craft::$app->runAction('copy/db/up', ['interactive' => $this->interactive])) {
+            return false;
+        }
 
-        $this->commentBlock("Check it the browser: http://{$this->app}.frb.io");
+        $this->successBlock("Check it the browser: https://{$this->app}.frb.io");
 
 
         return true;
