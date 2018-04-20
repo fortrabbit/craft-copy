@@ -1,113 +1,87 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: os
- * Date: 18.04.18
- * Time: 21:32
- */
 
 namespace fortrabbit\Copy\commands;
 
-
+use \Craft;
+use ostark\Yii2ArtisanBridge\base\Action as BaseAction;
 use fortrabbit\Copy\Plugin;
-use fortrabbit\Copy\services\Git;
-use GitWrapper\GitException;
-use GitWrapper\GitWrapper;
-use ostark\Yii2ArtisanBridge\base\Action;
 use yii\console\ExitCode;
 
-class CodeUpAction extends Action
-{
 
+/**
+ * Class DbDownAction
+ *
+ * @package fortrabbit\DeployTools\commands
+ */
+class DbUpAction extends BaseAction
+{
     /**
-     * @return int
+     * Upload database
+     *
+     * @return bool
+     * @throws \craft\errors\ShellCommandException
+     * @throws \fortrabbit\Copy\exceptions\CraftNotInstalledException
+     * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
+     * @throws \fortrabbit\Copy\exceptions\RemoteException
+     * @throws \yii\base\Exception
+     * @throws \yii\console\Exception
      */
     public function run()
     {
-        $git = Plugin::getInstance()->git;
-        $git->getWorkingCopy()->init();
+        $plugin       = Plugin::getInstance();
+        $path         = './storage/';
+        $localFile    = $remoteFile = $path . 'craft-copy-dump-' . date('Ymd-his') . '.sql';
+        $remoteBackup = $path . 'craft-copy-dump-recent.sql';
+        $steps        = 4;
+        $messages     = [];
+        // Step 0:
+        //$this->remotePreCheck($plugin);
 
-        $localBranches = $git->getLocalBranches();
-        $branch        = $git->getLocalHead();
-
-        if (count($localBranches) > 1) {
-            $branch = $this->choice('Select a local branch:', $localBranches, $branch);
-            $git->run('checkout', $branch);
-        }
-
-        if (!$git->getWorkingCopy()->hasChanges()) {
-            if (!$this->confirm("No changes detected. Push anyways?", true)) {
-                return ExitCode::OK;
-            }
-        }
-
-        // Ask for remote
-        // or create one
-        // or pick the only one
-        if (!$upstream = $this->getUpstream($git)) {
+        if (!$this->confirm("Do you really want to sync your local DB with the remote?", true)) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        if ($status = $git->getWorkingCopy()->getStatus()) {
+        $bar = $this->output->createProgressBar($steps);
 
-            // Changed files
-            $this->noteBlock("Uncommitted changes:" . PHP_EOL . $status);
+        // Custom format
+        $bar->setFormat('%message%' . PHP_EOL . '%bar% %percent:3s% %' . PHP_EOL . 'time:  %elapsed:6s%/%estimated:-6s%' . PHP_EOL . PHP_EOL);
+        $bar->setBarCharacter('<info>' . $bar->getBarCharacter() . '</info>');
+        $bar->setBarWidth(70);
 
-            if (!$msg = $this->ask("Enter a commit message, or leave it empty to abort the commit")) {
-                $this->errorBlock('Abort');
 
-                return ExitCode::UNSPECIFIED_ERROR;
-            }
-
-            // Add and commit
-            $git->getWorkingCopy()->commit($msg);
+        // Step 1: Create dump of the current database
+        $bar->setMessage($messages[] = "Creating local dump");
+        if ($plugin->dump->export($localFile)) {
+            $bar->advance();
         }
 
-
-        try {
-            $this->section('git push');
-            $git->getWorkingCopy()->getWrapper()->streamOutput();
-            $git->push($upstream, 'master');
-        } catch (GitException $exception) {
-            $lines = count(explode(PHP_EOL, $exception->getMessage()));
-            $this->output->write(str_repeat("\x1B[1A\x1B[2K", $lines));
-            $this->errorBlock('Ooops.');
-            $this->output->write("<fg=red>{$exception->getMessage()}</>");
-
-            return ExitCode::UNSPECIFIED_ERROR;
+        // Step 2: Upload that dump to remote
+        $bar->setMessage($messages[] = "Uploading dump to remote {$remoteFile}");
+        if ($plugin->ssh->upload($localFile, $remoteFile, true)) {
+            $bar->advance();
         }
 
-
-        $this->successBlock('Code deployed successfully.');
-
-        return ExitCode::OK;
-
-    }
-
-
-    /**
-     * Dialog helper to choose the Remote
-     *
-     * @param \fortrabbit\Copy\services\Git $git
-     *
-     * @return string upstream
-     */
-    protected function getUpstream(Git $git): string
-    {
-        // Non
-        if (!$remotes = $git->getRemotes()) {
-            if ($this->confirm("No remotes configured. Do you want to add fortrabbit?")) {
-                return $git->addRemote(getenv(Plugin::ENV_NAME_SSH_REMOTE));
-            }
-            return false;
+        // Step 3: Backup the remote database before importing the uploaded dump
+        $bar->setMessage($messages[] = "Creating DB Backup on remote ({$remoteBackup})");
+        if ($plugin->ssh->exec("php craft copy/db/to-file {$remoteBackup} --interactive=0")) {
+            $bar->advance();
         }
 
-        // There is just one
-        if (count($remotes) == 1) {
-            return array_keys($remotes)[0];
+        // Step 4: Import on remote
+        $bar->setMessage($messages[] = "Importing dump on remote");
+        if ($plugin->ssh->exec("php craft copy/db/from-file {$remoteFile} --interactive=0")) {
+            $bar->advance();
+            $bar->setMessage("Dump imported");
         }
 
-        // Multiple
-        return $this->choice('Select a remote', $remotes, $git->getTracking());
+        $bar->finish();
+
+        $this->section('Performed steps:');
+        $this->listing($messages);
+
+        $this->section('Rollback?');
+        $this->line("ssh {$plugin->ssh->remote} 'php craft copy/db/from-file {$remoteBackup}'" . PHP_EOL);
+
+        return 0;
     }
 }

@@ -36,7 +36,7 @@ class CodeUpAction extends Action
         }
 
         if (!$git->getWorkingCopy()->hasChanges()) {
-            if (!$this->confirm("Push anyways?", true)) {
+            if (!$this->confirm("No changes detected. Push anyways?", true)) {
                 return ExitCode::OK;
             }
         }
@@ -78,7 +78,7 @@ class CodeUpAction extends Action
         }
 
 
-        $this->successBlock('All good!');
+        $this->successBlock('Code deployed successfully.');
 
         return ExitCode::OK;
 
