@@ -16,7 +16,6 @@ use ostark\Yii2ArtisanBridge\base\Commands;
 
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use yii\base\ActionEvent;
-use yii\base\Event;
 use yii\console\Application as ConsoleApplication;
 
 use fortrabbit\Copy\services\Ssh as SshService;
@@ -55,7 +54,6 @@ class Plugin extends BasePlugin
         if (Craft::$app instanceof ConsoleApplication) {
 
             // Register console commands
-            //Craft::$app->controllerMap['copy'] = Commands::class;
 
             Commands::register('copy', [
                 'assets/up'    => AssetsUpAction::class,
