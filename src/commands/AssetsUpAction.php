@@ -2,6 +2,7 @@
 
 namespace fortrabbit\Copy\commands;
 
+use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
 use yii\console\ExitCode;
 
@@ -22,27 +23,21 @@ class AssetsUpAction extends Action
      */
     public function run(string $app = null)
     {
-        $this->title("Hello {$app}");
-
-        $answer = $this->choice("What's your favorite animal?", ['Dog','Cat','Elephant']);
-
-        if ($answer === 'Elephant') {
-            $this->successBlock("Yes, '$answer' is correct.");
-            return ExitCode::OK;
-        } else {
-            $this->errorBlock("No, '$answer' is the wrong.");
+        // Ask
+        if (!$this->confirm("Do you really want to sync your local assets?")) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
+        $plugin = Plugin::getInstance();
+        $dir = './web/assets/';
 
-        // Ask if not forced
-        if (!$this->pleaseConfirm("Do you really want to sync upload your local assets? to ...")) {
-            return ExitCode::UNSPECIFIED_ERROR;
+        $plugin->rsync->setOption('dryRun', false);
+        $plugin->rsync->setOption('verbose', true);
 
-        }
+        $this->section('Rsync started');
+        $plugin->rsync->syncToRemote($dir, $dir);
+        $this->section('done');
 
-
-        die('SOME CALLED ME!!');
         return true;
     }
 }

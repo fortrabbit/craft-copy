@@ -12,6 +12,7 @@ use fortrabbit\Copy\commands\DbUpAction;
 use fortrabbit\Copy\commands\InfoAction;
 use fortrabbit\Copy\commands\SetupAction;
 use fortrabbit\Copy\services\Git;
+use fortrabbit\Copy\services\Rsync;
 use ostark\Yii2ArtisanBridge\base\Commands;
 
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -87,7 +88,9 @@ class Plugin extends BasePlugin
             $this->setComponents([
                 'ssh'   => SshService::class,
                 'dump'  => DumpService::class,
-                'rsync' => RsyncService::class,
+                'rsync' => function() {
+                    return Rsync::remoteFactory(getenv(self::ENV_NAME_SSH_REMOTE));
+                },
                 'git'   => function () {
                     return Git::fromDirectory(\Craft::getAlias('@root'));
                 }
@@ -98,7 +101,7 @@ class Plugin extends BasePlugin
 
             // Inject $remote
             if (getenv(self::ENV_NAME_SSH_REMOTE)) {
-                $this->ssh->remote = getenv(self::ENV_NAME_SSH_REMOTE);
+                $this->ssh->remote   = getenv(self::ENV_NAME_SSH_REMOTE);
             }
 
         }

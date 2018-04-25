@@ -8,9 +8,6 @@
 
 namespace fortrabbit\Copy\services;
 
-use Craft;
-use craft\base\Component;
-
 /**
  * Rsync Service
  *
@@ -18,26 +15,66 @@ use craft\base\Component;
  * @package   Copy
  * @since     1.0.0
  */
-class Rsync extends Component
+class Rsync
 {
-    // Public Methods
-    // =========================================================================
+
+    public $remote;
+
+    protected $rsync;
+
+    protected function __construct(\AFM\Rsync\Rsync $rsync)
+    {
+        $this->rsync = $rsync;
+    }
+
+    public static function remoteFactory($remoteUrl) {
+
+        if (strpos($remoteUrl, '@') === false) {
+            throw new \InvalidArgumentException("SSH remote URL must contain a user@host, '$remoteUrl' given.");
+        }
+
+        // split
+        [$username, $host] = explode('@', $remoteUrl, 2);
+
+        $rsync = new \AFM\Rsync\Rsync();
+        $rsync->setSshOptions([
+            'host'     => $host,
+            'username' => $username
+        ]);
+
+        return new self($rsync);
+    }
+
+    /**
+     * Rsync config
+     *
+     * @param string $key
+     * @param mixed $value
+     */
+    public function setOption(string $key, $value)
+    {
+        $setter = 'set' . ucfirst($key);
+        $this->rsync->$setter($value);
+    }
+
+    /**
+     * @param string $originDir
+     * @param string $targetDir
+     */
+    public function syncFromRemote($originDir, $targetDir)
+    {
+        $this->rsync->setRemoteOrigin(true);
+        $this->rsync->sync($originDir, $targetDir);
+    }
 
 
     /**
-     * This function can literally be anything you want, and you can have as many service
-     * functions as you want
-     *
-     * From any other plugin file, call it like this:
-     *
-     *     Sync::$plugin->rsync->exampleService()
-     *
-     * @return mixed
+     * @param string $originDir
+     * @param string $targetDir
      */
-    public function exampleService()
+    public function syncToRemote($originDir, $targetDir)
     {
-        $result = 'something';
-
-        return $result;
+        $this->rsync->setRemoteOrigin(false);
+        $this->rsync->sync($originDir, $targetDir);
     }
 }
