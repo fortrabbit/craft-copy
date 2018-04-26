@@ -154,10 +154,11 @@ class SetupAction extends Action
             }
         }
 
-
         if ($plugin->ssh->exec('php vendor/bin/craft-copy-installer.php')) {
             $this->output->write($plugin->ssh->getOutput());
         };
+
+        $this->output->type('php craft copy/db/up');
 
         if (0 != Craft::$app->runAction('copy/db/up', ['interactive' => $this->interactive])) {
             return false;

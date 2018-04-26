@@ -68,7 +68,8 @@ class Plugin extends BasePlugin
                 'info'         => InfoAction::class
             ], [
                     'v' => 'verbose',
-                    'd' => 'directory'
+                    'd' => 'directory',
+                    'n' => 'dryRun'
                 ]
             );
 

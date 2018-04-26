@@ -27,7 +27,8 @@ class Rsync
         $this->rsync = $rsync;
     }
 
-    public static function remoteFactory($remoteUrl) {
+    public static function remoteFactory($remoteUrl)
+    {
 
         if (strpos($remoteUrl, '@') === false) {
             throw new \InvalidArgumentException("SSH remote URL must contain a user@host, '$remoteUrl' given.");
@@ -37,6 +38,7 @@ class Rsync
         [$username, $host] = explode('@', $remoteUrl, 2);
 
         $rsync = new \AFM\Rsync\Rsync();
+        $rsync->setVerbose(true);
         $rsync->setSshOptions([
             'host'     => $host,
             'username' => $username
@@ -49,7 +51,7 @@ class Rsync
      * Rsync config
      *
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      */
     public function setOption(string $key, $value)
     {
@@ -58,23 +60,21 @@ class Rsync
     }
 
     /**
-     * @param string $originDir
-     * @param string $targetDir
+     * @param string $dir
      */
-    public function syncFromRemote($originDir, $targetDir)
+    public function sync($dir)
     {
-        $this->rsync->setRemoteOrigin(true);
-        $this->rsync->sync($originDir, $targetDir);
+        $this->rsync->sync($dir, $dir);
     }
-
 
     /**
-     * @param string $originDir
-     * @param string $targetDir
+     * @param $dir
+     *
+     * @return string
      */
-    public function syncToRemote($originDir, $targetDir)
+    public function getCommand($dir): string
     {
-        $this->rsync->setRemoteOrigin(false);
-        $this->rsync->sync($originDir, $targetDir);
+        return $this->rsync->getCommand($dir, $dir)->getCommand();
     }
+
 }
