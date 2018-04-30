@@ -2,9 +2,9 @@
 
 namespace fortrabbit\Copy\commands;
 
+use fortrabbit\Copy\helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
-use Symfony\Component\Console\Helper\TableSeparator;
 use yii\console\ExitCode;
 
 /**
@@ -19,29 +19,20 @@ class AssetsUpAction extends Action
 
     public $verbose = false;
 
+    use ConsoleOutputHelper;
+
     /**
      * Upload Assets
      *
-     * @param string|null $app
-     *
      * @return bool
      */
-    public function run(string $app = null)
+    public function run()
     {
         $plugin = Plugin::getInstance();
         $dir    = './web/assets/';
 
         // Info
-        $this->table(
-            ['Key', 'Value'],
-            [
-                ['Asset directory', $dir],
-                new TableSeparator(),
-                ['SSH remote', getenv(Plugin::ENV_NAME_SSH_REMOTE)],
-                new TableSeparator(),
-                ['Dry run', $this->dryRun ? 'true' : 'false']
-            ]
-        );
+        $this->rsyncInfo($dir);
 
         // Ask
         if (!$this->confirm("Do you really want to sync your local assets?")) {

@@ -3,6 +3,7 @@
 namespace fortrabbit\Copy\services;
 
 
+use fortrabbit\Copy\Plugin;
 use GitWrapper\GitException;
 use GitWrapper\GitWorkingCopy;
 use GitWrapper\GitWrapper;
@@ -190,6 +191,42 @@ final class Git
     public function run(string $command, ...$argsAndOptions): string
     {
         return $this->gitWorkingCopy->run($command, $argsAndOptions);
+    }
+
+
+    /**
+     * Create .gitignore or adjust the existing
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public function assureDotGitignore()
+    {
+        $path                 = $this->getWorkingCopy()->getDirectory();
+        $gitignoreFile        = "$path/.gitignore";
+        $gitignoreExampleFile = Plugin::PLUGIN_ROOT_PATH . "/.gitignore.example";
+
+        if (!file_exists($gitignoreExampleFile)) {
+            throw new \Exception("Unable to read .gitignore.example.");
+        }
+
+        if (!file_exists($gitignoreFile)) {
+            return copy($gitignoreExampleFile, $gitignoreFile);
+        }
+
+        if (!$gitignored = file_get_contents($gitignoreFile)) {
+            throw new \Exception("Unable to read .gitignore.");
+        }
+
+        if (strpos($gitignored, "web/assets") === false) {
+            $gitignored .= PHP_EOL . '# ASSETS (added by fortrabbit/craft-copy)';
+            $gitignored .= PHP_EOL . '/web/assets/*' . PHP_EOL;
+
+            return (file_put_contents($gitignoreFile, $gitignored)) ? true : false;
+        }
+
+        return false;
+
     }
 
 

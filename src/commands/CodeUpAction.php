@@ -18,6 +18,7 @@ class CodeUpAction extends Action
     {
         $git = Plugin::getInstance()->git;
         $git->getWorkingCopy()->init();
+        $git->assureDotGitignore();
 
         $localBranches = $git->getLocalBranches();
         $branch        = $git->getLocalHead();

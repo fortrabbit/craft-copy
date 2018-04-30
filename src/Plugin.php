@@ -40,6 +40,7 @@ class Plugin extends BasePlugin
 {
     const ENV_NAME_APP = "APP_NAME";
     const ENV_NAME_SSH_REMOTE = "APP_SSH_REMOTE";
+    const PLUGIN_ROOT_PATH = __DIR__;
     const REGIONS = [
         'us1' => 'US (AWS US-EAST-1 / Virginia)',
         'eu2' => 'EU (AWS EU-WEST-1 / Ireland)'
