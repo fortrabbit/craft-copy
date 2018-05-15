@@ -1,8 +1,15 @@
 #!/usr/bin/env php
 <?php
 
-// Project root path (assumes we are in vendor/fortrabbit/craft-copy/bin)
-$root = __DIR__ . '/../../../..';
+// Detect the project root
+$root = $_SERVER["PWD"] ?? __DIR__;
+while(!file_exists($root . '/craft')) {
+    $root .= '/..';
+    if (substr_count($root, '/..') > 5) {
+        die('Unable to find the project root: craft binary is missing.');
+    }
+}
+
 
 // Composer autoloader
 require_once $root . '/vendor/autoload.php';

@@ -2,7 +2,7 @@
     "name": "fortrabbit/craft-copy",
     "description": "Tooling for Craft on fortrabbit",
     "type": "craft-plugin",
-    "version": "0.10.0",
+    "version": "0.11.0",
     "keywords": [
         "craft",
         "cms",
@@ -47,6 +47,9 @@
         "ps": "vendor/bin/phpstan analyse src --level=5 -c phpstan.neon",
         "stan": "@ps"
     },
-    "bin": ["bin/craft-copy-installer.php"]
+    "bin": [
+        "bin/craft-copy-installer.php",
+        "bin/craft-copy-env.php"
+    ]
 
 }
