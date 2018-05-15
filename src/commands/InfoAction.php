@@ -2,6 +2,7 @@
 
 namespace fortrabbit\Copy\commands;
 
+use fortrabbit\Copy\exceptions\RemoteException;
 use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
 use Symfony\Component\Console\Helper\TableSeparator;
@@ -23,12 +24,15 @@ class InfoAction extends Action
         }
 
         // Get environment info from remote
-        if ($plugin->ssh->exec('php vendor/bin/craft-copy-env.php')) {
+        try {
+            $plugin->ssh->exec('php vendor/bin/craft-copy-env.php');
             $remote = json_decode($plugin->ssh->getOutput(), true);
-        };
+        } catch (\Exception $e) {
+            $this->errorBlock('Unable to get information about the remote environment');
+        }
+
 
         $this->section('Environments');
-
 
         $rows = [
             ['ENVIRONMENT', getenv('ENVIRONMENT'), $remote['ENVIRONMENT'], (getenv('ENVIRONMENT') != $remote['ENVIRONMENT']) ? "👌" : "💥"],
