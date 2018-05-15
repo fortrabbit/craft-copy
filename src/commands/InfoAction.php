@@ -35,18 +35,19 @@ class InfoAction extends Action
             $this->errorBlock('Unable to get information about the remote environment');
         }
 
-
         $this->section('Environments');
 
+        $this->remoteInfo['DB_TABLE_PREFIX'] = null;
+
         $rows = [
-            $this->row('ENVIRONMENT', function() {
+            $this->row('ENVIRONMENT', function () {
                 return (!$this->remoteInfo['ENVIRONMENT']) ? false : ($this->remoteInfo['ENVIRONMENT'] != getenv('ENVIRONMENT'));
             }),
             new TableSeparator(),
             $this->row('SECURITY_KEY', true, true),
             new TableSeparator(),
             $this->row('DB_TABLE_PREFIX'),
-            $this->row('DB_SERVER', function() {
+            $this->row('DB_SERVER', function () {
                 return stristr($this->remoteInfo['DB_SERVER'], '.frbit.com');
             })
         ];
@@ -81,20 +82,23 @@ class InfoAction extends Action
     protected function row($key, $assertEqual = true, $obfuscate = false)
     {
 
-        if ($assertEqual === true) {
-            $icon = (getenv($key) === $this->remoteInfo[$key]) ? "👌" : "💥";
-        }
-        if ($assertEqual === false) {
-            $icon = (getenv($key) != $this->remoteInfo[$key]) ? "👌" : "💥";
-        }
+        $remoteValue = $this->remoteInfo[$key] ?? '';
+
         if (is_callable($assertEqual)) {
-            $icon = ($assertEqual()) ? "👌" : "💥";
+            $success = ($assertEqual()) ? true : false;
+        } elseif ($assertEqual === false) {
+            $success = (getenv($key) != $remoteValue) ? true : false;
+        } else {
+            $success = (getenv($key) === $remoteValue) ? true : false;
         }
 
+        $icon  = ($success) ? "👌" : "💥";
+        $color = ($success) ? "white" : "red";
+
         return [
-            "<fg=white>$key</>",
+            "<fg=$color>$key</>",
             ($obfuscate && $this->verbose === false) ? $this->obfuscate(getenv($key)) : getenv($key),
-            ($obfuscate && $this->verbose === false) ? $this->obfuscate($this->remoteInfo[$key]) : $this->remoteInfo[$key],
+            ($obfuscate && $this->verbose === false) ? $this->obfuscate($remoteValue) : $remoteValue,
             $icon
         ];
     }
