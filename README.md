@@ -1,15 +1,15 @@
 # Craft deploy commands for fortrabbit
 
-...
+This little command line tool makes your life even better. It helps to speed up common tasks around professional Craft CMS deployment on fortrabbit: Dumb the database, Sync the assets folder, push and pull changes.
 
 ## Requirements
 
+* MacOS or Linux (no Windows support so far) 
 * Craft 3
 * PHP 7.1
+* Composer installed
 * Executable binaries: `php`, `mysqldump`, `git` and `rsync` installed locally
 * SSH key installed with fortrabbit (no password auth so far)
-* MacOS or Linux (no Windows support so far) 
-* Craft and composer installed locally 
 
 ## Demo setup
 
@@ -18,7 +18,7 @@
 
 ## Installation
 
-```
+```console
 cd your/craft-project
 
 composer require fortrabbit/craft-copy
@@ -31,7 +31,7 @@ composer require fortrabbit/craft-copy
 ## Usage 
 
 **Getting started**
-```
+```console
 # Get help
 ./craft help copy
 
@@ -43,7 +43,7 @@ composer require fortrabbit/craft-copy
 ```
 
 **Database**
-```
+```console
 # Dump local DB and import it on remote 
 ./craft copy/db/up
 
@@ -58,7 +58,7 @@ composer require fortrabbit/craft-copy
 ```
 
 **Assets**
-```
+```console
 # Rsync local assets with remote 
 ./craft copy/assets/up {?assetDir}
 
@@ -67,7 +67,7 @@ composer require fortrabbit/craft-copy
 ```
 
 **Code**
-```
+```console
 # Git push
 ./craft copy/code/up
 
