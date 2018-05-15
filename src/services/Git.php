@@ -37,6 +37,7 @@ final class Git
     public static function fromDirectory(string $directory)
     {
         $wrapper = new GitWrapper();
+        $wrapper->setTimeout(300);
 
         return new Git($wrapper->workingCopy($directory));
     }
@@ -53,6 +54,7 @@ final class Git
     public static function fromClone(string $repository, ?string $directory = null, array $options = [])
     {
         $wrapper = new GitWrapper();
+        $wrapper->setTimeout(300);
 
         return new Git($wrapper->cloneRepository($repository, $directory, $options));
     }
