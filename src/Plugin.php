@@ -46,6 +46,8 @@ class Plugin extends BasePlugin
         'eu2' => 'EU (AWS EU-WEST-1 / Ireland)'
     ];
 
+    const DASHBOARD_URL = "https://dashboard.fortrabbit.com";
+
     /**
      * Initialize Plugins
      */

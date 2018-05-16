@@ -18,6 +18,7 @@ class InfoAction extends Action
     {
         $plugin = Plugin::getInstance();
 
+        // Continue if ssh remote is set
         if (!$plugin->ssh->remote) {
 
             $this->errorBlock("The SSH remote is not configured yet.");
@@ -37,18 +38,18 @@ class InfoAction extends Action
 
         $this->section('Environments');
 
-        $this->remoteInfo['DB_TABLE_PREFIX'] = null;
+        $this->remoteInfo['DB_TABLE_PREFIX2'] = null;
 
         $rows = [
-            $this->row('ENVIRONMENT', function () {
-                return (!$this->remoteInfo['ENVIRONMENT']) ? false : ($this->remoteInfo['ENVIRONMENT'] != getenv('ENVIRONMENT'));
+            $this->row('ENVIRONMENT', function ($local, $remote) {
+                return (!$local) ? false : ($local != $remote);
             }),
             new TableSeparator(),
             $this->row('SECURITY_KEY', true, true),
             new TableSeparator(),
             $this->row('DB_TABLE_PREFIX'),
-            $this->row('DB_SERVER', function () {
-                return stristr($this->remoteInfo['DB_SERVER'], '.frbit.com');
+            $this->row('DB_SERVER', function ($local, $remote) {
+                return stristr($remote, '.frbit.com');
             })
         ];
 
@@ -70,34 +71,54 @@ class InfoAction extends Action
             $rows
         );
 
+        // Error message with more instructions
+        $errors = array_filter(['SECURITY_KEY', 'DB_TABLE_PREFIX2'], function ($key) {
+            return (!self::assertEquals(
+                $this->remoteInfo[$key],
+                getenv($key)
+            ));
+        });
+
+        if (count($errors)) {
+
+            $varsUrl = sprintf("https://dashboard.fortrabbit.com/apps/%s/vars", getenv('APP_NAME'));
+            $messages = ["These local ENV vars are not in sync with the remote:"];
+
+            foreach ($errors as $key) {
+                $messages[] = "<fg=white>$key=" . getenv($key)."</>";
+            }
+
+            $messages[] =(count($errors) == 1)
+                ? "Copy the line above and paste it here:" . PHP_EOL . $varsUrl
+                : "Copy the lines above and paste them here:" . PHP_EOL . $varsUrl;
+
+            $this->block($messages, 'WARNING', 'fg=red;', ' ', true, false);
+
+        }
+
+
     }
+
 
     /**
      * @param               $key
-     * @param bool|callable $assertEqual
+     * @param bool|callable $assertEquals
      * @param bool          $obfuscate
      *
      * @return array
      */
-    protected function row($key, $assertEqual = true, $obfuscate = false)
+    protected function row($key, $assertEquals = true, $obfuscate = false)
     {
-
+        $localValue  = getenv($key);
         $remoteValue = $this->remoteInfo[$key] ?? '';
-
-        if (is_callable($assertEqual)) {
-            $success = ($assertEqual()) ? true : false;
-        } elseif ($assertEqual === false) {
-            $success = (getenv($key) != $remoteValue) ? true : false;
-        } else {
-            $success = (getenv($key) === $remoteValue) ? true : false;
-        }
+        $success     = self::assertEquals($localValue, $remoteValue, $assertEquals);
 
         $icon  = ($success) ? "👌" : "💥";
         $color = ($success) ? "white" : "red";
 
         return [
             "<fg=$color>$key</>",
-            ($obfuscate && $this->verbose === false) ? $this->obfuscate(getenv($key)) : getenv($key),
+            ($obfuscate && $this->verbose === false) ? $this->obfuscate($localValue) : $localValue,
             ($obfuscate && $this->verbose === false) ? $this->obfuscate($remoteValue) : $remoteValue,
             $icon
         ];
@@ -112,5 +133,24 @@ class InfoAction extends Action
     protected function obfuscate(string $value, $visibleChars = 5)
     {
         return (substr($value, 0, $visibleChars)) . '*******';
+    }
+
+    /**
+     * @param      $localValue
+     * @param      $remoteValue
+     * @param bool $assertEquals
+     *
+     * @return bool
+     */
+    protected static function assertEquals($localValue, $remoteValue, $assertEquals = true)
+    {
+        if (is_callable($assertEquals)) {
+            return ($assertEquals($localValue, $remoteValue)) ? true : false;
+        } elseif ($assertEquals === false) {
+            return ($localValue != $remoteValue) ? true : false;
+        }
+
+        return ($localValue == $remoteValue) ? true : false;
+
     }
 }
