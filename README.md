@@ -1,6 +1,6 @@
 # Craft deploy commands for fortrabbit
 
-This little command line tool makes your life even better. It helps to speed up common tasks around professional Craft CMS deployment on fortrabbit: Dumb the database, Sync the assets folder, push and pull changes.
+This little command line tool makes your life even better. It helps to speed up common tasks around professional Craft CMS deployment on fortrabbit: Dump the database, sync the assets folder, push and pull changes.
 
 ## Requirements
 
