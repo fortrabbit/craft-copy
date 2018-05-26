@@ -3,6 +3,7 @@
 namespace fortrabbit\Copy\commands;
 
 use fortrabbit\Copy\helpers\ConsoleOutputHelper;
+use fortrabbit\Copy\helpers\PathHelper;
 use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
 use yii\console\ExitCode;
@@ -20,16 +21,19 @@ class AssetsUpAction extends Action
     public $verbose = false;
 
     use ConsoleOutputHelper;
+    use PathHelper;
 
     /**
      * Upload Assets
      *
+     * @param string $dir Directory, relative to the project root
+     *
      * @return bool
      */
-    public function run()
+    public function run($dir = 'web/assets')
     {
         $plugin = Plugin::getInstance();
-        $dir    = './web/assets/';
+        $dir    = $this->prepareForRsync($dir);
 
         // Info
         $this->rsyncInfo($dir);

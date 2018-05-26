@@ -11,8 +11,10 @@ use yii\console\ExitCode;
 class CodeUpAction extends Action
 {
 
+
     /**
      * @return int
+     * @throws \Exception
      */
     public function run()
     {
