@@ -18,6 +18,8 @@ class InfoAction extends Action
     {
         $plugin = Plugin::getInstance();
 
+        $this->section('Environment check');
+
         // Continue if ssh remote is set
         if (!$plugin->ssh->remote) {
 
@@ -36,30 +38,29 @@ class InfoAction extends Action
             $this->errorBlock('Unable to get information about the remote environment');
         }
 
-        $this->section('Environments');
-
-        $this->remoteInfo['DB_TABLE_PREFIX2'] = null;
-
+        // Rows
         $rows = [
-            $this->row('ENVIRONMENT', function ($local, $remote) {
-                return (!$local) ? false : ($local != $remote);
+            $this->envRow('ENVIRONMENT', function ($local, $remote) {
+                return (!$local || !$remote) ? false : ($local != $remote);
             }),
             new TableSeparator(),
-            $this->row('SECURITY_KEY', true, true),
+
+            $this->envRow('SECURITY_KEY', true, true),
             new TableSeparator(),
-            $this->row('DB_TABLE_PREFIX'),
-            $this->row('DB_SERVER', function ($local, $remote) {
+
+            $this->envRow('DB_TABLE_PREFIX'),
+            $this->envRow('DB_SERVER', function ($local, $remote) {
                 return stristr($remote, '.frbit.com');
             })
         ];
 
-        // Optional
+        // Optional rows
         foreach (['OBJECT_STORAGE_', 'S3_'] as $volumeConfigPrefix) {
             if (isset($this->remoteInfo[$volumeConfigPrefix . 'BUCKET'])) {
                 $rows[] = new TableSeparator();
                 foreach ($this->remoteInfo as $key => $value) {
                     if (strstr($key, $volumeConfigPrefix)) {
-                        $rows[] = $this->row($key, true, in_array($key, ['OBJECT_STORAGE_SECRET', 'S3_SECRET']));
+                        $rows[] = $this->envRow($key, true, in_array($key, ['OBJECT_STORAGE_SECRET', 'S3_SECRET']));
                     }
                 }
             }
@@ -72,7 +73,7 @@ class InfoAction extends Action
         );
 
         // Error message with more instructions
-        $errors = array_filter(['SECURITY_KEY', 'DB_TABLE_PREFIX2'], function ($key) {
+        $errors = array_filter(['SECURITY_KEY', 'DB_TABLE_PREFIX'], function ($key) {
             return (!self::assertEquals(
                 $this->remoteInfo[$key],
                 getenv($key)
@@ -107,7 +108,7 @@ class InfoAction extends Action
      *
      * @return array
      */
-    protected function row($key, $assertEquals = true, $obfuscate = false)
+    protected function envRow($key, $assertEquals = true, $obfuscate = false)
     {
         $localValue  = getenv($key);
         $remoteValue = $this->remoteInfo[$key] ?? '';
