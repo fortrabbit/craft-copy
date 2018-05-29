@@ -155,7 +155,7 @@ final class Git
         try {
             $result = $this->run('rev-parse', '@{u}', ['abbrev-ref' => true, 'symbolic-full-name' => true]);
         } catch (GitException $gitException) {
-            return false;
+            return null;
         }
 
         if ($includeBranch) {
@@ -184,9 +184,10 @@ final class Git
         return $app;
     }
 
+
     /**
      * @param string $command
-     * @param array  $argsAndOptions
+     * @param array  ...$argsAndOptions
      *
      * @return string
      */

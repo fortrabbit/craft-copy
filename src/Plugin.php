@@ -14,6 +14,7 @@ use fortrabbit\Copy\commands\InfoAction;
 use fortrabbit\Copy\commands\SetupAction;
 use fortrabbit\Copy\services\Git;
 use fortrabbit\Copy\services\Rsync;
+use ostark\Yii2ArtisanBridge\base\Action;
 use ostark\Yii2ArtisanBridge\base\Commands;
 
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -84,8 +85,10 @@ class Plugin extends BasePlugin
                 Commands::class,
                 Commands::EVENT_BEFORE_ACTION,
                 function (ActionEvent $event) {
-                    $style = new OutputFormatterStyle('white', 'cyan');
-                    $event->action->output->getFormatter()->setStyle('ocean', $style);
+                    if ($event->action instanceof Action) {
+                        $style = new OutputFormatterStyle('white', 'cyan');
+                        $event->action->output->getFormatter()->setStyle('ocean', $style);
+                    }
                 }
             );
 
@@ -98,7 +101,7 @@ class Plugin extends BasePlugin
                     return Rsync::remoteFactory(getenv(self::ENV_NAME_SSH_REMOTE));
                 },
                 'git'   => function () {
-                    return Git::fromDirectory(\Craft::getAlias('@root'));
+                    return Git::fromDirectory(\Craft::getAlias('@root') ?: CRAFT_BASE_PATH);
                 }
             ]);
 

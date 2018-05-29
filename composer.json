@@ -2,7 +2,7 @@
     "name": "fortrabbit/craft-copy",
     "description": "Tooling for Craft on fortrabbit",
     "type": "craft-plugin",
-    "version": "0.13.0",
+    "version": "1.0.0-beta1",
     "keywords": [
         "craft",
         "cms",
@@ -11,7 +11,7 @@
         "queue"
     ],
     "support": {
-        "docs": "https://github.com/fortrabbit/craft-deploy-tools/blob/master/README.md",
+        "docs": "https://github.com/fortrabbit/craft-copy/blob/master/README.md",
         "issues": "https://github.com/fortrabbit/craft-deploy-tools/issues"
     },
     "license": "MIT",

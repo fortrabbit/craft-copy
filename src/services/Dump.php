@@ -68,7 +68,7 @@ class Dump extends Component
 
 
     /**
-     * @param $file
+     * @param string $file
      *
      * @return string
      */

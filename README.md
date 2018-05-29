@@ -1,6 +1,10 @@
-# Craft deploy commands for fortrabbit
+# Craft Copy Plugin (beta)
 
-This little command line tool makes your life even better. It helps to speed up common tasks around professional Craft CMS deployment on fortrabbit: Dump the database, sync the assets folder, push and pull changes.
+This little command line tool helps to speed up common tasks around Craft CMS deployment on [fortrabbit](https://www.fortrabbit.com): 
+
+* dump the database, 
+* sync the assets folder, 
+* push and pull code changes.
 
 ## Requirements
 
@@ -16,7 +20,7 @@ This little command line tool makes your life even better. It helps to speed up 
 ![demo](https://github.com/fortrabbit/craft-copy/blob/master/demo_setup.gif "Demo")
 
 
-## Installation
+## Installation (locally)
 
 ```console
 cd your/craft-project
@@ -38,7 +42,8 @@ composer require fortrabbit/craft-copy
 # Tell the plugin with fortrabbit App to use
 ./craft copy/setup
 
-# Various system checks
+# Environment checks
+./craft copy
 ./craft copy/info
 ```
 
@@ -50,10 +55,10 @@ composer require fortrabbit/craft-copy
 # Dump remote DB and import it locally 
 ./craft copy/db/down
 
-# Export db 
+# Export DB 
 ./craft copy/db/to-file {file}
 
-# Import db 
+# Import DB 
 ./craft copy/db/from-file {file}
 ```
 
@@ -65,12 +70,16 @@ composer require fortrabbit/craft-copy
 # Rsync remote assets with local
 ./craft copy/db/down {?assetDir}
 ```
+No remote volumes (S3, Object Storage, ..) so far.
 
 **Code**
 ```console
 # Git push
 ./craft copy/code/up
 
-# Git pull
-./craft copy/code/down
+# Git pull (current remote)
+./craft copy/code/down 
+
+# Git pull (specific remote)
+./craft copy/code/down {remote} {branch}
 ```

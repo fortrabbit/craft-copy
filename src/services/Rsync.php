@@ -68,11 +68,11 @@ class Rsync
     }
 
     /**
-     * @param $dir
+     * @param string $dir
      *
      * @return string
      */
-    public function getCommand($dir): string
+    public function getCommand(string $dir): string
     {
         return $this->rsync->getCommand($dir, $dir)->getCommand();
     }

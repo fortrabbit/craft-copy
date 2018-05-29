@@ -13,6 +13,8 @@ class CodeUpAction extends Action
 
 
     /**
+     * Git push
+     *
      * @return int
      * @throws \Exception
      */
@@ -34,7 +36,6 @@ class CodeUpAction extends Action
             if (!$this->confirm("No changes detected. Push anyways?", true)) {
                 return ExitCode::OK;
             }
-            $msg = 'empty commit';
         }
 
         // Ask for remote
@@ -59,6 +60,9 @@ class CodeUpAction extends Action
             // Add and commit
             $git->getWorkingCopy()->add('.');
             $git->getWorkingCopy()->commit($msg);
+
+        } else {
+            $msg = 'empty commit';
         }
 
 
@@ -94,11 +98,10 @@ class CodeUpAction extends Action
     {
         // Non
         if (!$remotes = $git->getRemotes()) {
-            if ($this->confirm("No remotes configured. Do you want to add fortrabbit?")) {
-                return $git->addRemote(getenv(Plugin::ENV_NAME_SSH_REMOTE));
+            $remote = getenv(Plugin::ENV_NAME_SSH_REMOTE);
+            if ($this->confirm("No remotes configured. Do you want to add '{$remote}''?")) {
+                return $git->addRemote($remote);
             }
-
-            return false;
         }
 
         // There is just one

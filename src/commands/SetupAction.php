@@ -27,7 +27,7 @@ class SetupAction extends Action
     /**
      * Setup your App
      *
-     * @return bool
+     * @return int
      */
     public function run()
     {
@@ -83,12 +83,13 @@ class SetupAction extends Action
 
     }
 
+
     /**
-     * @param $app
+     * @param string $app
      *
-     * @return string|null
+     * @return null|string
      */
-    protected function guessRegion($app)
+    protected function guessRegion(string $app)
     {
         if ($records = dns_get_record("$app.frb.io", DNS_CNAME)) {
             return explode('.', $records[0]['target'])[1];
@@ -97,11 +98,13 @@ class SetupAction extends Action
         return null;
     }
 
+
     /**
-     * @param $app
+     * @param string $cmd
      *
+     * @return bool
      */
-    protected function canExecBinary($cmd)
+    protected function canExecBinary(string $cmd)
     {
         $proc     = new Process($cmd);
         $exitCode = $proc->run();

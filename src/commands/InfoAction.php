@@ -14,6 +14,11 @@ class InfoAction extends Action
 
     public $verbose = false;
 
+    /**
+     * Environment check
+     *
+     * @return int
+     */
     public function run()
     {
         $plugin = Plugin::getInstance();
@@ -82,14 +87,14 @@ class InfoAction extends Action
 
         if (count($errors)) {
 
-            $varsUrl = sprintf("https://dashboard.fortrabbit.com/apps/%s/vars", getenv('APP_NAME'));
+            $varsUrl  = sprintf("https://dashboard.fortrabbit.com/apps/%s/vars", getenv('APP_NAME'));
             $messages = ["These local ENV vars are not in sync with the remote:"];
 
             foreach ($errors as $key) {
-                $messages[] = "<fg=white>$key=" . getenv($key)."</>";
+                $messages[] = "<fg=white>$key=" . getenv($key) . "</>";
             }
 
-            $messages[] =(count($errors) == 1)
+            $messages[] = (count($errors) == 1)
                 ? "Copy the line above and paste it here:" . PHP_EOL . $varsUrl
                 : "Copy the lines above and paste them here:" . PHP_EOL . $varsUrl;
 
@@ -102,7 +107,7 @@ class InfoAction extends Action
 
 
     /**
-     * @param               $key
+     * @param string        $key
      * @param bool|callable $assertEquals
      * @param bool          $obfuscate
      *
@@ -137,9 +142,9 @@ class InfoAction extends Action
     }
 
     /**
-     * @param      $localValue
-     * @param      $remoteValue
-     * @param bool $assertEquals
+     * @param string|bool   $localValue
+     * @param string|bool   $remoteValue
+     * @param bool|callable $assertEquals
      *
      * @return bool
      */

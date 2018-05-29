@@ -32,14 +32,14 @@ class Ssh extends Component
     /**
      * Execute a command via ssh on remote
      *
-     * @param $cmd
+     * @param string $cmd
      *
      * @return bool
      * @throws \fortrabbit\Copy\exceptions\CraftNotInstalledException
      * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
      * @throws \fortrabbit\Copy\exceptions\RemoteException
      */
-    public function exec($cmd)
+    public function exec(string $cmd)
     {
 
         $process = new Process("ssh {$this->remote} $cmd", CRAFT_BASE_PATH);
@@ -66,8 +66,8 @@ class Ssh extends Component
     /**
      * Upload a single file
      *
-     * @param $src
-     * @param $target
+     * @param string $src
+     * @param string $target
      *
      * @return bool
      * @throws \fortrabbit\Copy\exceptions\RemoteException
@@ -89,8 +89,8 @@ class Ssh extends Component
     /**
      * Download a single file
      *
-     * @param $src
-     * @param $target
+     * @param string $src
+     * @param string $target
      *
      * @return bool
      * @throws \fortrabbit\Copy\exceptions\RemoteException

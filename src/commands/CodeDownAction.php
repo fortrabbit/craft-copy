@@ -12,6 +12,8 @@ class CodeDownAction extends Action
 
 
     /**
+     * Git pull
+     *
      * @param null   $remote
      * @param string $remoteBranch
      *

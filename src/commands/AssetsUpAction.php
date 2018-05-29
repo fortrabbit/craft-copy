@@ -28,7 +28,7 @@ class AssetsUpAction extends Action
      *
      * @param string $dir Directory, relative to the project root
      *
-     * @return bool
+     * @return int
      */
     public function run($dir = 'web/assets')
     {
@@ -59,6 +59,6 @@ class AssetsUpAction extends Action
         $plugin->rsync->sync($dir);
         $this->section(PHP_EOL . 'done');
 
-        return true;
+        return ExitCode::OK;
     }
 }

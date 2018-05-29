@@ -2,7 +2,6 @@
 
 namespace fortrabbit\Copy\commands;
 
-use \Craft;
 use ostark\Yii2ArtisanBridge\base\Action as BaseAction;
 use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
@@ -16,9 +15,10 @@ use yii\console\ExitCode;
 class DbDownAction extends BaseAction
 {
     /**
-     * Upload database
+     * Download database
      *
-     * @return bool
+     * @return int
+     *
      * @throws \craft\errors\ShellCommandException
      * @throws \fortrabbit\Copy\exceptions\CraftNotInstalledException
      * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
@@ -57,7 +57,7 @@ class DbDownAction extends BaseAction
 
         // Step 2: Download that dump from remote
         $bar->setMessage($messages[] = "Downloading dump from remote {$transferFile}");
-        if ($plugin->ssh->download($transferFile, $transferFile, true)) {
+        if ($plugin->ssh->download($transferFile, $transferFile)) {
             $bar->advance();
         }
 

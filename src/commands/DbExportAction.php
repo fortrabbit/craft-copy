@@ -19,7 +19,7 @@ class DbExportAction extends Action
      *
      * @param string|null $file Create a sql dump
      *
-     * @return bool
+     * @return int
      * @throws \yii\console\Exception
      */
     public function run(string $file = null)

@@ -20,7 +20,7 @@ class DbImportAction extends Action
      *
      * @param string $file Import a sql dump
      *
-     * @return bool
+     * @return int
      */
     public function run(string $file)
     {

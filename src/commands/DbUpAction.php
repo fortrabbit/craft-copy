@@ -18,7 +18,8 @@ class DbUpAction extends BaseAction
     /**
      * Upload database
      *
-     * @return bool
+     * @return int
+     *
      * @throws \craft\errors\ShellCommandException
      * @throws \fortrabbit\Copy\exceptions\CraftNotInstalledException
      * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
@@ -56,7 +57,7 @@ class DbUpAction extends BaseAction
 
         // Step 2: Upload that dump to remote
         $bar->setMessage($messages[] = "Uploading dump to remote {$transferFile}");
-        if ($plugin->ssh->upload($transferFile, $transferFile, true)) {
+        if ($plugin->ssh->upload($transferFile, $transferFile)) {
             $bar->advance();
         }
 
