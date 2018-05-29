@@ -5,10 +5,6 @@
 # COMPOSER
 /vendor
 
-# CRAFT STORAGE
-/storage/*
-!/storage/.gitkeep
-
 # ASSETS
 /web/assets/*
 /web/cpresources/*

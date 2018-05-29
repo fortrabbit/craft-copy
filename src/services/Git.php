@@ -224,6 +224,7 @@ final class Git
         if (strpos($gitignored, "web/assets") === false) {
             $gitignored .= PHP_EOL . '# ASSETS (added by fortrabbit/craft-copy)';
             $gitignored .= PHP_EOL . '/web/assets/*' . PHP_EOL;
+            $gitignored .= PHP_EOL . '/web/cpresources/*' . PHP_EOL;
 
             return (file_put_contents($gitignoreFile, $gitignored)) ? true : false;
         }
