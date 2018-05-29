@@ -5,8 +5,7 @@ use fortrabbit\Copy\exceptions\CraftNotInstalledException;
 use fortrabbit\Copy\exceptions\PluginNotInstalledException;
 use fortrabbit\Copy\exceptions\RemoteException;
 use Symfony\Component\Process\Process;
-use yii\base\InvalidConfigException;
-use yii\console\Exception;
+
 
 /**
  * Ssh Service
@@ -17,14 +16,22 @@ use yii\console\Exception;
  */
 class Ssh extends Component
 {
-    public $remote;
+    /**
+     * @var string
+     */
+    public $remote ;
 
+    /**
+     * @var string
+     */
     protected $output;
 
     // Public Methods
     // =========================================================================
 
     /**
+     * Execute a command via ssh on remote
+     *
      * @param $cmd
      *
      * @return bool
@@ -55,6 +62,16 @@ class Ssh extends Component
 
     }
 
+
+    /**
+     * Upload a single file
+     *
+     * @param $src
+     * @param $target
+     *
+     * @return bool
+     * @throws \fortrabbit\Copy\exceptions\RemoteException
+     */
     public function upload($src, $target)
     {
         $cmd = "cat {$src} | gzip | ssh {$this->remote} 'zcat > {$target}'";
@@ -69,10 +86,18 @@ class Ssh extends Component
 
     }
 
-
+    /**
+     * Download a single file
+     *
+     * @param $src
+     * @param $target
+     *
+     * @return bool
+     * @throws \fortrabbit\Copy\exceptions\RemoteException
+     */
     public function download($src, $target)
     {
-        $cmd = "ssh {$this->remote} 'cat {$src} | gzip' zcat > {$target}";
+        $cmd = "ssh {$this->remote} 'cat {$src} | gzip' | zcat > {$target}";
         $process = new Process($cmd);
         $process->run();
 
@@ -84,7 +109,10 @@ class Ssh extends Component
 
     }
 
+
     /**
+     * Plugin check on remote
+     *
      * @throws \fortrabbit\Copy\exceptions\CraftNotInstalledException
      * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
      * @throws \fortrabbit\Copy\exceptions\RemoteException
@@ -93,6 +121,12 @@ class Ssh extends Component
         $this->exec("php craft help copy");
     }
 
+
+    /**
+     * Get output of command execution
+     *
+     * @return mixed
+     */
     public function getOutput() {
         return $this->output;
     }

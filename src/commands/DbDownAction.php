@@ -28,14 +28,16 @@ class DbDownAction extends BaseAction
      */
     public function run()
     {
-        $plugin = Plugin::getInstance();
-        $path   = './storage/';
-        $remoteFile  = $path . 'craft-copy-dump-recent.sql';
-        $localBackup = $path . 'craft-copy-dump-local.sql';
-        $steps       = 4;
-        $messages    = [];
+        $plugin       = Plugin::getInstance();
+        $path         = './storage/';
+        $transferFile = $path . 'craft-copy-transfer.sql';
+        $backupFile   = $path . 'craft-copy-recent.sql';
+        $steps        = 4;
+        $messages     = [];
 
-        if (!$this->confirm("Do you really want to sync your remote DB with the local?", true)) {
+        $this->section('Export DB remote - import locally: ' . getenv(Plugin::ENV_NAME_APP));
+
+        if (!$this->confirm("Are you sure?", true)) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -48,27 +50,27 @@ class DbDownAction extends BaseAction
 
 
         // Step 1: Create dump of the current database
-        $bar->setMessage($messages[] = "Creating dump on remote ({$remoteFile})");
-        if ($plugin->ssh->exec("php craft copy/db/to-file {$remoteFile} --interactive=0")) {
+        $bar->setMessage($messages[] = "Creating dump on remote ({$transferFile})");
+        if ($plugin->ssh->exec("php craft copy/db/to-file {$transferFile} --interactive=0")) {
             $bar->advance();
         }
 
         // Step 2: Download that dump from remote
-        $bar->setMessage($messages[] = "Downloading dump from remote {$remoteFile}");
-        if ($plugin->ssh->download($remoteFile, $remoteFile, true)) {
+        $bar->setMessage($messages[] = "Downloading dump from remote {$transferFile}");
+        if ($plugin->ssh->download($transferFile, $transferFile, true)) {
             $bar->advance();
         }
 
         // Step 3: Backup the local database before importing the downloaded dump
-        $bar->setMessage($messages[] = "Creating backup of local DV ({$localBackup})");
+        $bar->setMessage($messages[] = "Creating backup of local DB ({$backupFile})");
 
-        if ($plugin->dump->export($localBackup)) {
+        if ($plugin->dump->export($backupFile)) {
             $bar->advance();
         }
 
         // Step 4: Import
         $bar->setMessage($messages[] = "Importing dump");
-        if ($plugin->dump->import($remoteFile)) {
+        if ($plugin->dump->import($transferFile)) {
             $bar->advance();
             $bar->setMessage("Dump imported");
         }
@@ -79,7 +81,7 @@ class DbDownAction extends BaseAction
         $this->listing($messages);
 
         $this->section('Rollback?');
-        $this->line("ssh {$plugin->ssh->remote} 'php craft copy/db/from-file {$localBackup}'" . PHP_EOL);
+        $this->line("php craft copy/db/from-file {$backupFile}" . PHP_EOL);
 
         return 0;
     }

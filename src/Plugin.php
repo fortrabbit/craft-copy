@@ -4,6 +4,7 @@ use Craft;
 use craft\base\Plugin as BasePlugin;
 use fortrabbit\Copy\commands\AssetsDownAction;
 use fortrabbit\Copy\commands\AssetsUpAction;
+use fortrabbit\Copy\commands\CodeDownAction;
 use fortrabbit\Copy\commands\CodeUpAction;
 use fortrabbit\Copy\commands\DbDownAction;
 use fortrabbit\Copy\commands\DbExportAction;
@@ -63,6 +64,7 @@ class Plugin extends BasePlugin
                 'assets/up'    => AssetsUpAction::class,
                 'assets/down'  => AssetsDownAction::class,
                 'code/up'      => CodeUpAction::class,
+                'code/down'    => CodeDownAction::class,
                 'db/up'        => DbUpAction::class,
                 'db/down'      => DbDownAction::class,
                 'db/to-file'   => DbExportAction::class,
@@ -92,7 +94,7 @@ class Plugin extends BasePlugin
             $this->setComponents([
                 'ssh'   => SshService::class,
                 'dump'  => DumpService::class,
-                'rsync' => function() {
+                'rsync' => function () {
                     return Rsync::remoteFactory(getenv(self::ENV_NAME_SSH_REMOTE));
                 },
                 'git'   => function () {
@@ -105,7 +107,7 @@ class Plugin extends BasePlugin
 
             // Inject $remote
             if (getenv(self::ENV_NAME_SSH_REMOTE)) {
-                $this->ssh->remote   = getenv(self::ENV_NAME_SSH_REMOTE);
+                $this->ssh->remote = getenv(self::ENV_NAME_SSH_REMOTE);
             }
 
         }

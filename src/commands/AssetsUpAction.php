@@ -35,11 +35,13 @@ class AssetsUpAction extends Action
         $plugin = Plugin::getInstance();
         $dir    = $this->prepareForRsync($dir);
 
+        $this->section('Copy assets up');
+
         // Info
         $this->rsyncInfo($dir);
 
         // Ask
-        if (!$this->confirm("Do you really want to sync your local assets?")) {
+        if (!$this->confirm("Are you sure?", true)) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
