@@ -1,5 +1,10 @@
 #  Changelog
 
+## 1.0.0-beta2 - 2018-05-29
+
+- Fixed broken dependency: ostark/yii2-artisan-bridge
+
+
 ## 1.0.0-beta1 - 2018-05-29
 
 Initial (beta) release. Supported commands:
