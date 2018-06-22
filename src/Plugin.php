@@ -60,7 +60,6 @@ class Plugin extends BasePlugin
         if (Craft::$app instanceof ConsoleApplication) {
 
             // Register console commands
-
             Commands::register('copy', [
                 'assets/up'    => AssetsUpAction::class,
                 'assets/down'  => AssetsDownAction::class,

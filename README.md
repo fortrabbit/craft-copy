@@ -25,7 +25,7 @@ This little command line tool helps to speed up common tasks around Craft CMS de
 ```console
 cd your/craft-project
 
-composer require fortrabbit/craft-copy
+composer require fortrabbit/craft-copy:^1.0.0-beta
 
 ./craft plugin/install copy
 ./craft copy/setup
