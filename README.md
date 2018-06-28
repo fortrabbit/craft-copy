@@ -27,7 +27,7 @@ cd your/craft-project
 
 composer require fortrabbit/craft-copy:^1.0.0-beta
 
-./craft plugin/install copy
+./craft install/plugin copy
 ./craft copy/setup
 ```
 
