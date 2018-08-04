@@ -76,7 +76,7 @@ class Ssh extends Component
      */
     public function upload($src, $target)
     {
-        $cmd = "cat {$src} | gzip | ssh {$this->remote} 'zcat > {$target}'";
+        $cmd = "cat {$src} | gzip | ssh {$this->remote} \"zcat > {$target}\"";
         $process = new Process($cmd);
         $process->run();
 
@@ -99,7 +99,7 @@ class Ssh extends Component
      */
     public function download($src, $target)
     {
-        $cmd = "ssh {$this->remote} 'cat {$src} | gzip' | zcat > {$target}";
+        $cmd = "ssh {$this->remote} \"cat {$src} | gzip | zcat > {$target}\"";
         $process = new Process($cmd);
         $process->run();
 
