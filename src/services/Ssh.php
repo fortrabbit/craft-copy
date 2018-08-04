@@ -1,4 +1,6 @@
-<?php namespace fortrabbit\Copy\services;
+<?php
+
+namespace fortrabbit\Copy\services;
 
 use craft\base\Component;
 use fortrabbit\Copy\exceptions\CraftNotInstalledException;

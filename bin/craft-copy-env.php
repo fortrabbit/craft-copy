@@ -50,6 +50,3 @@ if (getenv('OBJECT_STORAGE_SECRET')) {
 }
 
 echo json_encode($env, JSON_PRETTY_PRINT);
-
-
-

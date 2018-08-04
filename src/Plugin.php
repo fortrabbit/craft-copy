@@ -1,4 +1,6 @@
-<?php namespace fortrabbit\Copy;
+<?php
+
+namespace fortrabbit\Copy;
 
 use Craft;
 use craft\base\Plugin as BasePlugin;

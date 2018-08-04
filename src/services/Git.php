@@ -28,7 +28,7 @@ final class Git
 
 
     /**
-     * Directoy Factory
+     * Directory Factory
      *
      * @param string $directory Path to the directory containing the working copy.
      *

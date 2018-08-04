@@ -3,7 +3,7 @@
 
 // Detect the project root
 $root = $_SERVER["PWD"] ?? __DIR__;
-while(!file_exists($root . '/craft')) {
+while (!file_exists($root . '/craft')) {
     $root .= '/..';
     if (substr_count($root, '/..') > 5) {
         die('Unable to find the project root: craft binary is missing.');
@@ -63,7 +63,7 @@ function installer()
     }
 
 
-    echo "Installed Craft successfully" . PHP_EOL;
+    echo "Craft installed successfully" . PHP_EOL;
 
     // Mark all existing migrations as applied
     foreach ($migrator->getNewMigrations() as $name) {
@@ -84,7 +84,3 @@ function install_copy()
     return 1;
 
 }
-
-
-
-
