@@ -14,12 +14,12 @@ class CodeDownAction extends Action
     /**
      * Git pull
      *
-     * @param null   $remote
+     * @param string $remote
      * @param string $remoteBranch
      *
      * @return int
      */
-    public function run($remote = null, $remoteBranch = 'master')
+    public function run(string $remote = null, $remoteBranch = 'master')
     {
         $git = Plugin::getInstance()->git;
         $git->getWorkingCopy()->init();
