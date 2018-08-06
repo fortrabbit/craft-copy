@@ -36,7 +36,7 @@ class DbUpAction extends BaseAction
         $steps        = 4;
         $messages     = [];
 
-        $this->section('Export DB local - import on remote: ' . getenv(Plugin::ENV_NAME_APP));
+        $this->section('Export local DB - import on remote: ' . getenv(Plugin::ENV_NAME_APP));
 
         if (!$this->confirm("Are you sure?", true)) {
             return ExitCode::UNSPECIFIED_ERROR;
