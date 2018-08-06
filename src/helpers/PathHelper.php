@@ -1,5 +1,6 @@
-<?php namespace fortrabbit\Copy\helpers;
+<?php
 
+namespace fortrabbit\Copy\helpers;
 
 trait PathHelper
 {

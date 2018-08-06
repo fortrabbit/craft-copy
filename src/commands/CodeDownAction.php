@@ -10,7 +10,6 @@ use yii\console\ExitCode;
 class CodeDownAction extends Action
 {
 
-
     /**
      * Git pull
      *

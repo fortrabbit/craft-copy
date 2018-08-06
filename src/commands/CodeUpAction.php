@@ -11,7 +11,6 @@ use yii\console\ExitCode;
 class CodeUpAction extends Action
 {
 
-
     /**
      * Git push
      *
@@ -33,7 +32,7 @@ class CodeUpAction extends Action
         }
 
         if (!$git->getWorkingCopy()->hasChanges()) {
-            if (!$this->confirm("No changes detected. Push anyways?", true)) {
+            if (!$this->confirm("No changes detected. Push anyway?", true)) {
                 return ExitCode::OK;
             }
         }

@@ -3,7 +3,7 @@
  * Copy plugin for Craft CMS 3.x
  **
  *
- * @link      http://www.fortrabbit.com
+ * @link      https://www.fortrabbit.com/
  * @copyright Copyright (c) 2018 Oliver Stark
  */
 
