@@ -2,7 +2,7 @@
     "name": "fortrabbit/craft-copy",
     "description": "Tooling for Craft on fortrabbit",
     "type": "craft-plugin",
-    "version": "1.0.0-beta2",
+    "version": "1.0.0-beta3",
     "keywords": [
         "craft",
         "cms",
@@ -27,7 +27,7 @@
         "albertofem/rsync-lib": "^1.0.0",
         "ostark/yii2-artisan-bridge": "^1.1.1",
         "cpliakas/git-wrapper": "^2.0",
-        "symfony/process": "^4.0"
+        "symfony/process": "^4.1"
     },
     "require-dev": {
         "phpstan/phpstan": "^0.10.2"
