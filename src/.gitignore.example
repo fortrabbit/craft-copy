@@ -1,20 +1,25 @@
-
 # CRAFT ENVIRONMENT
+.env.php
+.env.sh
 .env
 
 # COMPOSER
-/vendor
+/vendor/
+
+# CRAFT STORAGE
+/storage/*
+!/storage/.gitkeep
 
 # ASSETS
-/web/assets/*
-/web/cpresources/*
+/web/assets/
+/web/cpresources/
 
 # BUILD FILES
-/bower_components/*
-/node_modules/*
-/build/*
-/yarn-error.log
+/bower_components/
+/build/
+/node_modules/
 /npm-debug.log
+/yarn-error.log
 
 # MISC FILES
 .cache
@@ -27,10 +32,10 @@
 *.sublime-project
 *.tmproj
 *.tmproject
-.vscode/*
+.vscode/
+!.vscode/extensions.json
+!.vscode/launch.json
 !.vscode/settings.json
 !.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 config.codekit3
 prepros-6.config
