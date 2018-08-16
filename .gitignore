@@ -1,12 +1,6 @@
 # COMPOSER
-/vendor
-composer.lock
-
-# BUILD FILES
-/bower_components/*
-/node_modules/*
-/build/*
-/yarn-error.log
+/vendor/
+/composer.lock
 
 # MISC FILES
 .cache
@@ -14,15 +8,15 @@ composer.lock
 .idea
 .project
 .settings
+config.codekit3
+prepros-6.config
 *.esproj
-*.sublime-workspace
 *.sublime-project
+*.sublime-workspace
 *.tmproj
 *.tmproject
 .vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
 !.vscode/settings.json
 !.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-config.codekit3
-prepros-6.config
