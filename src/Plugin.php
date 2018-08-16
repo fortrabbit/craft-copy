@@ -28,7 +28,6 @@ use fortrabbit\Copy\services\Dump as DumpService;
 use fortrabbit\Copy\services\Rsync as RsyncService;
 use fortrabbit\Copy\services\Git as GitService;
 
-
 /**
  * Class Plugin
  *
@@ -62,18 +61,21 @@ class Plugin extends BasePlugin
         if (Craft::$app instanceof ConsoleApplication) {
 
             // Register console commands
-            Commands::register('copy', [
-                'assets/up'    => AssetsUpAction::class,
-                'assets/down'  => AssetsDownAction::class,
-                'code/up'      => CodeUpAction::class,
-                'code/down'    => CodeDownAction::class,
-                'db/up'        => DbUpAction::class,
-                'db/down'      => DbDownAction::class,
-                'db/to-file'   => DbExportAction::class,
-                'db/from-file' => DbImportAction::class,
-                'setup'        => SetupAction::class,
-                'info'         => InfoAction::class
-            ], [
+            Commands::register(
+                'copy',
+                [
+                    'assets/up'    => AssetsUpAction::class,
+                    'assets/down'  => AssetsDownAction::class,
+                    'code/up'      => CodeUpAction::class,
+                    'code/down'    => CodeDownAction::class,
+                    'db/up'        => DbUpAction::class,
+                    'db/down'      => DbDownAction::class,
+                    'db/to-file'   => DbExportAction::class,
+                    'db/from-file' => DbImportAction::class,
+                    'setup'        => SetupAction::class,
+                    'info'         => InfoAction::class
+                ],
+                [
                     'v' => 'verbose',
                     'd' => 'directory',
                     'n' => 'dryRun'
@@ -113,11 +115,6 @@ class Plugin extends BasePlugin
             if (getenv(self::ENV_NAME_SSH_REMOTE)) {
                 $this->ssh->remote = getenv(self::ENV_NAME_SSH_REMOTE);
             }
-
         }
-
-
     }
-
-
 }

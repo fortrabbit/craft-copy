@@ -82,6 +82,5 @@ class Dump extends Component
         }
 
         return $file;
-
     }
 }

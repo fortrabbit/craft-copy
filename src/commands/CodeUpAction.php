@@ -59,7 +59,6 @@ class CodeUpAction extends Action
             // Add and commit
             $git->getWorkingCopy()->add('.');
             $git->getWorkingCopy()->commit($msg);
-
         } else {
             $msg = 'empty commit';
         }
@@ -82,7 +81,6 @@ class CodeUpAction extends Action
         $this->successBlock('Code deployed successfully.');
 
         return ExitCode::OK;
-
     }
 
 

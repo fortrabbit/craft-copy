@@ -6,7 +6,6 @@ use ostark\Yii2ArtisanBridge\base\Action as BaseAction;
 use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
 
-
 /**
  * Class DbDownAction
  *

@@ -50,7 +50,5 @@ class CodeDownAction extends Action
         $this->successBlock('Code pulled successfully.');
 
         return ExitCode::OK;
-
     }
-
 }

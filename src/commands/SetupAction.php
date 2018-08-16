@@ -80,7 +80,6 @@ class SetupAction extends Action
         return ($this->setupRemote())
             ? ExitCode::OK
             : ExitCode::UNSPECIFIED_ERROR;
-
     }
 
 
@@ -146,9 +145,8 @@ class SetupAction extends Action
 
         if ($plugin->ssh->exec("ls vendor/bin/craft-copy-installer.php | wc -l")) {
             if (trim($plugin->ssh->getOutput()) != "1") {
-
                 if ($this->confirm("The plugin is not installed on the remote! Do you want to deploy now?", true)) {
-                    if (0 != Craft::$app->runAction('copy/code/up', ['interactive' => $this->interactive])) {
+                    if (Craft::$app->runAction('copy/code/up', ['interactive' => $this->interactive]) != 0) {
                         return false;
                     }
                 } else {
@@ -163,7 +161,7 @@ class SetupAction extends Action
 
         $this->output->type('php craft copy/db/up');
 
-        if (0 != Craft::$app->runAction('copy/db/up', ['interactive' => $this->interactive])) {
+        if (Craft::$app->runAction('copy/db/up', ['interactive' => $this->interactive]) != 0) {
             return false;
         }
 
@@ -171,7 +169,6 @@ class SetupAction extends Action
 
 
         return true;
-
     }
 
     protected function checkAndWrite($message, $success)
@@ -181,5 +178,4 @@ class SetupAction extends Action
 
         return $success;
     }
-
 }

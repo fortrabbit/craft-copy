@@ -17,7 +17,6 @@ namespace fortrabbit\Copy\services;
  */
 class Rsync
 {
-
     public $remote;
 
     protected $rsync;
@@ -29,7 +28,6 @@ class Rsync
 
     public static function remoteFactory($remoteUrl)
     {
-
         if (strpos($remoteUrl, '@') === false) {
             throw new \InvalidArgumentException("SSH remote URL must contain a user@host, '$remoteUrl' given.");
         }
@@ -76,5 +74,4 @@ class Rsync
     {
         return $this->rsync->getCommand($dir, $dir)->getCommand();
     }
-
 }

@@ -8,7 +8,7 @@ trait PathHelper
     {
         $path = rtrim(trim($path), '/');
 
-        if (0 === strpos($path, './')) {
+        if (strpos($path, './') === 0) {
             return "$path/";
         }
 

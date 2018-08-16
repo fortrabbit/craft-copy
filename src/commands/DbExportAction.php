@@ -5,7 +5,6 @@ namespace fortrabbit\Copy\commands;
 use ostark\Yii2ArtisanBridge\base\Action;
 use fortrabbit\Copy\Plugin;
 
-
 /**
  * Class DbExportAction
  *
@@ -31,6 +30,5 @@ class DbExportAction extends Action
             $this->info("OK");
             return 0;
         }
-
     }
 }

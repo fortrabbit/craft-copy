@@ -12,7 +12,6 @@ use Symfony\Component\Console\Helper\TableSeparator;
  */
 trait ConsoleOutputHelper
 {
-
     public function rsyncInfo(string $dir)
     {
         $this->table(

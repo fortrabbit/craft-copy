@@ -82,5 +82,4 @@ function install_copy()
 
     echo "Failed to install Copy plugin." . PHP_EOL;
     return 1;
-
 }

@@ -8,10 +8,8 @@
 
 namespace fortrabbit\Copy\exceptions;
 
-
 use yii\base\Exception;
 
 class RemoteException extends Exception
 {
-
 }

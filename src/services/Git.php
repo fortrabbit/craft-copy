@@ -2,7 +2,6 @@
 
 namespace fortrabbit\Copy\services;
 
-
 use fortrabbit\Copy\Plugin;
 use GitWrapper\GitException;
 use GitWrapper\GitWorkingCopy;
@@ -164,7 +163,6 @@ final class Git
 
         // Split upstream/branch and return upstream only
         return explode('/', $result)[0];
-
     }
 
     /**
@@ -230,8 +228,5 @@ final class Git
         }
 
         return false;
-
     }
-
-
 }
