@@ -28,7 +28,7 @@ class DbExportAction extends Action
 
         if ($file = $plugin->dump->export($file)) {
             $this->info("OK");
-            return 0;
+            return ExitCode::OK;
         }
     }
 }
