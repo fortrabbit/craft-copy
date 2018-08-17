@@ -8,8 +8,6 @@
 
 namespace fortrabbit\Copy\exceptions;
 
-
 class CraftNotInstalledException extends RemoteException
 {
-
 }

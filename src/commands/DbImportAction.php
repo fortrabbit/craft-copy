@@ -33,10 +33,9 @@ class DbImportAction extends Action
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        $this->info("Import DB Dump from '{$file}'");
+        $this->info("Importing DB Dump from '{$file}'");
 
         if ($file = Plugin::getInstance()->dump->import($file)) {
-
             $this->successBlock("Dump imported");
 
             if (!$this->confirm("Do you really want to remove the {$file} file?", true)) {

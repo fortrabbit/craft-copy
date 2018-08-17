@@ -8,7 +8,6 @@ use fortrabbit\Copy\exceptions\PluginNotInstalledException;
 use fortrabbit\Copy\exceptions\RemoteException;
 use Symfony\Component\Process\Process;
 
-
 /**
  * Ssh Service
  *
@@ -43,7 +42,6 @@ class Ssh extends Component
      */
     public function exec(string $cmd)
     {
-
         $process = new Process("ssh {$this->remote} $cmd", CRAFT_BASE_PATH);
         $process->run();
 
@@ -52,7 +50,7 @@ class Ssh extends Component
             return true;
         }
 
-        if ("Could not open input file: craft" == trim($process->getErrorOutput())) {
+        if (trim($process->getErrorOutput()) == "Could not open input file: craft") {
             throw new CraftNotInstalledException("Craft is not installed on remote.");
         }
 
@@ -61,7 +59,6 @@ class Ssh extends Component
         }
 
         throw new RemoteException("SSH Remote error: " . $process->getErrorOutput());
-
     }
 
 
@@ -85,7 +82,6 @@ class Ssh extends Component
         }
 
         throw new RemoteException($cmd . PHP_EOL . $process->getErrorOutput());
-
     }
 
     /**
@@ -108,7 +104,6 @@ class Ssh extends Component
         }
 
         throw new RemoteException($cmd . PHP_EOL . $process->getErrorOutput());
-
     }
 
 
@@ -119,7 +114,8 @@ class Ssh extends Component
      * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
      * @throws \fortrabbit\Copy\exceptions\RemoteException
      */
-    public function checkPlugin() {
+    public function checkPlugin()
+    {
         $this->exec("php craft help copy");
     }
 
@@ -129,7 +125,8 @@ class Ssh extends Component
      *
      * @return mixed
      */
-    public function getOutput() {
+    public function getOutput()
+    {
         return $this->output;
     }
 }

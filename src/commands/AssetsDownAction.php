@@ -15,7 +15,6 @@ use yii\console\ExitCode;
  */
 class AssetsDownAction extends Action
 {
-
     public $dryRun = false;
 
     public $verbose = false;

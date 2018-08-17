@@ -59,7 +59,6 @@ class CodeUpAction extends Action
             // Add and commit
             $git->getWorkingCopy()->add('.');
             $git->getWorkingCopy()->commit($msg);
-
         } else {
             $msg = 'empty commit';
         }
@@ -82,7 +81,6 @@ class CodeUpAction extends Action
         $this->successBlock('Code deployed successfully.');
 
         return ExitCode::OK;
-
     }
 
 
@@ -98,7 +96,7 @@ class CodeUpAction extends Action
         // Non
         if (!$remotes = $git->getRemotes()) {
             $remote = getenv(Plugin::ENV_NAME_SSH_REMOTE);
-            if ($this->confirm("No remotes configured. Do you want to add '{$remote}''?")) {
+            if ($this->confirm("No remotes configured. Do you want to add '{$remote}'?")) {
                 return $git->addRemote($remote);
             }
         }

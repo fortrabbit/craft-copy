@@ -6,7 +6,6 @@ use ostark\Yii2ArtisanBridge\base\Action as BaseAction;
 use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
 
-
 /**
  * Class DbDownAction
  *
@@ -83,6 +82,6 @@ class DbDownAction extends BaseAction
         $this->section('Rollback?');
         $this->line("php craft copy/db/from-file {$backupFile}" . PHP_EOL);
 
-        return 0;
+        return ExitCode::OK;
     }
 }

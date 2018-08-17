@@ -9,7 +9,6 @@ use yii\console\ExitCode;
 
 class InfoAction extends Action
 {
-
     private $remoteInfo = [];
 
     public $verbose = false;
@@ -27,7 +26,6 @@ class InfoAction extends Action
 
         // Continue if ssh remote is set
         if (!$plugin->ssh->remote) {
-
             $this->errorBlock("The SSH remote is not configured yet.");
             $this->line('Run the setup command first:' . PHP_EOL);
             $this->output->type('php craft copy/setup' . PHP_EOL, 'fg=white', 20);
@@ -86,7 +84,6 @@ class InfoAction extends Action
         });
 
         if (count($errors)) {
-
             $varsUrl  = sprintf("https://dashboard.fortrabbit.com/apps/%s/vars", getenv('APP_NAME'));
             $messages = ["These local ENV vars are not in sync with the remote:"];
 
@@ -99,10 +96,7 @@ class InfoAction extends Action
                 : "Copy the lines above and paste them here:" . PHP_EOL . $varsUrl;
 
             $this->block($messages, 'WARNING', 'fg=red;', ' ', true, false);
-
         }
-
-
     }
 
 
@@ -157,6 +151,5 @@ class InfoAction extends Action
         }
 
         return ($localValue == $remoteValue) ? true : false;
-
     }
 }
