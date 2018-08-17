@@ -96,7 +96,7 @@ class CodeUpAction extends Action
         // Non
         if (!$remotes = $git->getRemotes()) {
             $remote = getenv(Plugin::ENV_NAME_SSH_REMOTE);
-            if ($this->confirm("No remotes configured. Do you want to add '{$remote}''?")) {
+            if ($this->confirm("No remotes configured. Do you want to add '{$remote}'?")) {
                 return $git->addRemote($remote);
             }
         }

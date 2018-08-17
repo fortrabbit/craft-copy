@@ -62,7 +62,7 @@ class SetupAction extends Action
             }
         }
 
-        if (!$this->confirm("Do you want initialize the plugin on the remote?", true)) {
+        if (!$this->confirm("Do you want to initialize the plugin on the remote?", true)) {
             $this->noteBlock('Abort');
             return ExitCode::UNSPECIFIED_ERROR;
         }
@@ -165,7 +165,7 @@ class SetupAction extends Action
             return false;
         }
 
-        $this->successBlock("Check it the browser: https://{$this->app}.frb.io");
+        $this->successBlock("Check it in the browser: https://{$this->app}.frb.io");
 
 
         return true;
