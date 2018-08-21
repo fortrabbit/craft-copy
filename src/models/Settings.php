@@ -77,7 +77,8 @@ class Settings extends Model
     public function getStageConfig(string $key): StageConfig
     {
         if (!array_key_exists($key, $this->stages)) {
-            throw new \InvalidArgumentException("'$key' is not configured");
+            $whitelist = implode(PHP_EOL, array_keys($this->stages));
+            throw new \InvalidArgumentException("Stage '$key' is not configured. Possible values are:" . PHP_EOL . $whitelist);
         }
 
         return $this->stages[$key];

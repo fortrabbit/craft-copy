@@ -1,14 +1,15 @@
 <?php
 /**
- * Rename this file to craft-copy.php and place it in your /config folder
+ * Rename this file to copy.php and place it in your /config folder
  */
+
 use fortrabbit\Copy\models\StageConfig;
 
 return [
     /**
      * Multi stage config
      */
-    'stages' => [
+    'stages'             => [
 
         /**
          * Example config for your-test-app
@@ -16,7 +17,8 @@ return [
          * @see StageConfig
          */
         'your-test-app'    => new StageConfig([
-            'localBranch' => 'testing'
+            'sshRemoteUrl' => 'your-test-app@deploy.us1.frbit.com',
+            'gitRemoteName'=> 'testing',
         ]),
 
         /**
@@ -25,10 +27,8 @@ return [
          * @see StageConfig
          */
         'your-prod-app'    => new StageConfig([
-            'localBranch'   => 'prod',
-            'remoteBranch'  => 'master',
-            // executed on remote
-            'postCodeUpCmd' => 'php craft cache/clear-all',
+            'sshRemoteUrl' => 'your-prod-app@deploy.eu2.frbit.com',
+            'gitRemoteName'=> 'production',
         ]),
 
         /**
@@ -37,21 +37,20 @@ return [
          * @see StageConfig
          */
         'some-test-server' => new StageConfig([
-            'localBranch'  => 'testing',
-            'remoteBranch' => 'master',
-            'gitRemote'    => 'git@github.com:prefix/repo.git',
-            'sshRemote'    => 'user@host.com',
+            'sshRemoteUrl' => 'user@host.com',
         ]),
     ],
 
     /**
      * Alternative ssh upload command (usually no changes needed)
+     *
      * @see \fortrabbit\Copy\services\Ssh::UPLOAD_COMMAND
      */
     'sshUploadCommand'   => null,
 
     /**
      * Alternative ssh download command (usually no changes needed)
+     *
      * @see \fortrabbit\Copy\services\Ssh::DOWNLOAD_COMMAND
      */
     'sshDownloadCommand' => null,

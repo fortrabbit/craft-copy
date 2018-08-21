@@ -6,6 +6,7 @@ use Craft;
 use craft\base\Plugin as BasePlugin;
 use fortrabbit\Copy\commands\AssetsDownAction;
 use fortrabbit\Copy\commands\AssetsUpAction;
+use fortrabbit\Copy\commands\BaseAction;
 use fortrabbit\Copy\commands\CodeDownAction;
 use fortrabbit\Copy\commands\CodeUpAction;
 use fortrabbit\Copy\commands\DbDownAction;
@@ -15,12 +16,11 @@ use fortrabbit\Copy\commands\DbUpAction;
 use fortrabbit\Copy\commands\InfoAction;
 use fortrabbit\Copy\commands\SetupAction;
 use fortrabbit\Copy\models\Settings;
+use fortrabbit\Copy\models\StageConfig;
 use fortrabbit\Copy\services\Git;
 use fortrabbit\Copy\services\Rsync;
-use ostark\Yii2ArtisanBridge\base\Action;
 use ostark\Yii2ArtisanBridge\base\Commands;
 
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use yii\base\ActionEvent;
 use yii\console\Application as ConsoleApplication;
 
@@ -38,6 +38,8 @@ use fortrabbit\Copy\services\Git as GitService;
  * @property  DumpService  $dump
  * @property  RsyncService $rsync
  * @property  GitService   $git
+ *
+ * @method    models\Settings getSettings()
  *
  */
 class Plugin extends BasePlugin
@@ -86,18 +88,6 @@ class Plugin extends BasePlugin
 
             Commands::setDefaultAction('copy', 'info');
 
-            \yii\base\Event::on(
-                Commands::class,
-                Commands::EVENT_BEFORE_ACTION,
-                function (ActionEvent $event) {
-                    if ($event->action instanceof Action) {
-                        $style = new OutputFormatterStyle('white', 'cyan');
-                        $event->action->output->getFormatter()->setStyle('ocean', $style);
-                    }
-                }
-            );
-
-
             // Register services
             $this->setComponents([
                 'ssh'   => SshService::class,
@@ -117,6 +107,20 @@ class Plugin extends BasePlugin
             if (getenv(self::ENV_NAME_SSH_REMOTE)) {
                 $this->ssh->remote = getenv(self::ENV_NAME_SSH_REMOTE);
             }
+
+            // Globally apply stage config if --app=name is given
+            \yii\base\Event::on(
+                Commands::class,
+                Commands::EVENT_BEFORE_ACTION,
+                function (ActionEvent $event) {
+                    if ($event->action instanceof BaseAction) {
+                        if (is_string($event->action->app)) {
+                            $stage = $this->getSettings()->getStageConfig($event->action->app);
+                            $this->applyStageConfig($stage);
+                        }
+                    }
+                }
+            );
         }
     }
 
@@ -129,5 +133,18 @@ class Plugin extends BasePlugin
     protected function createSettingsModel()
     {
         return new Settings();
+    }
+
+    /**
+     * @param \fortrabbit\Copy\models\StageConfig $stageConfig
+     */
+    protected function applyStageConfig(StageConfig $stageConfig)
+    {
+        if ($stageConfig->sshRemoteUrl) {
+            $this->ssh->remote = $stageConfig->sshRemoteUrl;
+            $this->set('rsync', function () use ($stageConfig) {
+                return Rsync::remoteFactory($stageConfig->sshRemoteUrl);
+            });
+        }
     }
 }

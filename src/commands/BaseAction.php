@@ -10,5 +10,5 @@ class BaseAction extends Action
     /**
      * @var string Name of the App (to apply multi staging configs)
      */
-    public $app;
+    public $app = null;
 }

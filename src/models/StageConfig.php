@@ -6,13 +6,10 @@ class StageConfig
 {
     public $app;
 
-    public $localBranch;
+    public $sshRemoteUrl;
 
-    public $remoteBranch = 'master';
+    public $gitRemoteName;
 
-    public $sshRemote;
-
-    public $gitRemote;
 
     /**
      * StageConfig constructor.

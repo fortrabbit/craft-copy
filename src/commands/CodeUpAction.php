@@ -105,6 +105,14 @@ class CodeUpAction extends BaseAction
             return array_keys($remotes)[0];
         }
 
+        // Use configured remote
+        if (is_string($this->app)) {
+            $remote = Plugin::getInstance()->getSettings()->getStageConfig($this->app)->gitRemoteName;
+            if (in_array($remote, array_keys($remotes))) {
+                return $remote;
+            }
+        }
+
         // Multiple
         return $this->choice('Select a remote', $remotes, $git->getTracking());
     }

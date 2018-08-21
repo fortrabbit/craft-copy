@@ -3,7 +3,6 @@
 namespace fortrabbit\Copy\commands;
 
 use craft\helpers\FileHelper;
-use ostark\Yii2ArtisanBridge\base\Action;
 use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
 
@@ -12,7 +11,7 @@ use yii\console\ExitCode;
  *
  * @package fortrabbit\DeployTools\commands
  */
-class DbImportAction extends Action
+class DbImportAction extends BaseAction
 {
 
     /**

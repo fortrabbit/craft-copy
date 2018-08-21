@@ -3,6 +3,7 @@
 namespace fortrabbit\Copy\commands;
 
 use fortrabbit\Copy\Plugin;
+use yii\console\ExitCode;
 
 /**
  * Class DbExportAction

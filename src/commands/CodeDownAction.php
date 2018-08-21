@@ -30,6 +30,11 @@ class CodeDownAction extends BaseAction
             $git->run('checkout', $branch);
         }
 
+        // Use configured remote
+        if (is_string($this->app) && is_null($remote)) {
+            $remote = Plugin::getInstance()->getSettings()->getStageConfig($this->app)->gitRemoteName;
+        }
+
         $remote = $remote ?: $git->getTracking();
 
         try {

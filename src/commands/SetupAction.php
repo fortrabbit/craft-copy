@@ -20,7 +20,6 @@ class SetupAction extends BaseAction
      */
     public $verbose = false;
 
-    protected $app;
     protected $sshUrl;
 
     /**
