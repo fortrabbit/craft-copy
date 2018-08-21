@@ -14,6 +14,7 @@ use fortrabbit\Copy\commands\DbImportAction;
 use fortrabbit\Copy\commands\DbUpAction;
 use fortrabbit\Copy\commands\InfoAction;
 use fortrabbit\Copy\commands\SetupAction;
+use fortrabbit\Copy\models\Settings;
 use fortrabbit\Copy\services\Git;
 use fortrabbit\Copy\services\Rsync;
 use ostark\Yii2ArtisanBridge\base\Action;
@@ -78,7 +79,8 @@ class Plugin extends BasePlugin
                 [
                     'v' => 'verbose',
                     'd' => 'directory',
-                    'n' => 'dryRun'
+                    'n' => 'dryRun',
+                    'a' => 'app'
                 ]
             );
 
@@ -116,5 +118,16 @@ class Plugin extends BasePlugin
                 $this->ssh->remote = getenv(self::ENV_NAME_SSH_REMOTE);
             }
         }
+    }
+
+
+    /**
+     * Creates and returns the model used to store the plugin’s settings.
+     *
+     * @return \craft\base\Model|null
+     */
+    protected function createSettingsModel()
+    {
+        return new Settings();
     }
 }

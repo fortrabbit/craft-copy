@@ -3,7 +3,6 @@
 namespace fortrabbit\Copy\commands;
 
 use Craft;
-use ostark\Yii2ArtisanBridge\base\Action;
 use fortrabbit\Copy\Plugin;
 use Symfony\Component\Process\Process;
 use yii\console\ExitCode;
@@ -13,7 +12,7 @@ use yii\console\ExitCode;
  *
  * @package fortrabbit\Copy\commands
  */
-class SetupAction extends Action
+class SetupAction extends BaseAction
 {
 
     /**

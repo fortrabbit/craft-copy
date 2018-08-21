@@ -2,8 +2,6 @@
 
 namespace fortrabbit\Copy\commands;
 
-use \Craft;
-use ostark\Yii2ArtisanBridge\base\Action as BaseAction;
 use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
 

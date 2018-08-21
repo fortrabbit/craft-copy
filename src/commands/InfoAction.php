@@ -3,11 +3,10 @@
 namespace fortrabbit\Copy\commands;
 
 use fortrabbit\Copy\Plugin;
-use ostark\Yii2ArtisanBridge\base\Action;
 use Symfony\Component\Console\Helper\TableSeparator;
 use yii\console\ExitCode;
 
-class InfoAction extends Action
+class InfoAction extends BaseAction
 {
     private $remoteInfo = [];
 

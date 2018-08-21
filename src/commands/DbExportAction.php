@@ -2,7 +2,6 @@
 
 namespace fortrabbit\Copy\commands;
 
-use ostark\Yii2ArtisanBridge\base\Action;
 use fortrabbit\Copy\Plugin;
 
 /**
@@ -10,7 +9,7 @@ use fortrabbit\Copy\Plugin;
  *
  * @package fortrabbit\DeployTools\commands
  */
-class DbExportAction extends Action
+class DbExportAction extends BaseAction
 {
 
     /**

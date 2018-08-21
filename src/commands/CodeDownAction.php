@@ -4,10 +4,9 @@ namespace fortrabbit\Copy\commands;
 
 use fortrabbit\Copy\Plugin;
 use GitWrapper\GitException;
-use ostark\Yii2ArtisanBridge\base\Action;
 use yii\console\ExitCode;
 
-class CodeDownAction extends Action
+class CodeDownAction extends BaseAction
 {
 
     /**

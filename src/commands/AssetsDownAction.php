@@ -5,7 +5,6 @@ namespace fortrabbit\Copy\commands;
 use fortrabbit\Copy\helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\helpers\PathHelper;
 use fortrabbit\Copy\Plugin;
-use ostark\Yii2ArtisanBridge\base\Action;
 use yii\console\ExitCode;
 
 /**
@@ -13,7 +12,7 @@ use yii\console\ExitCode;
  *
  * @package fortrabbit\Copy\commands
  */
-class AssetsDownAction extends Action
+class AssetsDownAction extends BaseAction
 {
     public $dryRun = false;
 
