@@ -2,7 +2,6 @@
 
 namespace fortrabbit\Copy\commands;
 
-
 use ostark\Yii2ArtisanBridge\base\Action;
 
 class BaseAction extends Action

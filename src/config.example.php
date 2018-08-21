@@ -1,6 +1,6 @@
 <?php
 /**
- * rename this file to craft-copy.php and place it in your /config folder
+ * Rename this file to craft-copy.php and place it in your /config folder
  */
 use fortrabbit\Copy\models\StageConfig;
 

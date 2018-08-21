@@ -4,7 +4,6 @@ namespace fortrabbit\Copy\models;
 
 class StageConfig
 {
-
     public $app;
 
     public $localBranch;

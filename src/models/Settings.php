@@ -54,7 +54,6 @@ class Settings extends Model
     {
         // Prepare stages
         if (isset($values['stages'])) {
-
             foreach ($values['stages'] as $key => $config) {
                 if (is_array($config)) {
                     $config = new StageConfig($config);
