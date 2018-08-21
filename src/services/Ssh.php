@@ -17,10 +17,14 @@ use Symfony\Component\Process\Process;
  */
 class Ssh extends Component
 {
+    const UPLOAD_COMMAND = 'cat {src} | gzip | ssh {remote} "zcat > {target}"';
+
+    const DOWNLOAD_COMMAND = 'ssh {remote} "cat {src} | gzip" | zcat > {target}';
+
     /**
      * @var string
      */
-    public $remote ;
+    public $remote;
 
     /**
      * @var string
@@ -42,11 +46,13 @@ class Ssh extends Component
      */
     public function exec(string $cmd)
     {
-        $process = new Process("ssh {$this->remote} $cmd", CRAFT_BASE_PATH);
+        $cmd = sprintf('ssh %s "%s"', $this->remote, $cmd);
+        $process = new Process($cmd, CRAFT_BASE_PATH);
         $process->run();
 
         if ($process->isSuccessful()) {
             $this->output = $process->getOutput();
+
             return true;
         }
 
@@ -73,15 +79,14 @@ class Ssh extends Component
      */
     public function upload($src, $target)
     {
-        $cmd = "cat {$src} | gzip | ssh {$this->remote} 'zcat > {$target}'";
-        $process = new Process($cmd);
+        $process = new Process($this->getUploadCommand($src, $target));
         $process->run();
 
         if ($process->isSuccessful()) {
             return true;
         }
 
-        throw new RemoteException($cmd . PHP_EOL . $process->getErrorOutput());
+        throw new RemoteException($process->getCommandLine() . PHP_EOL . $process->getErrorOutput());
     }
 
     /**
@@ -95,15 +100,14 @@ class Ssh extends Component
      */
     public function download($src, $target)
     {
-        $cmd = "ssh {$this->remote} 'cat {$src} | gzip' | zcat > {$target}";
-        $process = new Process($cmd);
+        $process = new Process($this->getDownloadCommand($src, $target));
         $process->run();
 
         if ($process->isSuccessful()) {
             return true;
         }
 
-        throw new RemoteException($cmd . PHP_EOL . $process->getErrorOutput());
+        throw new RemoteException($process->getCommandLine() . PHP_EOL . $process->getErrorOutput());
     }
 
 
@@ -128,5 +132,30 @@ class Ssh extends Component
     public function getOutput()
     {
         return $this->output;
+    }
+
+
+    protected function getUploadCommand(string $src, string $target)
+    {
+        $cmd    = self::UPLOAD_COMMAND;
+        $tokens = [
+            '{src}'    => $src,
+            '{target}' => $target,
+            '{remote}' => $this->remote,
+        ];
+
+        return str_replace(array_keys($tokens), array_values($tokens), $cmd);
+    }
+
+    protected function getDownloadCommand(string $src, string $target)
+    {
+        $cmd    = self::DOWNLOAD_COMMAND;
+        $tokens = [
+            '{src}'    => $src,
+            '{target}' => $target,
+            '{remote}' => $this->remote,
+        ];
+
+        return str_replace(array_keys($tokens), array_values($tokens), $cmd);
     }
 }
