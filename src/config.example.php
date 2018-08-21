@@ -2,9 +2,6 @@
 /**
  * Rename this file to copy.php and place it in your /config folder
  */
-
-use fortrabbit\Copy\models\StageConfig;
-
 return [
     /**
      * Multi stage config
@@ -16,29 +13,29 @@ return [
          *
          * @see StageConfig
          */
-        'your-test-app'    => new StageConfig([
+        'your-test-app'    => [
             'sshRemoteUrl' => 'your-test-app@deploy.us1.frbit.com',
             'gitRemoteName'=> 'testing',
-        ]),
+        ],
 
         /**
          * Example config for your-prod-app
          *
          * @see StageConfig
          */
-        'your-prod-app'    => new StageConfig([
+        'your-prod-app'    => [
             'sshRemoteUrl' => 'your-prod-app@deploy.eu2.frbit.com',
             'gitRemoteName'=> 'production',
-        ]),
+        ],
 
         /**
          * Example config for some-test-server
          *
          * @see StageConfig
          */
-        'some-test-server' => new StageConfig([
+        'some-test-server' => [
             'sshRemoteUrl' => 'user@host.com',
-        ]),
+        ],
     ],
 
     /**
