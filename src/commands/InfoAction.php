@@ -23,6 +23,8 @@ class InfoAction extends BaseAction
 
         $this->section('Environment check');
 
+        $app = $this->app ?: getenv(Plugin::ENV_NAME_APP);
+
         // Continue if ssh remote is set
         if (!$plugin->ssh->remote) {
             $this->errorBlock("The SSH remote is not configured yet.");
@@ -70,7 +72,7 @@ class InfoAction extends BaseAction
 
         // Print table
         $this->table(
-            ['Key', 'Local', sprintf("Remote (App:%s)", getenv('APP_NAME')), '  '],
+            ['Key', 'Local', sprintf("Remote (App:%s)", $app), '  '],
             $rows
         );
 
@@ -83,7 +85,7 @@ class InfoAction extends BaseAction
         });
 
         if (count($errors)) {
-            $varsUrl  = sprintf("https://dashboard.fortrabbit.com/apps/%s/vars", getenv('APP_NAME'));
+            $varsUrl  = sprintf("https://dashboard.fortrabbit.com/apps/%s/vars", $app);
             $messages = ["These local ENV vars are not in sync with the remote:"];
 
             foreach ($errors as $key) {

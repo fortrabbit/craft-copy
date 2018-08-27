@@ -4,10 +4,19 @@ namespace fortrabbit\Copy\models;
 
 class StageConfig
 {
+    /**
+     * @var string
+     */
     public $app;
 
+    /**
+     * @var string
+     */
     public $sshRemoteUrl;
 
+    /**
+     * @var string
+     */
     public $gitRemoteName;
 
 

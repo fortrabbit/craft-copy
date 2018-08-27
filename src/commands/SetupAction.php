@@ -26,12 +26,17 @@ class SetupAction extends BaseAction
      * Setup your App
      *
      * @return int
+     * @throws \fortrabbit\Copy\exceptions\CraftNotInstalledException
+     * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
+     * @throws \fortrabbit\Copy\exceptions\RemoteException
      */
     public function run()
     {
-        $this->input->setInteractive(true);
-        $this->app = $this->ask("What's the name of your App?", getenv(Plugin::ENV_NAME_APP));
-        $this->input->setInteractive($this->interactive);
+        if (!$this->app) {
+            $this->input->setInteractive(true);
+            $this->app = $this->ask("What's the name of your App?", getenv(Plugin::ENV_NAME_APP));
+            $this->input->setInteractive($this->interactive);
+        }
 
         if (strlen($this->app) < 3 || strlen($this->app) > 16) {
             $this->errorBlock("Invalid App name.");
@@ -60,7 +65,7 @@ class SetupAction extends BaseAction
             }
         }
 
-        if (!$this->confirm("Do you want to initialize the plugin on the remote?", true)) {
+        if (!$this->confirm("Do you want to install and enable the plugin on the remote?", true)) {
             $this->noteBlock('Abort');
             return ExitCode::UNSPECIFIED_ERROR;
         }
@@ -140,7 +145,6 @@ class SetupAction extends BaseAction
         $plugin = Plugin::getInstance();
         $plugin->ssh->remote = $this->sshUrl;
 
-
         if ($plugin->ssh->exec("ls vendor/bin/craft-copy-installer.php | wc -l")) {
             if (trim($plugin->ssh->getOutput()) != "1") {
                 if ($this->confirm("The plugin is not installed on the remote! Do you want to deploy now?", true)) {
@@ -165,9 +169,9 @@ class SetupAction extends BaseAction
 
         $this->successBlock("Check it in the browser: https://{$this->app}.frb.io");
 
-
         return true;
     }
+
 
     protected function checkAndWrite($message, $success)
     {

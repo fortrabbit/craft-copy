@@ -90,3 +90,28 @@ No remote volumes (S3, Object Storage, ..) so far.
 # Git pull (specific remote)
 ./craft copy/code/down {remote} {branch}
 ```
+
+## Multi Staging
+
+When working with multiple stages, changing the `.env` file manually or calling `craft copy setup` is very inconvenient.
+
+
+### Configuration
+
+Create a `copy.php` config file in your `/config` directory based on this template: [src/config.example.php](src/config.example.php).
+If you are not sure 
+
+### Usage
+
+```
+# Copy code and db down from 'your-test-app'
+php craft copy/code/down --app=your-test-app`
+php craft copy/db/down --app=your-test-app
+
+# Make changes
+# ... 
+
+# Copy code and db up to 'your-prod-app'
+php craft copy/code/up --app=your-prod-app
+php craft copy/db/up --app=your-prod-app
+```

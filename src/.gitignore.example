@@ -4,11 +4,12 @@
 .env
 
 # COMPOSER
-/vendor/
+/vendor
 
 # CRAFT STORAGE
-/storage/*
-!/storage/.gitkeep
+/storage/backups/
+/storage/runtime/
+/storage/logs/
 
 # ASSETS
 /web/assets/
@@ -31,6 +32,9 @@
 *.sublime-workspace
 *.sublime-project
 *.tmproj
+*.sql
+*.log
+web.log.*
 *.tmproject
 .vscode/
 !.vscode/extensions.json

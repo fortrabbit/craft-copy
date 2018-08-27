@@ -2,7 +2,7 @@
     "name": "fortrabbit/craft-copy",
     "description": "Tooling for Craft on fortrabbit",
     "type": "craft-plugin",
-    "version": "1.0.0-beta3",
+    "version": "1.0.0-beta4",
     "keywords": [
         "craft",
         "cms",

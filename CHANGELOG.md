@@ -1,5 +1,17 @@
 #  Changelog
 
+## 1.0.0-beta4 - 2018-08-27
+
+- multi-staging support for `copy/info ` 
+- multi-staging help in README.md
+
+
+## 1.0.0-beta3 - 2018-08-21
+
+- code clean up, thanks @XhmikosR
+- configurable ssh upload & download commands
+- support for multi-staging, see src/config.example.php
+
 ## 1.0.0-beta2 - 2018-05-29
 
 - Fixed broken dependency: ostark/yii2-artisan-bridge
