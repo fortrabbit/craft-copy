@@ -55,7 +55,7 @@ class Plugin extends BasePlugin
     const DASHBOARD_URL = "https://dashboard.fortrabbit.com";
 
     /**
-     * Initialize Plugins
+     * Initialize Plugin
      */
     public function init()
     {

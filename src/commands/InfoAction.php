@@ -85,7 +85,7 @@ class InfoAction extends BaseAction
         });
 
         if (count($errors)) {
-            $varsUrl  = sprintf("https://dashboard.fortrabbit.com/apps/%s/vars", $app);
+            $varsUrl  = sprintf("%s/apps/%s/vars", Plugin::DASHBOARD_URL, $app);
             $messages = ["These local ENV vars are not in sync with the remote:"];
 
             foreach ($errors as $key) {
