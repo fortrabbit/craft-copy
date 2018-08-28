@@ -99,17 +99,16 @@ When working with multiple stages, changing the `.env` file manually or calling 
 ### Configuration
 
 Create a `copy.php` config file in your `/config` directory based on this template: [src/config.example.php](src/config.example.php).
-If you are not sure 
 
 ### Usage
 
-```
+```sh
 # Copy code and db down from 'your-test-app'
-php craft copy/code/down --app=your-test-app`
+php craft copy/code/down --app=your-test-app
 php craft copy/db/down --app=your-test-app
 
 # Make changes
-# ... 
+# ...
 
 # Copy code and db up to 'your-prod-app'
 php craft copy/code/up --app=your-prod-app

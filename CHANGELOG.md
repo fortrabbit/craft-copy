@@ -2,9 +2,8 @@
 
 ## 1.0.0-beta4 - 2018-08-27
 
-- multi-staging support for `copy/info ` 
+- multi-staging support for `copy/info`
 - multi-staging help in README.md
-
 
 ## 1.0.0-beta3 - 2018-08-21
 
