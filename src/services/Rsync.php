@@ -17,13 +17,20 @@ namespace fortrabbit\Copy\services;
  */
 class Rsync
 {
-    public $remote;
+    public $remoteUrl;
 
     protected $rsync;
 
-    protected function __construct(\AFM\Rsync\Rsync $rsync)
+    /**
+     * Rsync constructor.
+     *
+     * @param \AFM\Rsync\Rsync $rsync
+     * @param string           $remoteUrl
+     */
+    protected function __construct(\AFM\Rsync\Rsync $rsync, string $remoteUrl = null)
     {
-        $this->rsync = $rsync;
+        $this->rsync     = $rsync;
+        $this->remoteUrl = $remoteUrl;
     }
 
     public static function remoteFactory($remoteUrl)
@@ -42,7 +49,7 @@ class Rsync
             'username' => $username
         ]);
 
-        return new self($rsync);
+        return new self($rsync, $remoteUrl);
     }
 
     /**

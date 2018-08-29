@@ -36,7 +36,7 @@ class AssetsUpAction extends BaseAction
         $this->section('Copy assets up');
 
         // Info
-        $this->rsyncInfo($dir);
+        $this->rsyncInfo($dir, $plugin->rsync->remoteUrl);
 
         // Ask
         if (!$this->confirm("Are you sure?", true)) {

@@ -9,17 +9,24 @@ use Symfony\Component\Console\Helper\TableSeparator;
  * Trait ConsoleOutputHelper
  *
  * @package fortrabbit\Copy\services
+ *
+ * @property string $app
+ * @property boolean $dryRun
  */
 trait ConsoleOutputHelper
 {
-    public function rsyncInfo(string $dir)
+    /**
+     * @param string      $dir
+     * @param string|null $remoteUrl
+     */
+    public function rsyncInfo(string $dir, string $remoteUrl = null)
     {
         $this->table(
             ['Key', 'Value'],
             [
                 ['Asset directory', $dir],
                 new TableSeparator(),
-                ['SSH remote', getenv(Plugin::ENV_NAME_SSH_REMOTE)],
+                ['SSH remote', $remoteUrl],
                 new TableSeparator(),
                 ['Dry run', $this->dryRun ? 'true' : 'false']
             ]
