@@ -45,6 +45,7 @@ use fortrabbit\Copy\services\Git as GitService;
 class Plugin extends BasePlugin
 {
     const ENV_NAME_APP = "APP_NAME";
+    const ENV_DEFAULT_DEPLOY_ENVIRONMENT = "DEFAULT_DEPLOY_ENVIRONMENT";
     const ENV_NAME_SSH_REMOTE = "APP_SSH_REMOTE";
     const PLUGIN_ROOT_PATH = __DIR__;
     const REGIONS = [
@@ -82,7 +83,8 @@ class Plugin extends BasePlugin
                     'v' => 'verbose',
                     'd' => 'directory',
                     'n' => 'dryRun',
-                    'a' => 'app'
+                    'a' => 'app',
+                    'e' => 'env'
                 ]
             );
 
