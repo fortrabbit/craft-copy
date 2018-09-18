@@ -26,11 +26,6 @@ class Dump extends Component
      */
     public $db;
 
-    public function __construct(array $config = [])
-    {
-        parent::__construct($config);
-    }
-
     /**
      * @param string|null $file
      *

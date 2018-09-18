@@ -11,7 +11,7 @@ use yii\console\ExitCode;
  *
  * @package fortrabbit\DeployTools\commands
  */
-class DbImportAction extends BaseAction
+class DbImportAction extends EnvironmentAwareBaseAction
 {
 
     /**

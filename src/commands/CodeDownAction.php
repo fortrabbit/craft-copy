@@ -6,7 +6,7 @@ use fortrabbit\Copy\Plugin;
 use GitWrapper\GitException;
 use yii\console\ExitCode;
 
-class CodeDownAction extends BaseAction
+class CodeDownAction extends EnvironmentAwareBaseAction
 {
 
     /**

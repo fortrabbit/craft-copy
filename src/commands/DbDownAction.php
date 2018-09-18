@@ -10,7 +10,7 @@ use yii\console\ExitCode;
  *
  * @package fortrabbit\DeployTools\commands
  */
-class DbDownAction extends BaseAction
+class DbDownAction extends EnvironmentAwareBaseAction
 {
     /**
      * Download database

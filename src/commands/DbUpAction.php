@@ -10,7 +10,7 @@ use yii\console\ExitCode;
  *
  * @package fortrabbit\DeployTools\commands
  */
-class DbUpAction extends BaseAction
+class DbUpAction extends EnvironmentAwareBaseAction
 {
     /**
      * Upload database

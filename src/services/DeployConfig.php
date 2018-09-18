@@ -9,17 +9,14 @@
 
 namespace fortrabbit\Copy\services;
 
-
-use Symfony\Component\Yaml\Exception\ParseException as YamlParseException;
+use fortrabbit\Copy\exceptions\DeployConfigNotFoundException;
 use Symfony\Component\Yaml\Yaml;
 use fortrabbit\Copy\models\DeployConfig as DeployConfigModel;
 
 class DeployConfig
 {
 
-    const FILE_NAME = '{env}.copy.yaml';
-
-    const DEFAULT_DEPLOY_ENVIRONMENT = 'production';
+    const FILE_NAME_TEMPLATE = '{env}.copy.yaml';
 
     protected $env = 'production';
 
@@ -40,59 +37,63 @@ class DeployConfig
         }
     }
 
+    /**
+     * @return \fortrabbit\Copy\models\DeployConfig
+     * @throws \fortrabbit\Copy\exceptions\DeployConfigNotFoundException
+     */
     public function get(): DeployConfigModel
     {
         if ($this->config instanceof DeployConfigModel) {
             return $this->config;
         }
 
-        try {
-            $this->config = $this->getConfigDataFromFile();;
-        } catch (\InvalidArgumentException $e) {
-            // file does not exist
-            $this->config = $this->writeConfigDataToFile();
-        } catch (YamlParseException $e) {
-            // invalid yaml
-        }
+        $this->config = $this->getConfigDataFromFile();
 
         return $this->config;
     }
 
 
+    /**
+     * @return string
+     * @throws \yii\base\Exception
+     */
     protected function getFullPathToConfig()
     {
-        $file = str_replace('{env}', $this->env, self::FILE_NAME);
+        $file = str_replace('{env}', $this->env, self::FILE_NAME_TEMPLATE);
 
         return \Craft::$app->getPath()->getConfigPath() . DIRECTORY_SEPARATOR . $file;
     }
 
+
     /**
      * @return \fortrabbit\Copy\models\DeployConfig
+     * @throws \fortrabbit\Copy\exceptions\DeployConfigNotFoundException
      */
     protected function getConfigDataFromFile(): DeployConfigModel
     {
         $fullPath = $this->getFullPathToConfig();
+
         if (!file_exists($fullPath)) {
-            throw new \InvalidArgumentException("File '$fullPath' does not exist");
+            throw new DeployConfigNotFoundException();
         }
 
         $data = Yaml::parse(file_get_contents($fullPath));
 
-        return new \fortrabbit\Copy\models\DeployConfig($data);
+        return new DeployConfigModel($data);
 
     }
 
     /**
+     * @param \fortrabbit\Copy\models\DeployConfig $config
+     *
      * @return bool
+     * @throws \yii\base\Exception
      */
-    protected function persist(): bool
+    public function persist(DeployConfigModel $config): bool
     {
-        if (!$this->config instanceof DeployConfigModel) {
-            return false;
-        }
-
-        $yaml     = Yaml::dump($this->config->toArray());
-        $fullPath = $this->getFullPathToConfig();
+        $this->config = $config;
+        $yaml         = Yaml::dump($this->config->toArray());
+        $fullPath     = $this->getFullPathToConfig();
 
         if (file_put_contents($fullPath, $yaml)) {
             return true;

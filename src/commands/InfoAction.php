@@ -6,7 +6,7 @@ use fortrabbit\Copy\Plugin;
 use Symfony\Component\Console\Helper\TableSeparator;
 use yii\console\ExitCode;
 
-class InfoAction extends BaseAction
+class InfoAction extends EnvironmentAwareBaseAction
 {
     private $remoteInfo = [];
 

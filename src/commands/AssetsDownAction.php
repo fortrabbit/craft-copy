@@ -12,7 +12,7 @@ use yii\console\ExitCode;
  *
  * @package fortrabbit\Copy\commands
  */
-class AssetsDownAction extends BaseAction
+class AssetsDownAction extends EnvironmentAwareBaseAction
 {
     public $dryRun = false;
 
