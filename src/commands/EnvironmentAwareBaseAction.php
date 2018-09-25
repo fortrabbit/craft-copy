@@ -34,7 +34,21 @@ abstract class EnvironmentAwareBaseAction extends Action
             Plugin::getInstance()->config->setDeployEnviroment($this->env);
             $this->config = Plugin::getInstance()->config->get();
         } catch (DeployConfigNotFoundException $exception) {
-            $this->errorBlock(["Unable to find deploy config for '{$this->env}' environment."]);
+
+            $envs = Plugin::getInstance()->config->getConfigOptions();
+
+            if (count($envs) === 0) {
+                $this->errorBlock("The plugin is not configured yet.");
+                $this->line('Run the setup command first:' . PHP_EOL);
+                $this->output->type('php craft copy/setup' . PHP_EOL, 'fg=white', 20);
+
+                return false;
+            }
+
+            if ($this->env) {
+                $this->errorBlock(["Unable to find deploy config for '{$this->env}' environment."]);
+            }
+
             return false;
         }
 

@@ -146,24 +146,6 @@ class SetupAction extends \ostark\Yii2ArtisanBridge\base\Action
 
     }
 
-    /**
-     *
-     * @throws \yii\base\Exception
-     */
-    protected function writeDotEnv()
-    {
-        $vars = [
-            Plugin::ENV_NAME_APP        => $this->app,
-            Plugin::ENV_NAME_SSH_REMOTE => $this->sshUrl
-        ];
-
-        $config = \Craft::$app->getConfig();
-
-        foreach ($vars as $name => $value) {
-            $config->setDotEnvVar($name, $value);
-            putenv("$name=$value");
-        }
-    }
 
     /**
      * @return bool
@@ -173,9 +155,8 @@ class SetupAction extends \ostark\Yii2ArtisanBridge\base\Action
      */
     protected function setupRemote()
     {
-        $plugin              = Plugin::getInstance();
-        $plugin->ssh->remote = $plugin->config->get()->sshUrl;
-        $app                 = $plugin->config->get()->name;
+        $plugin = Plugin::getInstance();
+        $app    = $plugin->config->get()->name;
 
         if ($plugin->ssh->exec("ls vendor/bin/craft-copy-installer.php | wc -l")) {
             if (trim($plugin->ssh->getOutput()) != "1") {

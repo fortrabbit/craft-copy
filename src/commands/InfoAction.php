@@ -23,16 +23,8 @@ class InfoAction extends EnvironmentAwareBaseAction
 
         $this->section('Environment check');
 
-        $app = $this->app ?: getenv(Plugin::ENV_NAME_APP);
+        $app = $this->config->name;
 
-        // Continue if ssh remote is set
-        if (!$plugin->ssh->remote) {
-            $this->errorBlock("The SSH remote is not configured yet.");
-            $this->line('Run the setup command first:' . PHP_EOL);
-            $this->output->type('php craft copy/setup' . PHP_EOL, 'fg=white', 20);
-
-            return ExitCode::UNSPECIFIED_ERROR;
-        }
 
         // Get environment info from remote
         try {

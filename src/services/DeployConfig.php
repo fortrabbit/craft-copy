@@ -52,6 +52,25 @@ class DeployConfig
         return $this->config;
     }
 
+    /**
+     * @return array
+     * @throws \yii\base\Exception
+     */
+    public function getConfigOptions() : array
+    {
+        $file    = str_replace('{env}', '*', self::FILE_NAME_TEMPLATE);
+        $suffix =  str_replace('{env}', '', self::FILE_NAME_TEMPLATE);
+        $pattern = \Craft::$app->getPath()->getConfigPath() . DIRECTORY_SEPARATOR . $file;
+
+        // get config files
+        $files = glob($pattern);
+
+        // extract the 'envs'
+        return array_map(function ($path) use ($suffix){
+            return basename($path, $suffix);
+        }, $files);
+
+    }
 
     /**
      * @return string
