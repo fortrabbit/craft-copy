@@ -26,7 +26,7 @@
         "albertofem/rsync-lib": "^1.0.0",
         "cpliakas/git-wrapper": "^2.0",
         "craftcms/cms": "^3.0.0",
-        "ostark/yii2-artisan-bridge": "^1.1.1",
+        "ostark/yii2-artisan-bridge": "dev-master",
         "symfony/process": "^4.1",
         "vlucas/phpdotenv": "^2.5.1",
         "symfony/yaml": "^4.1"
@@ -56,5 +56,11 @@
     "bin": [
         "bin/craft-copy-installer.php",
         "bin/craft-copy-env.php"
+    ],
+    "repositories": [
+      {
+        "type": "vcs",
+        "url": "https://github.com/ostark/yii2-artisan-bridge"
+      }
     ]
 }

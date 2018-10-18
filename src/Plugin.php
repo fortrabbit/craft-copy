@@ -19,7 +19,8 @@ use fortrabbit\Copy\services\DeployConfig;
 use fortrabbit\Copy\services\Git;
 use fortrabbit\Copy\services\Rsync;
 
-use fortrabbit\Copy\helpers\ArtisanStyleCommands as Commands;
+use ostark\Yii2ArtisanBridge\ActionGroup;
+use ostark\Yii2ArtisanBridge\Bridge;
 
 use yii\console\Application as ConsoleApplication;
 
@@ -64,10 +65,8 @@ class Plugin extends BasePlugin
 
         if (Craft::$app instanceof ConsoleApplication) {
 
-            // Register console commands
-            Commands::register(
-                'copy',
-                [
+            $group = (new ActionGroup('copy', 'Copy Craft between environments.'))
+                ->setActions([
                     'assets/up'    => AssetsUpAction::class,
                     'assets/down'  => AssetsDownAction::class,
                     'code/up'      => CodeUpAction::class,
@@ -78,17 +77,19 @@ class Plugin extends BasePlugin
                     'db/from-file' => DbImportAction::class,
                     'setup'        => SetupAction::class,
                     'info'         => InfoAction::class
-                ],
-                [
-                    'v' => 'verbose',
-                    'd' => 'directory',
-                    'n' => 'dryRun',
-                    'a' => 'app',
-                    'e' => 'env'
-                ]
-            );
+                ])
+                ->setDefaultAction('info')
+                ->setOptions([
+                        'v' => 'verbose',
+                        'd' => 'directory',
+                        'n' => 'dryRun',
+                        'a' => 'app',
+                        'e' => 'env'
+                    ]
+                );
 
-            Commands::setDefaultAction('copy', 'info');
+            // Register console commands
+            Bridge::registerGroup($group);
 
             // Register services
             $this->setComponents([
