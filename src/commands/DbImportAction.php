@@ -2,8 +2,10 @@
 
 namespace fortrabbit\Copy\commands;
 
+use craft\errors\ShellCommandException;
 use craft\helpers\FileHelper;
 use fortrabbit\Copy\Plugin;
+use yii\base\Exception;
 use yii\console\ExitCode;
 
 /**
@@ -34,7 +36,8 @@ class DbImportAction extends BaseAction
 
         $this->info("Importing DB Dump from '{$file}'");
 
-        if ($file = Plugin::getInstance()->dump->import($file)) {
+        try {
+            $file = Plugin::getInstance()->dump->import($file);
             $this->successBlock("Dump imported");
 
             if (!$this->confirm("Do you really want to remove the {$file} file?", true)) {
@@ -46,6 +49,19 @@ class DbImportAction extends BaseAction
             }
 
             return ExitCode::OK;
+
+
+        } catch (ShellCommandException $exception) {
+
+            $this->errorBlock(['Mysql Import error', $exception->getMessage()]);
+            return ExitCode::UNSPECIFIED_ERROR;
+
+        } catch (Exception $exception) {
+
+            $this->errorBlock([$exception->getMessage()]);
+            return ExitCode::UNSPECIFIED_ERROR;
+
         }
+
     }
 }
