@@ -26,6 +26,10 @@ abstract class EnvironmentAwareBaseAction extends Action
 
     public function beforeRun()
     {
+
+        // see bindActionParams()
+        //var_dump([\Yii::$app->requestedParams, \Yii::$app->catchAll]);
+
         $this->env = is_string($this->env)
             ? $this->env
             : getenv(Plugin::ENV_DEPLOY_ENVIRONMENT);
