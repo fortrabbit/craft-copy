@@ -7,18 +7,22 @@ use fortrabbit\Copy\services\Git;
 use GitWrapper\GitException;
 use yii\console\ExitCode;
 
-class CodeUpAction extends EnvironmentAwareBaseAction
+class CodeUpAction extends ConfigAwareBaseAction
 {
 
     /**
      * Git push
      *
+     * @param string|null $config Name of the deploy config
+     *
      * @return int
      * @throws \Exception
      */
-    public function run()
+    public function run(string $config = null)
     {
-        $git = Plugin::getInstance()->git;
+        $this->head("Deploy recent code changes", $this->config->app);
+
+        $git = $this->plugin->git;
         $git->getWorkingCopy()->init();
         $git->assureDotGitignore();
 
@@ -26,7 +30,7 @@ class CodeUpAction extends EnvironmentAwareBaseAction
         $branch        = $git->getLocalHead();
 
         if (count($localBranches) > 1) {
-            $branch = str_replace('* ', '', $this->choice('Select a local branch:', $localBranches, $branch));
+            $branch = str_replace('* ', '', $this->choice('Select a local branch (checkout):', $localBranches, $branch));
             $git->run('checkout', $branch);
         }
 
@@ -62,6 +66,10 @@ class CodeUpAction extends EnvironmentAwareBaseAction
             $msg = 'empty commit';
         }
 
+        // Run 'before' commands and stop on error
+        if (!$this->runBeforeDeployCommands()) {
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
 
         try {
             $this->section("git push ($msg)");
@@ -94,9 +102,9 @@ class CodeUpAction extends EnvironmentAwareBaseAction
     {
         // Non
         if (!$remotes = $git->getRemotes()) {
-            $remote = getenv(Plugin::ENV_NAME_SSH_REMOTE);
-            if ($this->confirm("No remotes configured. Do you want to add '{$remote}'?")) {
-                return $git->addRemote($remote);
+            $sshUrl = $this->config->sshUrl;
+            if ($this->confirm("No remotes configured. Do you want to add '{$sshUrl}'?")) {
+                return $git->addRemote($sshUrl);
             }
         }
 
@@ -106,11 +114,9 @@ class CodeUpAction extends EnvironmentAwareBaseAction
         }
 
         // Use configured remote
-        if (is_string($this->app)) {
-            $remote = Plugin::getInstance()->getSettings()->getStageConfig($this->app)->gitRemoteName;
-            if (in_array($remote, array_keys($remotes))) {
-                return $remote;
-            }
+        $upstream = explode('/', $this->config->gitRemote)[0];
+        if (in_array($upstream, array_keys($remotes))) {
+            return $upstream;
         }
 
         // Multiple

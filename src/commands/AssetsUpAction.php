@@ -12,7 +12,7 @@ use yii\console\ExitCode;
  *
  * @package fortrabbit\Copy\commands
  */
-class AssetsUpAction extends EnvironmentAwareBaseAction
+class AssetsUpAction extends ConfigAwareBaseAction
 {
     public $dryRun = false;
 
@@ -24,11 +24,12 @@ class AssetsUpAction extends EnvironmentAwareBaseAction
     /**
      * Upload Assets
      *
+     * @param string|null $config Name of the deploy config
      * @param string $dir Directory, relative to the project root
      *
      * @return int
      */
-    public function run($dir = 'web/assets')
+    public function run(string $config = null, $dir = 'web/assets')
     {
         $plugin = Plugin::getInstance();
         $dir    = $this->prepareForRsync($dir);
@@ -49,7 +50,12 @@ class AssetsUpAction extends EnvironmentAwareBaseAction
 
         // Type cmd
         if ($this->verbose) {
-            $this->output->type($plugin->rsync->getCommand($dir), "fg=white", 50);
+            $this->cmdBlock($plugin->rsync->getCommand($dir));
+        }
+
+        // Run 'before' commands and stop on error
+        if (!$this->runBeforeDeployCommands()) {
+            return ExitCode::UNSPECIFIED_ERROR;
         }
 
         // Execute

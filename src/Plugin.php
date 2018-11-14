@@ -20,8 +20,12 @@ use fortrabbit\Copy\services\Git;
 use fortrabbit\Copy\services\Rsync;
 
 use ostark\Yii2ArtisanBridge\ActionGroup;
+use ostark\Yii2ArtisanBridge\base\Commands;
 use ostark\Yii2ArtisanBridge\Bridge;
 
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use yii\base\ActionEvent;
+use yii\base\Event;
 use yii\console\Application as ConsoleApplication;
 
 use fortrabbit\Copy\services\Ssh as SshService;
@@ -47,6 +51,8 @@ class Plugin extends BasePlugin
 {
     const ENV_NAME_APP = "APP_NAME";
     const ENV_DEPLOY_ENVIRONMENT = "DEPLOY_ENVIRONMENT";
+    const ENV_DEFAULT_CONFIG = "DEFAULT_CONFIG";
+
     const ENV_NAME_SSH_REMOTE = "APP_SSH_REMOTE";
     const PLUGIN_ROOT_PATH = __DIR__;
     const REGIONS = [
@@ -108,8 +114,14 @@ class Plugin extends BasePlugin
                 },
             ]);
 
-            // Inject $db Connection
-            //$this->dump->db = \Craft::$app->getDb();
+            Event::on(
+                Commands::class,
+                Commands::EVENT_BEFORE_ACTION,
+                function (ActionEvent $event) {
+                    $style = new OutputFormatterStyle('blue');
+                    $event->action->output->getFormatter()->setStyle('comment', $style);
+                }
+            );
 
         }
     }

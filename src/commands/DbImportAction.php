@@ -4,6 +4,7 @@ namespace fortrabbit\Copy\commands;
 
 use craft\helpers\FileHelper;
 use fortrabbit\Copy\Plugin;
+use ostark\Yii2ArtisanBridge\base\Action;
 use yii\console\ExitCode;
 
 /**
@@ -11,17 +12,20 @@ use yii\console\ExitCode;
  *
  * @package fortrabbit\DeployTools\commands
  */
-class DbImportAction extends EnvironmentAwareBaseAction
+class DbImportAction extends Action
 {
 
     /**
      * Import database
      *
-     * @param string $file Import a sql dump
+     * @param string|null $file Filename of the sql dump
      *
      * @return int
+     * @throws \craft\errors\FileException
+     * @throws \craft\errors\ShellCommandException
+     * @throws \yii\base\Exception
      */
-    public function run(string $file)
+    public function run(string $file = null)
     {
         if (!file_exists($file)) {
             $this->errorBlock("File '{$file}' does not exist.");

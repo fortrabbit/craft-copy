@@ -10,21 +10,24 @@ use yii\console\ExitCode;
  *
  * @package fortrabbit\DeployTools\commands
  */
-class DbDownAction extends EnvironmentAwareBaseAction
+class DbDownAction extends ConfigAwareBaseAction
 {
     /**
      * Download database
      *
+     * @param string|null $config Name of the deploy config
+     *
      * @return int
      *
+     *
+     * @throws \craft\errors\FileException
      * @throws \craft\errors\ShellCommandException
      * @throws \fortrabbit\Copy\exceptions\CraftNotInstalledException
      * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
      * @throws \fortrabbit\Copy\exceptions\RemoteException
      * @throws \yii\base\Exception
-     * @throws \yii\console\Exception
      */
-    public function run()
+    public function run(string $config = null)
     {
         $plugin       = Plugin::getInstance();
         $path         = './storage/';
@@ -33,11 +36,14 @@ class DbDownAction extends EnvironmentAwareBaseAction
         $steps        = 4;
         $messages     = [];
 
-        $app = $this->app ?: getenv(Plugin::ENV_NAME_APP);
-
-        $this->section("Export remote DB - import locally: $app");
+        $this->section("Export remote DB - import locally: {$this->config->app}");
 
         if (!$this->confirm("Are you sure?", true)) {
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+
+        // Run 'before' commands and stop on error
+        if (!$this->runBeforeDeployCommands()) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 

@@ -6,41 +6,43 @@ use fortrabbit\Copy\Plugin;
 use GitWrapper\GitException;
 use yii\console\ExitCode;
 
-class CodeDownAction extends EnvironmentAwareBaseAction
+class CodeDownAction extends ConfigAwareBaseAction
 {
 
     /**
      * Git pull
      *
-     * @param string $remote
+     * @param string|null $config Name of the deploy config
      * @param string $remoteBranch
      *
      * @return int
      */
-    public function run(string $remote = null, $remoteBranch = 'master')
+    public function run(string $config = null, $remoteBranch = 'master')
     {
-        $git = Plugin::getInstance()->git;
+        $git = $this->plugin->git;
         $git->getWorkingCopy()->init();
 
         $localBranches = $git->getLocalBranches();
         $branch        = $git->getLocalHead();
 
         if (count($localBranches) > 1) {
-            $branch = str_replace('* ', '', $this->choice('Select a local branch:', $localBranches, $branch));
+            $branch = str_replace('* ', '', $this->choice('Select a local branch (checkout):', $localBranches, $branch));
             $git->run('checkout', $branch);
         }
 
-        // Use configured remote
-        if (is_string($this->app) && is_null($remote)) {
-            $remote = Plugin::getInstance()->getSettings()->getStageConfig($this->app)->gitRemoteName;
+        // Run 'before' commands and stop on error
+        if (!$this->runBeforeDeployCommands()) {
+            return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        $remote = $remote ?: $git->getTracking();
+        // Use configured remote
+        $remote = $this->config->gitRemote ?: $git->getTracking(true);
+        [$upstream, $branch] = explode('/', $remote);
 
         try {
-            $this->section("git pull ($remote/$remoteBranch)");
+            $this->section("git pull ($upstream/$branch)");
             $git->getWorkingCopy()->getWrapper()->streamOutput();
-            $git->pull($remote, $remoteBranch);
+            $git->pull($upstream, $branch);
         } catch (GitException $exception) {
             $lines = count(explode(PHP_EOL, $exception->getMessage()));
             $this->output->write(str_repeat("\x1B[1A\x1B[2K", $lines));

@@ -32,4 +32,24 @@ trait ConsoleOutputHelper
             ]
         );
     }
+
+    /**
+     * Formats a command comment.
+     *
+     * @param string|array $message
+     */
+    public function cmdBlock($cmd)
+    {
+        $here = str_replace(getenv("HOME"),'~',getcwd());
+        $this->block($cmd, null, null, '<fg=blue;bg=default><fg=white>'.$here.' $</> </>', false, false);
+    }
+
+    public function head($message, $context = null, $clear = true)
+    {
+        if ($clear) {
+            $this->output->write(sprintf("\033\143"));
+        }
+
+        $this->block($message, $context, 'fg=white;', '▶ ', false, false);
+    }
 }

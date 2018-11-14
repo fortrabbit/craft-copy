@@ -16,9 +16,9 @@ use fortrabbit\Copy\models\DeployConfig as DeployConfigModel;
 class DeployConfig
 {
 
-    const FILE_NAME_TEMPLATE = '{env}.copy.yaml';
+    const FILE_NAME_TEMPLATE = '{name}.copy.yaml';
 
-    protected $env = 'production';
+    protected $name = 'production';
 
     /**
      * @var \fortrabbit\Copy\services\DeployConfig $config
@@ -26,14 +26,14 @@ class DeployConfig
     protected $config;
 
     /**
-     * @param string $env
+     * @param string $name
      */
-    public function setDeployEnviroment(string $env)
+    public function setName(string $name)
     {
-        if ($this->env !== $env) {
-            // reset config if the env has changed
+        if ($this->name !== $name) {
+            // reset config if the config name has changed
             $this->config = null;
-            $this->env    = $env;
+            $this->name   = $name;
         }
     }
 
@@ -56,49 +56,18 @@ class DeployConfig
      * @return array
      * @throws \yii\base\Exception
      */
-    public function getConfigOptions() : array
+    public function getConfigOptions(): array
     {
-        $file    = str_replace('{env}', '*', self::FILE_NAME_TEMPLATE);
-        $suffix =  str_replace('{env}', '', self::FILE_NAME_TEMPLATE);
-        $pattern = \Craft::$app->getPath()->getConfigPath() . DIRECTORY_SEPARATOR . $file;
+        $globPattern = str_replace('{name}', '*', self::FILE_NAME_TEMPLATE);
+        $suffix      = str_replace('{name}', '', self::FILE_NAME_TEMPLATE);
 
         // get config files
-        $files = glob($pattern);
+        $files = glob(\Craft::$app->getPath()->getConfigPath() . DIRECTORY_SEPARATOR . $globPattern);
 
-        // extract the 'envs'
-        return array_map(function ($path) use ($suffix){
+        // extract the prefix of the existing config files
+        return array_map(function ($path) use ($suffix) {
             return basename($path, $suffix);
         }, $files);
-
-    }
-
-    /**
-     * @return string
-     * @throws \yii\base\Exception
-     */
-    protected function getFullPathToConfig()
-    {
-        $file = str_replace('{env}', $this->env, self::FILE_NAME_TEMPLATE);
-
-        return \Craft::$app->getPath()->getConfigPath() . DIRECTORY_SEPARATOR . $file;
-    }
-
-
-    /**
-     * @return \fortrabbit\Copy\models\DeployConfig
-     * @throws \fortrabbit\Copy\exceptions\DeployConfigNotFoundException
-     */
-    protected function getConfigDataFromFile(): DeployConfigModel
-    {
-        $fullPath = $this->getFullPathToConfig();
-
-        if (!file_exists($fullPath)) {
-            throw new DeployConfigNotFoundException();
-        }
-
-        $data = Yaml::parse(file_get_contents($fullPath));
-
-        return new DeployConfigModel($data);
 
     }
 
@@ -119,6 +88,35 @@ class DeployConfig
         }
 
         return false;
+
+    }
+
+    /**
+     * @return string
+     * @throws \yii\base\Exception
+     */
+    public function getFullPathToConfig()
+    {
+        $file = str_replace('{name}', $this->name, self::FILE_NAME_TEMPLATE);
+
+        return \Craft::$app->getPath()->getConfigPath() . DIRECTORY_SEPARATOR . $file;
+    }
+
+    /**
+     * @return \fortrabbit\Copy\models\DeployConfig
+     * @throws \fortrabbit\Copy\exceptions\DeployConfigNotFoundException
+     */
+    protected function getConfigDataFromFile(): DeployConfigModel
+    {
+        $fullPath = $this->getFullPathToConfig();
+
+        if (!file_exists($fullPath)) {
+            throw new DeployConfigNotFoundException();
+        }
+
+        $data = Yaml::parse(file_get_contents($fullPath));
+
+        return new DeployConfigModel($data);
 
     }
 

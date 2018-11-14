@@ -7,13 +7,12 @@ use craft\helpers\StringHelper;
 
 class DeployConfig extends Model
 {
-    public $name;
+    public $app;
     public $sshUrl;
+    public $sshPath;
     public $gitRemote;
-    public $beforeCodeUp = [];
-    public $beforeAssetsUp = [];
-    public $afterCodeDown = [];
-    public $afterAssetsDown = [];
+    public $before = [];
+    public $after = [];
 
     /**
      * DeployConfig constructor.
@@ -24,7 +23,7 @@ class DeployConfig extends Model
     {
         foreach ($config as $key => $value) {
             unset($config[$key]);
-            $array[StringHelper::toCamelCase($key)] = $value;
+            $config[StringHelper::toCamelCase($key)] = $value;
         }
         parent::__construct($config);
     }

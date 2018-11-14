@@ -3,9 +3,9 @@
 namespace fortrabbit\Copy\commands;
 
 use Craft;
-use craft\helpers\StringHelper;
 use fortrabbit\Copy\models\DeployConfig;
 use fortrabbit\Copy\Plugin;
+use ostark\Yii2ArtisanBridge\base\Action;
 use Symfony\Component\Process\Process;
 use yii\console\ExitCode;
 use yii\helpers\Inflector;
@@ -15,7 +15,7 @@ use yii\helpers\Inflector;
  *
  * @package fortrabbit\Copy\commands
  */
-class SetupAction extends \ostark\Yii2ArtisanBridge\base\Action
+class SetupAction extends Action
 {
 
     /**
@@ -52,10 +52,10 @@ class SetupAction extends \ostark\Yii2ArtisanBridge\base\Action
         }
 
 
-        $env = $this->anticipate("What's the environment?", ['production', 'staging'], 'production');
+        $configName = $this->anticipate("What's the environment?", ['production', 'staging'], 'production');
 
         // TODO: check if yaml exist
-        $config = $this->writeDeployConfig($app, $region, Inflector::slug($env));
+        $config = $this->writeDeployConfig($app, $region, Inflector::slug($configName));
 
         // Perform exec checks
         $this->checkAndWrite("Testing DNS - " . Plugin::REGIONS[$region], true);
@@ -125,19 +125,19 @@ class SetupAction extends \ostark\Yii2ArtisanBridge\base\Action
      * @return \fortrabbit\Copy\models\DeployConfig
      * @throws \yii\base\Exception
      */
-    protected function writeDeployConfig($app, $region, $env)
+    protected function writeDeployConfig($app, $region, $configName)
     {
         $config            = new DeployConfig();
-        $config->name      = $app;
+        $config->app       = $app;
         $config->sshUrl    = "{$app}@deploy.{$region}.frbit.com";
         $config->gitRemote = "$app/master";
 
         // Write yaml
-        Plugin::getInstance()->config->setDeployEnviroment($env);
+        Plugin::getInstance()->config->setName($configName);
         Plugin::getInstance()->config->persist($config);
 
         // Write .env
-        foreach ([Plugin::ENV_DEPLOY_ENVIRONMENT => $env] as $name => $value) {
+        foreach ([Plugin::ENV_DEFAULT_CONFIG => $configName] as $name => $value) {
             \Craft::$app->getConfig()->setDotEnvVar($name, $value);
             putenv("$name=$value");
         }

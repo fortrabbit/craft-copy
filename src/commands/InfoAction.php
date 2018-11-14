@@ -6,7 +6,7 @@ use fortrabbit\Copy\Plugin;
 use Symfony\Component\Console\Helper\TableSeparator;
 use yii\console\ExitCode;
 
-class InfoAction extends EnvironmentAwareBaseAction
+class InfoAction extends ConfigAwareBaseAction
 {
     private $remoteInfo = [];
 
@@ -15,16 +15,23 @@ class InfoAction extends EnvironmentAwareBaseAction
     /**
      * Environment check
      *
-     * @return int
+     * @param string|null $config Name of the deploy config
+     *
      */
-    public function run()
+    public function run(string $config = null)
     {
+        // TODO: for each deploy condig
+
         $plugin = Plugin::getInstance();
 
         $this->section('Environment check');
 
-        $app = $this->config->name;
+        $app = $this->config->app;
 
+        // Run 'before' commands and stop on error
+        if (!$this->runBeforeDeployCommands()) {
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
 
         // Get environment info from remote
         try {
