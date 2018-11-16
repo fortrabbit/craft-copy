@@ -68,7 +68,6 @@ class Plugin extends BasePlugin
         parent::init();
 
         if (Craft::$app instanceof ConsoleApplication) {
-
             $group = (new ActionGroup('copy', 'Copy Craft between environments.'))
                 ->setActions([
                     'assets/up'    => AssetsUpAction::class,
@@ -83,7 +82,8 @@ class Plugin extends BasePlugin
                     'info'         => InfoAction::class
                 ])
                 ->setDefaultAction('info')
-                ->setOptions([
+                ->setOptions(
+                    [
                         'v' => 'verbose',
                         'd' => 'directory',
                         'n' => 'dryRun',
@@ -113,15 +113,19 @@ class Plugin extends BasePlugin
             ]);
 
             Event::on(
+            /**
+             * @param \yii\base\ActionEvent $event
+             */
                 Commands::class,
                 Commands::EVENT_BEFORE_ACTION,
                 function (ActionEvent $event) {
+                    /** @var \ostark\Yii2ArtisanBridge\base\Action $action */
+                    $action = $event->action;
                     $style = new OutputFormatterStyle('blue');
-                    $event->action->output->getFormatter()->setStyle('comment', $style);
-                    $event->action->output->getFormatter()->setStyle('info', $style);
+                    $action->output->getFormatter()->setStyle('comment', $style);
+                    $action->output->getFormatter()->setStyle('info', $style);
                 }
             );
-
         }
     }
 
@@ -135,6 +139,4 @@ class Plugin extends BasePlugin
     {
         return new Model();
     }
-
-
 }

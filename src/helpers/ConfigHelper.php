@@ -7,7 +7,6 @@ use Symfony\Component\Process\Process;
 
 trait ConfigHelper
 {
-
     use ConsoleOutputHelper;
 
     /**
@@ -30,7 +29,6 @@ trait ConfigHelper
         return \Yii::$app->requestedParams[0]
             ?? getenv(Plugin::ENV_DEFAULT_CONFIG)
                 ?: 'production';
-
     }
 
 
@@ -44,18 +42,19 @@ trait ConfigHelper
         return $this->runDeployCommands('after');
     }
 
+
     /**
-     * @param $when
+     * @param string $when
      *
      * @return bool
      */
-    protected function runDeployCommands($when)
+    protected function runDeployCommands(string $when)
     {
         $action   = str_replace('copy/', '', $this->controller->id . '/' . $this->id);
         $actions  = $this->config->$when;
-        $commands = $actions[$action] ?? [];
+        $scripts = $actions[$action] ?? [];
 
-        if (count($actions) === 0 || count($commands) === 0) {
+        if (count($actions) === 0 || count($scripts) === 0) {
             return true;
         }
 
@@ -65,9 +64,9 @@ trait ConfigHelper
             false
         );
 
-        foreach ($commands as $command) {
-            $this->cmdBlock(" $command");
-            $process = new Process($command);
+        foreach ($scripts as $script) {
+            $this->cmdBlock(" $script");
+            $process = new Process($script);
             $process->run();
             if (!$process->isSuccessful()) {
                 $this->errorBlock($process->getErrorOutput());
@@ -99,7 +98,5 @@ trait ConfigHelper
         }
 
         return false;
-
     }
-
 }

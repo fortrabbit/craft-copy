@@ -52,7 +52,6 @@ abstract class ConfigAwareBaseAction extends Action
 
         // No deploy config files found?
         if (count($this->plugin->config->getConfigOptions()) === 0) {
-
             $this->errorBlock('The plugin is not configured yet. Make sure to run this setup command first:');
             $this->cmdBlock("php craft copy/setup");
 
@@ -70,7 +69,6 @@ abstract class ConfigAwareBaseAction extends Action
             $this->plugin->config->setName($configName);
             $this->config = Plugin::getInstance()->config->get();
         } catch (DeployConfigNotFoundException $exception) {
-
             $configFile = $this->plugin->config->getFullPathToConfig();
             $this->errorBlock(["Unable to find deploy config file '{$configFile}'"]);
 
@@ -86,15 +84,12 @@ abstract class ConfigAwareBaseAction extends Action
             Controller::class,
             Controller::EVENT_AFTER_ACTION,
             function (ActionEvent $event) {
-               if ($event->result == ExitCode::OK) {
-                   $this->runAfterDeployCommands();
-               }
+                if ($event->result == ExitCode::OK) {
+                    $this->runAfterDeployCommands();
+                }
             }
         );
 
         return true;
     }
-
-
-
 }

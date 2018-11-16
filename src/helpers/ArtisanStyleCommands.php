@@ -11,7 +11,6 @@ use ostark\Yii2ArtisanBridge\base\Commands;
  */
 class ArtisanStyleCommands extends Commands
 {
-
     public function getHelpSummary()
     {
         return 'Copy Craft between environments.';

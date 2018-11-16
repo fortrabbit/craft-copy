@@ -15,13 +15,12 @@ use fortrabbit\Copy\models\DeployConfig as DeployConfigModel;
 
 class DeployConfig
 {
-
     const FILE_NAME_TEMPLATE = '{name}.copy.yaml';
 
     protected $name = 'production';
 
     /**
-     * @var \fortrabbit\Copy\services\DeployConfig $config
+     * @var \fortrabbit\Copy\models\DeployConfig | null $config
      */
     protected $config;
 
@@ -31,7 +30,8 @@ class DeployConfig
     public function setName(string $name)
     {
         if ($this->name !== $name) {
-            // reset config if the config name has changed
+            // reset config
+            // if the config name has changed
             $this->config = null;
             $this->name   = $name;
         }
@@ -68,7 +68,6 @@ class DeployConfig
         return array_map(function ($path) use ($suffix) {
             return basename($path, $suffix);
         }, $files);
-
     }
 
     /**
@@ -88,7 +87,6 @@ class DeployConfig
         }
 
         return false;
-
     }
 
     /**
@@ -119,7 +117,5 @@ class DeployConfig
         $model->setName($this->name);
 
         return $model;
-
     }
-
 }

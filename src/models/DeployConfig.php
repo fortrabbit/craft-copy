@@ -70,5 +70,4 @@ class DeployConfig extends Model
     {
         return $this->name;
     }
-
 }

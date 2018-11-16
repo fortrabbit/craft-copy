@@ -3,6 +3,7 @@
 namespace fortrabbit\Copy\commands;
 
 use Craft;
+use fortrabbit\Copy\helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\models\DeployConfig;
 use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
@@ -24,6 +25,8 @@ class SetupAction extends Action
     public $verbose = false;
 
     protected $sshUrl;
+
+    use ConsoleOutputHelper;
 
     /**
      * Setup your App
@@ -117,15 +120,16 @@ class SetupAction extends Action
         return ($exitCode == 0) ? true : false;
     }
 
+
     /**
-     * @param $app
-     * @param $region
-     * @param $env
+     * @param string $app
+     * @param string $region
+     * @param string $configName
      *
      * @return \fortrabbit\Copy\models\DeployConfig
      * @throws \yii\base\Exception
      */
-    protected function writeDeployConfig($app, $region, $configName)
+    protected function writeDeployConfig(string $app, string $region, string $configName)
     {
         $config            = new DeployConfig();
         $config->app       = $app;
@@ -143,7 +147,6 @@ class SetupAction extends Action
         }
 
         return $config;
-
     }
 
 
@@ -156,11 +159,12 @@ class SetupAction extends Action
     protected function setupRemote()
     {
         $plugin = Plugin::getInstance();
-        $app    = $plugin->config->get()->name;
+        $app    = $plugin->config->get()->app;
 
         if ($plugin->ssh->exec("ls vendor/bin/craft-copy-installer.php | wc -l")) {
             if (trim($plugin->ssh->getOutput()) != "1") {
-                if ($this->confirm("The plugin is not installed on the remote! Do you want to deploy now?", true)) {
+                if ($this->confirm("The plugin is not installed with your App! Do you want to deploy now?", true)) {
+                    $this->cmdBlock('copy/code/up');
                     if (Craft::$app->runAction('copy/code/up', ['interactive' => $this->interactive]) != 0) {
                         return false;
                     }
@@ -174,8 +178,7 @@ class SetupAction extends Action
             $this->output->write($plugin->ssh->getOutput());
         };
 
-        $this->output->type('php craft copy/db/up');
-
+        $this->cmdBlock('php craft copy/db/up');
         if (Craft::$app->runAction('copy/db/up', ['interactive' => $this->interactive]) != 0) {
             return false;
         }

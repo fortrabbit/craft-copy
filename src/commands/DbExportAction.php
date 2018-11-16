@@ -8,7 +8,6 @@ use yii\base\Exception;
 use yii\console\ExitCode;
 use ostark\Yii2ArtisanBridge\base\Action;
 
-
 /**
  * Class DbExportAction
  *
@@ -30,21 +29,15 @@ class DbExportAction extends Action
         $this->info("Creating DB Dump in '{$file}'");
 
         try {
-
             $plugin->dump->export($file);
             $this->info("OK");
             return ExitCode::OK;
-
         } catch (ShellCommandException $exception) {
-
             $this->errorBlock(['Mysql Import error', $exception->getMessage()]);
             return ExitCode::UNSPECIFIED_ERROR;
-
         } catch (Exception $exception) {
-
             $this->errorBlock([$exception->getMessage()]);
             return ExitCode::UNSPECIFIED_ERROR;
-
         }
     }
 }

@@ -49,7 +49,6 @@ class InfoAction extends Action
         }
 
         foreach ($configs as $key => $configName) {
-
             $this->head("Environment check", "<info>$configName</info>", ($key === 0) ? true : false);
 
             $plugin->config->setName($configName);
@@ -127,8 +126,6 @@ class InfoAction extends Action
             $configFile = $plugin->config->getFullPathToConfig();
             $rawYaml    = file_get_contents($configFile);
             $this->table([$configFile], [[$rawYaml]]);
-
-
         }
 
         return ExitCode::OK;
