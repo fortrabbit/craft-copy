@@ -2,7 +2,6 @@
 
 namespace fortrabbit\Copy\commands;
 
-use fortrabbit\Copy\Plugin;
 use fortrabbit\Copy\services\Git;
 use GitWrapper\GitException;
 use yii\console\ExitCode;

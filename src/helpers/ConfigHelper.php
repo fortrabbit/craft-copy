@@ -66,14 +66,17 @@ trait ConfigHelper
         );
 
         foreach ($commands as $command) {
-            $this->cmdBlock($command);
+            $this->cmdBlock(" $command");
             $process = new Process($command);
             $process->run();
             if (!$process->isSuccessful()) {
                 $this->errorBlock($process->getErrorOutput());
                 return false;
             }
-            $this->output->write($process->getOutput());
+            $outputLines = explode(PHP_EOL, $process->getOutput());
+            foreach ($outputLines as $line) {
+                $this->output->writeln("   $line");
+            }
         }
 
         $this->output->write(PHP_EOL);

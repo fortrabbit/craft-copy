@@ -52,6 +52,6 @@ trait ConsoleOutputHelper
             $this->output->write(sprintf("\033\143"));
         }
 
-        $this->block($message, $context, 'fg=white;', '▶ ', false, false);
+        $this->block("<options=bold;fg=white>$message</>", $context, 'fg=white;', '▶ ', false, false);
     }
 }
