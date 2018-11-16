@@ -55,7 +55,7 @@ class SetupAction extends Action
         }
 
 
-        $configName = $this->anticipate("What's the environment?", ['production', 'staging'], 'production');
+        $configName = $this->anticipate("What's the environment? (use arrow key or type)", ['production', 'staging', 'stage', 'dev', 'prod'], 'production');
 
         // TODO: check if yaml exist
         $config = $this->writeDeployConfig($app, $region, Inflector::slug($configName));
