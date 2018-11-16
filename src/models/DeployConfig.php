@@ -11,8 +11,18 @@ class DeployConfig extends Model
     public $sshUrl;
     public $sshPath;
     public $gitRemote;
-    public $before = [];
-    public $after = [];
+
+    public $before = [
+        'code/up' => [
+            'echo  "Script example: " $(git rev-parse HEAD)'
+        ]
+    ];
+
+    public $after = [
+        'code/down' => [
+            'php craft migrate/all'
+        ]
+    ];
 
     /**
      * @var string

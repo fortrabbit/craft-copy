@@ -79,7 +79,9 @@ class DeployConfig
     public function persist(DeployConfigModel $config): bool
     {
         $this->config = $config;
-        $yaml         = Yaml::dump($this->config->toArray());
+        $this->config->setName($this->name);
+
+        $yaml         = Yaml::dump($this->config->toArray(), Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE);
         $fullPath     = $this->getFullPathToConfig();
 
         if (file_put_contents($fullPath, $yaml)) {
