@@ -27,7 +27,7 @@ cd your/craft-project
 
 composer config platform --unset
 
-composer require fortrabbit/craft-copy:^1.0.0-beta
+composer require fortrabbit/craft-copy:^1.0.0-RC1
 
 ./craft install/plugin copy
 ./craft copy/setup
@@ -93,11 +93,16 @@ No remote volumes (S3, Object Storage, ..) so far.
 
 ## Multi Staging
 
-// TODO: Update section
+At fortrabbit your set up multiple Apps to create multiple environments for your project. 
 
 ### Config
 
-// TODO: Update section
+Once your Apps are in place, you connect your local environment with each App.
+
+```
+# Run this command to setup a new deployment configuration
+./craft copy setup
+```
 
 ### Usage
 
@@ -114,7 +119,7 @@ php craft copy/code/up staging
 php craft copy/db/up staging
 ```
 
-## Run script before/after commands
+### Run scripts before/after commands
 
 Supported commands:
 
@@ -124,4 +129,6 @@ Supported commands:
 * db/down
 * assets/up
 * assets/down
+
+Here you can find some use cases: [config/fortrabbit.example-config.yaml](https://github.com/fortrabbit/craft-copy/blob/master/src/fortrabbit.example-config.yaml)
 

@@ -1,6 +1,6 @@
 #  Changelog
 
-## 1.0.0-rc1 - 2018-11-XX
+## 1.0.0-RC1 - 2018-11-16
 
 - Removed support for config/copy.php
 - Removed `--app` option
