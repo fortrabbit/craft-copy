@@ -34,7 +34,10 @@ class DbUpAction extends ConfigAwareBaseAction
         $steps        = 4;
         $messages     = [];
 
-        $this->head("Export local DB and import on remote. This will replace your existing remote DB.", $this->config->app);
+        $this->head(
+            "Export local DB and import on remote.",
+            "<comment>{$this->config}</comment> {$this->config->app}.frb.io"
+        );
 
         if (!$this->confirm("Are you sure?", true)) {
             return ExitCode::UNSPECIFIED_ERROR;

@@ -115,8 +115,10 @@ class DeployConfig
         }
 
         $data = Yaml::parse(file_get_contents($fullPath));
+        $model = new DeployConfigModel($data);
+        $model->setName($this->name);
 
-        return new DeployConfigModel($data);
+        return $model;
 
     }
 

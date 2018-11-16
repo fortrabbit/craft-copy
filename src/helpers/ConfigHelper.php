@@ -34,11 +34,13 @@ trait ConfigHelper
     }
 
 
-    protected function runBeforeDeployCommands() {
+    protected function runBeforeDeployCommands()
+    {
         return $this->runDeployCommands('before');
     }
 
-    protected function runAfterDeployCommands() {
+    protected function runAfterDeployCommands()
+    {
         return $this->runDeployCommands('after');
     }
 
@@ -49,15 +51,19 @@ trait ConfigHelper
      */
     protected function runDeployCommands($when)
     {
-        $action = str_replace('copy/','',$this->controller->id .'/'. $this->id);
-        $actions = $this->config->$when;
+        $action   = str_replace('copy/', '', $this->controller->id . '/' . $this->id);
+        $actions  = $this->config->$when;
         $commands = $actions[$action] ?? [];
 
         if (count($actions) === 0 || count($commands) === 0) {
             return true;
         }
 
-        $this->head($when, $this->config->app, false);
+        $this->head(
+            "Run $when scripts",
+            "<comment>{$this->config}</comment> {$this->config->app}.frb.io",
+            false
+        );
 
         foreach ($commands as $command) {
             $this->cmdBlock($command);

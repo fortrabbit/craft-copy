@@ -120,6 +120,7 @@ class Plugin extends BasePlugin
                 function (ActionEvent $event) {
                     $style = new OutputFormatterStyle('blue');
                     $event->action->output->getFormatter()->setStyle('comment', $style);
+                    $event->action->output->getFormatter()->setStyle('info', $style);
                 }
             );
 

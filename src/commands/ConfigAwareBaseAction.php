@@ -48,9 +48,9 @@ abstract class ConfigAwareBaseAction extends Action
 
         // No deploy config files found?
         if (count($this->plugin->config->getConfigOptions()) === 0) {
-            $this->errorBlock("The plugin is not configured yet.");
-            $this->line('Run the setup command first:' . PHP_EOL);
-            $this->output->type('php craft copy/setup' . PHP_EOL, 'fg=white', 20);
+
+            $this->errorBlock('The plugin is not configured yet. Make sure to run this setup command first:');
+            $this->cmdBlock("php craft copy/setup");
 
             return false;
         }

@@ -10,7 +10,7 @@ use Symfony\Component\Console\Helper\TableSeparator;
  *
  * @package fortrabbit\Copy\services
  *
- * @property string $app
+ * @property string  $app
  * @property boolean $dryRun
  */
 trait ConsoleOutputHelper
@@ -40,8 +40,10 @@ trait ConsoleOutputHelper
      */
     public function cmdBlock($cmd)
     {
-        $here = str_replace(getenv("HOME"),'~',getcwd());
-        $this->block($cmd, null, null, '<fg=blue;bg=default><fg=white>'.$here.' $</> </>', false, false);
+        $here = str_replace(getenv("HOME"), '~', getcwd());
+        $this->block($cmd, null, 'fg=white;bg=default', '<comment> ' . $here . ' ►  </comment>', false, false);
+        return true;
+
     }
 
     public function head($message, $context = null, $clear = true)

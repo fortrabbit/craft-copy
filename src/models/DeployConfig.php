@@ -15,6 +15,11 @@ class DeployConfig extends Model
     public $after = [];
 
     /**
+     * @var string
+     */
+    protected $name = '';
+
+    /**
      * DeployConfig constructor.
      *
      * @param array $config
@@ -48,6 +53,22 @@ class DeployConfig extends Model
         }
 
         return $array;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->name;
     }
 
 }

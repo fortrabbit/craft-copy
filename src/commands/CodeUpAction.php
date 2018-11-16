@@ -20,7 +20,10 @@ class CodeUpAction extends ConfigAwareBaseAction
      */
     public function run(string $config = null)
     {
-        $this->head("Deploy recent code changes", $this->config->app);
+        $this->head(
+            "Deploy recent code changes",
+            "<comment>{$this->config}</comment> {$this->config->app}.frb.io"
+        );
 
         $git = $this->plugin->git;
         $git->getWorkingCopy()->init();
