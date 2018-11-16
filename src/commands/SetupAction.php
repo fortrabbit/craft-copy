@@ -3,16 +3,20 @@
 namespace fortrabbit\Copy\commands;
 
 use Craft;
+use fortrabbit\Copy\helpers\ConsoleOutputHelper;
+use fortrabbit\Copy\models\DeployConfig;
 use fortrabbit\Copy\Plugin;
+use ostark\Yii2ArtisanBridge\base\Action;
 use Symfony\Component\Process\Process;
 use yii\console\ExitCode;
+use yii\helpers\Inflector;
 
 /**
  * Class SetupAction
  *
  * @package fortrabbit\Copy\commands
  */
-class SetupAction extends BaseAction
+class SetupAction extends Action
 {
 
     /**
@@ -21,6 +25,8 @@ class SetupAction extends BaseAction
     public $verbose = false;
 
     protected $sshUrl;
+
+    use ConsoleOutputHelper;
 
     /**
      * Setup your App
@@ -32,51 +38,51 @@ class SetupAction extends BaseAction
      */
     public function run()
     {
-        if (!$this->app) {
-            $this->input->setInteractive(true);
-            $this->app = $this->ask("What's the name of your App?", getenv(Plugin::ENV_NAME_APP));
-            $this->input->setInteractive($this->interactive);
-        }
+        $this->input->setInteractive(true);
+        $app = $this->ask("What's the name of your App?");
+        $this->input->setInteractive($this->interactive);
 
-        if (strlen($this->app) < 3 || strlen($this->app) > 16) {
+        if (strlen($app) < 3 || strlen($app) > 16) {
             $this->errorBlock("Invalid App name.");
+
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        if (!$region = $this->guessRegion($this->app)) {
+        if (!$region = $this->guessRegion($app)) {
             $this->errorBlock('⚠  App not found');
+
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        $this->sshUrl = "{$this->app}@deploy.{$region}.frbit.com";
+
+        $configName = $this->anticipate("What's the environment?", ['production', 'staging'], 'production');
+
+        // TODO: check if yaml exist
+        $config = $this->writeDeployConfig($app, $region, Inflector::slug($configName));
 
         // Perform exec checks
         $this->checkAndWrite("Testing DNS - " . Plugin::REGIONS[$region], true);
         $this->checkAndWrite("Testing rsync", $this->canExecBinary("rsync --help"));
 
         $mysql = $this->checkAndWrite("Testing mysqldump", $this->canExecBinary("mysqldump --help"));
-        $ssh   = $this->checkAndWrite("Testing ssh access", $this->canExecBinary("ssh {$this->sshUrl} secrets"));
+        $ssh   = $this->checkAndWrite("Testing ssh access", $this->canExecBinary("ssh {$config->sshUrl} secrets"));
 
-        if ($ssh && $this->confirm("Update .env file?", true)) {
-            try {
-                $this->writeDotEnv();
-            } catch (\Exception $e) {
-                $this->errorBlock($e->getMessage());
-            }
-        }
 
-        if (!$this->confirm("Do you want to install and enable the plugin on the remote?", true)) {
+        if (!$this->confirm("Do you want to install and enable the plugin with your App?", true)) {
             $this->noteBlock('Abort');
+
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
         if (!$mysql) {
             $this->errorBlock('Mysqldump is required.');
+
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
         if (!$ssh) {
             $this->errorBlock('SSH is required.');
+
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -116,23 +122,33 @@ class SetupAction extends BaseAction
 
 
     /**
+     * @param string $app
+     * @param string $region
+     * @param string $configName
      *
+     * @return \fortrabbit\Copy\models\DeployConfig
      * @throws \yii\base\Exception
      */
-    protected function writeDotEnv()
+    protected function writeDeployConfig(string $app, string $region, string $configName)
     {
-        $vars = [
-            Plugin::ENV_NAME_APP        => $this->app,
-            Plugin::ENV_NAME_SSH_REMOTE => $this->sshUrl
-        ];
+        $config            = new DeployConfig();
+        $config->app       = $app;
+        $config->sshUrl    = "{$app}@deploy.{$region}.frbit.com";
+        $config->gitRemote = "$app/master";
 
-        $config = \Craft::$app->getConfig();
+        // Write yaml
+        Plugin::getInstance()->config->setName($configName);
+        Plugin::getInstance()->config->persist($config);
 
-        foreach ($vars as $name => $value) {
-            $config->setDotEnvVar($name, $value);
+        // Write .env
+        foreach ([Plugin::ENV_DEFAULT_CONFIG => $configName] as $name => $value) {
+            \Craft::$app->getConfig()->setDotEnvVar($name, $value);
             putenv("$name=$value");
         }
+
+        return $config;
     }
+
 
     /**
      * @return bool
@@ -143,11 +159,12 @@ class SetupAction extends BaseAction
     protected function setupRemote()
     {
         $plugin = Plugin::getInstance();
-        $plugin->ssh->remote = $this->sshUrl;
+        $app    = $plugin->config->get()->app;
 
         if ($plugin->ssh->exec("ls vendor/bin/craft-copy-installer.php | wc -l")) {
             if (trim($plugin->ssh->getOutput()) != "1") {
-                if ($this->confirm("The plugin is not installed on the remote! Do you want to deploy now?", true)) {
+                if ($this->confirm("The plugin is not installed with your App! Do you want to deploy now?", true)) {
+                    $this->cmdBlock('copy/code/up');
                     if (Craft::$app->runAction('copy/code/up', ['interactive' => $this->interactive]) != 0) {
                         return false;
                     }
@@ -161,13 +178,12 @@ class SetupAction extends BaseAction
             $this->output->write($plugin->ssh->getOutput());
         };
 
-        $this->output->type('php craft copy/db/up');
-
+        $this->cmdBlock('php craft copy/db/up');
         if (Craft::$app->runAction('copy/db/up', ['interactive' => $this->interactive]) != 0) {
             return false;
         }
 
-        $this->successBlock("Check it in the browser: https://{$this->app}.frb.io");
+        $this->successBlock("Check it in the browser: https://{$app}.frb.io");
 
         return true;
     }

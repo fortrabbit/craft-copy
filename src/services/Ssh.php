@@ -22,6 +22,7 @@ class Ssh extends Component
     const DOWNLOAD_COMMAND = 'ssh {remote} "cat {src} | gzip" | zcat > {target}';
 
     const SSH_EXEC_TIMEOUT = 1200;
+
     /**
      * @var string
      */

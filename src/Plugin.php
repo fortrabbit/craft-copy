@@ -6,7 +6,6 @@ use Craft;
 use craft\base\Plugin as BasePlugin;
 use fortrabbit\Copy\commands\AssetsDownAction;
 use fortrabbit\Copy\commands\AssetsUpAction;
-use fortrabbit\Copy\commands\BaseAction;
 use fortrabbit\Copy\commands\CodeDownAction;
 use fortrabbit\Copy\commands\CodeUpAction;
 use fortrabbit\Copy\commands\DbDownAction;
@@ -15,13 +14,18 @@ use fortrabbit\Copy\commands\DbImportAction;
 use fortrabbit\Copy\commands\DbUpAction;
 use fortrabbit\Copy\commands\InfoAction;
 use fortrabbit\Copy\commands\SetupAction;
-use fortrabbit\Copy\models\Settings;
-use fortrabbit\Copy\models\StageConfig;
+use fortrabbit\Copy\services\DeployConfig;
 use fortrabbit\Copy\services\Git;
 use fortrabbit\Copy\services\Rsync;
-use ostark\Yii2ArtisanBridge\base\Commands;
 
+use ostark\Yii2ArtisanBridge\ActionGroup;
+use ostark\Yii2ArtisanBridge\base\Commands;
+use ostark\Yii2ArtisanBridge\Bridge;
+
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use yii\base\ActionEvent;
+use yii\base\Event;
+use yii\base\Model;
 use yii\console\Application as ConsoleApplication;
 
 use fortrabbit\Copy\services\Ssh as SshService;
@@ -38,13 +42,15 @@ use fortrabbit\Copy\services\Git as GitService;
  * @property  DumpService  $dump
  * @property  RsyncService $rsync
  * @property  GitService   $git
- *
- * @method    models\Settings getSettings()
+ * @property  DeployConfig $config
  *
  */
 class Plugin extends BasePlugin
 {
     const ENV_NAME_APP = "APP_NAME";
+    const ENV_DEPLOY_ENVIRONMENT = "DEPLOY_ENVIRONMENT";
+    const ENV_DEFAULT_CONFIG = "DEFAULT_CONFIG";
+
     const ENV_NAME_SSH_REMOTE = "APP_SSH_REMOTE";
     const PLUGIN_ROOT_PATH = __DIR__;
     const REGIONS = [
@@ -62,11 +68,8 @@ class Plugin extends BasePlugin
         parent::init();
 
         if (Craft::$app instanceof ConsoleApplication) {
-
-            // Register console commands
-            Commands::register(
-                'copy',
-                [
+            $group = (new ActionGroup('copy', 'Copy Craft between environments.'))
+                ->setActions([
                     'assets/up'    => AssetsUpAction::class,
                     'assets/down'  => AssetsDownAction::class,
                     'code/up'      => CodeUpAction::class,
@@ -77,48 +80,50 @@ class Plugin extends BasePlugin
                     'db/from-file' => DbImportAction::class,
                     'setup'        => SetupAction::class,
                     'info'         => InfoAction::class
-                ],
-                [
-                    'v' => 'verbose',
-                    'd' => 'directory',
-                    'n' => 'dryRun',
-                    'a' => 'app'
-                ]
-            );
+                ])
+                ->setDefaultAction('info')
+                ->setOptions(
+                    [
+                        'v' => 'verbose',
+                        'd' => 'directory',
+                        'n' => 'dryRun',
+                        'a' => 'app',
+                        'e' => 'env'
+                    ]
+                );
 
-            Commands::setDefaultAction('copy', 'info');
+            // Register console commands
+            Bridge::registerGroup($group);
 
             // Register services
             $this->setComponents([
-                'ssh'   => SshService::class,
-                'dump'  => DumpService::class,
-                'rsync' => function () {
-                    return Rsync::remoteFactory(getenv(self::ENV_NAME_SSH_REMOTE));
+                'config' => DeployConfig::class,
+                'dump'   => function () {
+                    return new DumpService(['db' => Craft::$app->getDb()]);
                 },
-                'git'   => function () {
-                    return Git::fromDirectory(\Craft::getAlias('@root') ?: CRAFT_BASE_PATH);
-                }
+                'git'    => function () {
+                    return GitService::fromDirectory(\Craft::getAlias('@root') ?: CRAFT_BASE_PATH);
+                },
+                'rsync'  => function () {
+                    return RsyncService::remoteFactory($this->config->get()->sshUrl);
+                },
+                'ssh'    => function () {
+                    return new SshService(['remote' => $this->config->get()->sshUrl]);
+                },
             ]);
 
-            // Inject $db Connection
-            $this->dump->db = \Craft::$app->getDb();
-
-            // Inject $remote
-            if (getenv(self::ENV_NAME_SSH_REMOTE)) {
-                $this->ssh->remote = getenv(self::ENV_NAME_SSH_REMOTE);
-            }
-
-            // Globally apply stage config if --app=name is given
-            \yii\base\Event::on(
+            Event::on(
+            /**
+             * @param \yii\base\ActionEvent $event
+             */
                 Commands::class,
                 Commands::EVENT_BEFORE_ACTION,
                 function (ActionEvent $event) {
-                    if ($event->action instanceof BaseAction) {
-                        if (is_string($event->action->app)) {
-                            $stage = $this->getSettings()->getStageConfig($event->action->app);
-                            $this->applyStageConfig($stage);
-                        }
-                    }
+                    /** @var \ostark\Yii2ArtisanBridge\base\Action $action */
+                    $action = $event->action;
+                    $style = new OutputFormatterStyle('blue');
+                    $action->output->getFormatter()->setStyle('comment', $style);
+                    $action->output->getFormatter()->setStyle('info', $style);
                 }
             );
         }
@@ -128,23 +133,10 @@ class Plugin extends BasePlugin
     /**
      * Creates and returns the model used to store the plugin’s settings.
      *
-     * @return \craft\base\Model|null
+     * @return \yii\base\Model
      */
     protected function createSettingsModel()
     {
-        return new Settings();
-    }
-
-    /**
-     * @param \fortrabbit\Copy\models\StageConfig $stageConfig
-     */
-    protected function applyStageConfig(StageConfig $stageConfig)
-    {
-        if ($stageConfig->sshRemoteUrl) {
-            $this->ssh->remote = $stageConfig->sshRemoteUrl;
-            $this->set('rsync', function () use ($stageConfig) {
-                return Rsync::remoteFactory($stageConfig->sshRemoteUrl);
-            });
-        }
+        return new Model();
     }
 }

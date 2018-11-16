@@ -1,5 +1,21 @@
 #  Changelog
 
+## 1.0.0-rc1 - 2018-11-XX
+
+- Removed support for config/copy.php
+- Removed `--app` option
+- Removed `--env` option
+- Changed signature of most commands, first argument is `{config}
+- Added YAML Config
+  - Support for `before` and `after` scripts
+  - Support for custom `ssh_url`
+
+
+## 1.0.0-beta5 - 2018-10-18
+
+- increased ssh timeout to 1200 seconds
+- verbose mysql import errors
+
 ## 1.0.0-beta4 - 2018-08-27
 
 - multi-staging support for `copy/info`

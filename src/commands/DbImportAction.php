@@ -5,6 +5,7 @@ namespace fortrabbit\Copy\commands;
 use craft\errors\ShellCommandException;
 use craft\helpers\FileHelper;
 use fortrabbit\Copy\Plugin;
+use ostark\Yii2ArtisanBridge\base\Action;
 use yii\base\Exception;
 use yii\console\ExitCode;
 
@@ -13,9 +14,8 @@ use yii\console\ExitCode;
  *
  * @package fortrabbit\DeployTools\commands
  */
-class DbImportAction extends BaseAction
+class DbImportAction extends Action
 {
-
     /**
      * Import database
      *
@@ -50,17 +50,12 @@ class DbImportAction extends BaseAction
 
             return ExitCode::OK;
 
-
         } catch (ShellCommandException $exception) {
-
             $this->errorBlock(['Mysql Import error', $exception->getMessage()]);
             return ExitCode::UNSPECIFIED_ERROR;
-
         } catch (Exception $exception) {
-
             $this->errorBlock([$exception->getMessage()]);
             return ExitCode::UNSPECIFIED_ERROR;
-
         }
 
     }

@@ -1,0 +1,17 @@
+app: your_app
+
+ssh_url: your_app@deploy.us1.frbit.com
+git_remote: your_app/master
+
+# Scripts
+before:
+  code/up:
+    - "npm run prod"
+    - "php craft copy/assets/up web/build/prod"
+
+after:
+  code/down:
+    - "php craft migrate/all"
+
+  assets/down:
+    - "echo OK"
