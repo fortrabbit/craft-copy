@@ -39,7 +39,8 @@ class DbUpAction extends ConfigAwareBaseAction
             "<comment>{$this->config}</comment> {$this->config->app}.frb.io"
         );
 
-        if (!$this->confirm("Are you sure?", true)) {
+        // Always ask (default no), but skip question in non-interactive mode
+        if (!$this->confirm("Are you sure?", $this->interactive ? false : true)) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 

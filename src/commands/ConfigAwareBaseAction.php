@@ -7,6 +7,10 @@ use fortrabbit\Copy\helpers\ConfigHelper;
 use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
 use ostark\Yii2ArtisanBridge\base\Commands;
+use yii\base\ActionEvent;
+use yii\base\Event;
+use yii\console\Controller;
+use yii\console\ExitCode;
 
 abstract class ConfigAwareBaseAction extends Action
 {
@@ -78,10 +82,19 @@ abstract class ConfigAwareBaseAction extends Action
 
     public function afterRun()
     {
-        if (!$this->runAfterDeployCommands()) {
-            return false;
-        }
+        Event::on(
+            Controller::class,
+            Controller::EVENT_AFTER_ACTION,
+            function (ActionEvent $event) {
+               if ($event->result == ExitCode::OK) {
+                   $this->runAfterDeployCommands();
+               }
+            }
+        );
+
         return true;
     }
+
+
 
 }
