@@ -55,9 +55,13 @@ class SetupAction extends Action
         }
 
 
-        $configName = $this->anticipate("What's the environment? (use arrow key or type)", ['production', 'staging', 'stage', 'dev', 'prod'], 'production');
+        $configName = $this->anticipate(
+            "What's a good name for the environment? <fg=default>(use arrow keys or type)</>",
+            ['production', 'staging', 'stage', 'dev', 'prod'],
+            'production'
+        );
 
-        // TODO: check if yaml exist
+        // Persist config
         $config = $this->writeDeployConfig($app, $region, Inflector::slug($configName));
 
         // Perform exec checks
@@ -139,12 +143,14 @@ class SetupAction extends Action
         // Write yaml
         Plugin::getInstance()->config->setName($configName);
 
+        // Check if file already exist
         if (file_exists(Plugin::getInstance()->config->getFullPathToConfig())) {
             if (!$this->confirm("Do you want to overwrite your existing config?", true)) {
-               return $config;
+                return $config;
             }
         }
 
+        // Write
         Plugin::getInstance()->config->persist($config);
 
         // Write .env
