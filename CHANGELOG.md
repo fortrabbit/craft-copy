@@ -5,7 +5,7 @@
 - Removed support for config/copy.php
 - Removed `--app` option
 - Removed `--env` option
-- Changed signature of most commands, first argument is `{config}
+- Changed signature of most commands, first argument is `{config}`
 - Added YAML Config
   - Support for `before` and `after` scripts
   - Support for custom `ssh_url`
