@@ -138,6 +138,13 @@ class SetupAction extends Action
 
         // Write yaml
         Plugin::getInstance()->config->setName($configName);
+
+        if (file_exists(Plugin::getInstance()->config->getFullPathToConfig())) {
+            if (!$this->confirm("Do you want to overwrite your existing config?", true)) {
+               return $config;
+            }
+        }
+
         Plugin::getInstance()->config->persist($config);
 
         // Write .env
