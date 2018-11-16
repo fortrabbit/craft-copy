@@ -35,9 +35,9 @@ class DbDownAction extends ConfigAwareBaseAction
         $backupFile   = $path . 'craft-copy-recent.sql';
         $steps        = 4;
         $messages     = [];
-        
+
         $this->head(
-            "Export remote DB and import locally.",
+            "Export remote DB, download and import locally.",
             "<comment>{$this->config}</comment> {$this->config->app}.frb.io",
             $this->interactive ? true : false
         );
