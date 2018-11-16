@@ -1,17 +1,13 @@
 app: your_app
 
-ssh_url: your_app@deploy.eu2.frbit.com
-ssh_path: path/to/project/root
+ssh_url: your_app@deploy.us1.frbit.com
 git_remote: your_app/master
 
-# Hooks
+# Scripts
 before:
   code/up:
     - "npm run prod"
-    - "php craft copy/assets/up web/build"
-
-  assets/up:
-    - "php -v"
+    - "php craft copy/assets/up web/build/prod"
 
 after:
   code/down:

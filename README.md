@@ -70,10 +70,10 @@ composer require fortrabbit/craft-copy:^1.0.0-beta
 
 ```shell
 # Rsync local assets with remote
-./craft copy/assets/up {?assetDir}
+./craft copy/assets/up {config} {assetDir}
 
 # Rsync remote assets with local
-./craft copy/assets/down {?assetDir}
+./craft copy/assets/down {config} {assetDir}
 ```
 
 No remote volumes (S3, Object Storage, ..) so far.
@@ -88,29 +88,40 @@ No remote volumes (S3, Object Storage, ..) so far.
 ./craft copy/code/down
 
 # Git pull (specific remote)
-./craft copy/code/down {remote} {branch}
+./craft copy/code/down
 ```
 
 ## Multi Staging
 
-When working with multiple stages, changing the `.env` file manually or calling `craft copy setup` is very inconvenient.
+// TODO: Update section
 
+### Config
 
-### Configuration
-
-Create a `copy.php` config file in your `/config` directory based on this template: [src/config.example.php](src/config.example.php).
+// TODO: Update section
 
 ### Usage
 
 ```sh
-# Copy code and db down from 'your-test-app'
-php craft copy/code/down --app=your-test-app
-php craft copy/db/down --app=your-test-app
+# Copy code and db down from 'production'
+php craft copy/code/down production
+php craft copy/db/down production
 
 # Make changes
 # ...
 
-# Copy code and db up to 'your-prod-app'
-php craft copy/code/up --app=your-prod-app
-php craft copy/db/up --app=your-prod-app
+# Copy code and db up to 'staging'
+php craft copy/code/up staging
+php craft copy/db/up staging
 ```
+
+## Run script before/after commands
+
+Supported commands:
+
+* code/up
+* code/down
+* db/up
+* db/down
+* assets/up
+* assets/down
+

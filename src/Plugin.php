@@ -14,7 +14,6 @@ use fortrabbit\Copy\commands\DbImportAction;
 use fortrabbit\Copy\commands\DbUpAction;
 use fortrabbit\Copy\commands\InfoAction;
 use fortrabbit\Copy\commands\SetupAction;
-use fortrabbit\Copy\models\Settings;
 use fortrabbit\Copy\services\DeployConfig;
 use fortrabbit\Copy\services\Git;
 use fortrabbit\Copy\services\Rsync;
@@ -26,6 +25,7 @@ use ostark\Yii2ArtisanBridge\Bridge;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use yii\base\ActionEvent;
 use yii\base\Event;
+use yii\base\Model;
 use yii\console\Application as ConsoleApplication;
 
 use fortrabbit\Copy\services\Ssh as SshService;
@@ -43,8 +43,6 @@ use fortrabbit\Copy\services\Git as GitService;
  * @property  RsyncService $rsync
  * @property  GitService   $git
  * @property  DeployConfig $config
- *
- * @method    models\Settings getSettings()
  *
  */
 class Plugin extends BasePlugin
@@ -131,11 +129,11 @@ class Plugin extends BasePlugin
     /**
      * Creates and returns the model used to store the plugin’s settings.
      *
-     * @return \craft\base\Model|null
+     * @return \yii\base\Model
      */
     protected function createSettingsModel()
     {
-        return new Settings();
+        return new Model();
     }
 
 
