@@ -1,4 +1,4 @@
-# Craft Copy Plugin (beta)
+# Craft Copy Plugin (RC1)
 
 This little command line tool helps to speed up common tasks around Craft CMS deployment on [fortrabbit](https://www.fortrabbit.com/):
 
