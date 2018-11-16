@@ -36,7 +36,8 @@ class DbUpAction extends ConfigAwareBaseAction
 
         $this->head(
             "Export local DB and import on remote.",
-            "<comment>{$this->config}</comment> {$this->config->app}.frb.io"
+            "<comment>{$this->config}</comment> {$this->config->app}.frb.io",
+            $this->interactive ? true : false
         );
 
         // Always ask (default no), but skip question in non-interactive mode

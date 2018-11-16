@@ -68,7 +68,7 @@ class SetupAction extends Action
         $ssh   = $this->checkAndWrite("Testing ssh access", $this->canExecBinary("ssh {$config->sshUrl} secrets"));
 
 
-        if (!$this->confirm("Do you want to install and enable the plugin on the remote?", true)) {
+        if (!$this->confirm("Do you want to install and enable the plugin with your App?", true)) {
             $this->noteBlock('Abort');
 
             return ExitCode::UNSPECIFIED_ERROR;
