@@ -15,7 +15,7 @@ use fortrabbit\Copy\models\DeployConfig as DeployConfigModel;
 
 class DeployConfig
 {
-    const FILE_NAME_TEMPLATE = '{name}.copy.yaml';
+    const FILE_NAME_TEMPLATE = 'copy.{name}.yaml';
 
     protected $name = 'production';
 
