@@ -2,9 +2,11 @@
 
 namespace fortrabbit\Copy\commands;
 
+use craft\errors\ShellCommandException;
 use craft\helpers\FileHelper;
 use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
+use yii\base\Exception;
 use yii\console\ExitCode;
 
 /**
@@ -18,14 +20,11 @@ class DbImportAction extends Action
     /**
      * Import database
      *
-     * @param string|null $file Filename of the sql dump
+     * @param string $file Import a sql dump
      *
      * @return int
-     * @throws \craft\errors\FileException
-     * @throws \craft\errors\ShellCommandException
-     * @throws \yii\base\Exception
      */
-    public function run(string $file = null)
+    public function run(string $file)
     {
         if (!file_exists($file)) {
             $this->errorBlock("File '{$file}' does not exist.");
@@ -38,7 +37,8 @@ class DbImportAction extends Action
 
         $this->info("Importing DB Dump from '{$file}'");
 
-        if ($file = Plugin::getInstance()->dump->import($file)) {
+        try {
+            $file = Plugin::getInstance()->dump->import($file);
             $this->successBlock("Dump imported");
 
             if (!$this->confirm("Do you really want to remove the {$file} file?", true)) {
@@ -50,6 +50,18 @@ class DbImportAction extends Action
             }
 
             return ExitCode::OK;
+
+        } catch (ShellCommandException $exception) {
+
+            $this->errorBlock(['Mysql Import error', $exception->getMessage()]);
+            return ExitCode::UNSPECIFIED_ERROR;
+
+        } catch (Exception $exception) {
+
+            $this->errorBlock([$exception->getMessage()]);
+            return ExitCode::UNSPECIFIED_ERROR;
+
         }
+
     }
 }

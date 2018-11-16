@@ -1,5 +1,11 @@
 #  Changelog
 
+## 1.0.0-rc1 - 2018-11-XX
+
+* Removed support for config/copy.php
+* Changed signature of most commands
+
+
 ## 1.0.0-beta4 - 2018-08-27
 
 - multi-staging support for `copy/info`
