@@ -21,6 +21,8 @@ class Ssh extends Component
 
     const DOWNLOAD_COMMAND = 'ssh {remote} "cat {src} | gzip" | zcat > {target}';
 
+    const SSH_EXEC_TIMEOUT = 1200;
+
     /**
      * @var string
      */
@@ -48,6 +50,7 @@ class Ssh extends Component
     {
         $cmd = sprintf('ssh %s "%s"', $this->remote, $cmd);
         $process = new Process($cmd, CRAFT_BASE_PATH);
+        $process->setTimeout(self::SSH_EXEC_TIMEOUT);
         $process->run();
 
         if ($process->isSuccessful()) {
@@ -80,6 +83,7 @@ class Ssh extends Component
     public function upload($src, $target)
     {
         $process = new Process($this->getUploadCommand($src, $target));
+        $process->setTimeout(self::SSH_EXEC_TIMEOUT);
         $process->run();
 
         if ($process->isSuccessful()) {
@@ -101,6 +105,7 @@ class Ssh extends Component
     public function download($src, $target)
     {
         $process = new Process($this->getDownloadCommand($src, $target));
+        $process->setTimeout(self::SSH_EXEC_TIMEOUT);
         $process->run();
 
         if ($process->isSuccessful()) {
