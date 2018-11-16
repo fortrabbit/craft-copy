@@ -88,7 +88,8 @@ class Plugin extends BasePlugin
                         'd' => 'directory',
                         'n' => 'dryRun',
                         'a' => 'app',
-                        'e' => 'env'
+                        'e' => 'env',
+                        'f' => 'force'
                     ]
                 );
 

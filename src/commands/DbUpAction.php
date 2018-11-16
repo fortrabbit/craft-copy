@@ -13,6 +13,11 @@ use yii\console\ExitCode;
 class DbUpAction extends ConfigAwareBaseAction
 {
     /**
+     * @var bool Force questions to 'yes'
+     */
+    public $force = false;
+
+    /**
      * Upload database
      *
      * @param string|null $config Name of the deploy config
@@ -37,11 +42,11 @@ class DbUpAction extends ConfigAwareBaseAction
         $this->head(
             "Export local DB and import on remote.",
             "<comment>{$this->config}</comment> {$this->config->app}.frb.io",
-            $this->interactive ? true : false
+            $this->force ? false : true
         );
 
         // Always ask (default no), but skip question in non-interactive mode
-        if (!$this->confirm("Are you sure?", $this->interactive ? false : true)) {
+        if (!$this->confirm("Are you sure?", $this->force ? true : false)) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 

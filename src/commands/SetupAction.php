@@ -179,7 +179,7 @@ class SetupAction extends Action
         };
 
         $this->cmdBlock('php craft copy/db/up');
-        if (Craft::$app->runAction('copy/db/up', ['interactive' => $this->interactive]) != 0) {
+        if (Craft::$app->runAction('copy/db/up', ['interactive' => $this->interactive, 'force' => true]) != 0) {
             return false;
         }
 
