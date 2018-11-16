@@ -62,14 +62,15 @@ class DeployConfig
     public function getConfigOptions(): array
     {
         $globPattern = str_replace('{name}', '*', self::FILE_NAME_TEMPLATE);
-        $suffix      = str_replace('{name}', '', self::FILE_NAME_TEMPLATE);
+        $prefix     = 'fortrabbit.';
+        $suffix      = '.yaml';
 
         // get config files
         $files = glob(\Craft::$app->getPath()->getConfigPath() . DIRECTORY_SEPARATOR . $globPattern);
 
         // extract the prefix of the existing config files
-        return array_map(function ($path) use ($suffix) {
-            return basename($path, $suffix);
+        return array_map(function ($path) use ($suffix, $prefix) {
+            return str_replace($prefix, '', basename($path, $suffix));
         }, $files);
     }
 
