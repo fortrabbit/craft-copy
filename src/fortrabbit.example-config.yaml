@@ -7,7 +7,7 @@ git_remote: your_app/master
 before:
   code/up:
     - "npm run prod"
-    - "php craft copy/assets/up web/build/prod"
+    - "php craft copy/assets/up production web/build/prod"
 
 after:
   code/down:
