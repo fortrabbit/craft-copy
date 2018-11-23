@@ -15,9 +15,11 @@ This little command line tool helps to speed up common tasks around Craft CMS de
 * Executable binaries: `php`, `mysqldump`, `git` and `rsync` installed locally
 * SSH key installed with fortrabbit (no password auth so far)
 
-## Demo setup
+## Demos
 
-![demo](https://github.com/fortrabbit/craft-copy/blob/master/demo_setup.gif "Demo")
+![demo](https://github.com/fortrabbit/craft-copy/blob/master/resources/craft-copy-db-up.gif "Database sync")
+
+![demo](https://github.com/fortrabbit/craft-copy/blob/master/resources/craft-copy-code-up.gif "Code sync")
 
 
 ## Installation (locally)
