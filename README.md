@@ -68,30 +68,31 @@ composer require fortrabbit/craft-copy:^1.0.0-RC1
 ./craft copy/db/from-file {file}
 ```
 
-### Assets
-
-```shell
-# Rsync local assets with remote
-./craft copy/assets/up {config} {assetDir}
-
-# Rsync remote assets with local
-./craft copy/assets/down {config} {assetDir}
-```
-
-No remote volumes (S3, Object Storage, ..) so far.
-
 ### Code
 
 ```shell
 # Git push
 ./craft copy/code/up
 
-# Git pull (current remote)
+# Git pull 
 ./craft copy/code/down
 
-# Git pull (specific remote)
-./craft copy/code/down
 ```
+
+### Assets
+
+```shell
+# Rsync local assets with remote
+./craft copy/assets/up {config} {?assetDir}
+
+# Rsync remote assets with local
+./craft copy/assets/down {config} {?assetDir}
+```
+
+* {assetDir} defaults to `web/assets`
+* No remote volumes (S3, Object Storage, ..) so far.
+
+
 
 ## Multi Staging
 
@@ -105,6 +106,8 @@ Once your Apps are in place, you connect your local environment with each App.
 # Run this command to setup a new deployment configuration
 ./craft copy setup
 ```
+
+The setup command creates a config files the Craft `/config` folder. You can modify and share them across your team.
 
 ### Usage
 
