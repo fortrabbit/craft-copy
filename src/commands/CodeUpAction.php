@@ -102,23 +102,26 @@ class CodeUpAction extends ConfigAwareBaseAction
      */
     protected function getUpstream(Git $git): string
     {
-        // Non
+        // Get configured remote & sshUrl
+        $upstream = explode('/', $this->config->gitRemote)[0];
+        $sshUrl = $this->config->sshUrl;
+
+        // Nothing found
         if (!$remotes = $git->getRemotes()) {
-            $sshUrl = $this->config->sshUrl;
             if ($this->confirm("No remotes configured. Do you want to add '{$sshUrl}'?")) {
                 return $git->addRemote($sshUrl);
             }
         }
 
-        // There is just one
-        if (count($remotes) == 1) {
-            return array_keys($remotes)[0];
+        // Auto setup
+        if (!array_key_exists($upstream, $remotes)) {
+            $git->addRemote($sshUrl);
+            $remotes = $git->getRemotes();
         }
 
-        // Use configured remote
-        $upstream = explode('/', $this->config->gitRemote)[0];
-        if (in_array($upstream, array_keys($remotes))) {
-            return $upstream;
+        // Just one
+        if (count($remotes) == 1) {
+            return array_keys($remotes)[0];
         }
 
         // Multiple
