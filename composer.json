@@ -2,7 +2,7 @@
     "name": "fortrabbit/craft-copy",
     "description": "Tooling for Craft on fortrabbit",
     "type": "craft-plugin",
-    "version": "1.0.0-RC1",
+    "version": "1.0.0-RC2",
     "keywords": [
         "craft",
         "cms",
@@ -30,7 +30,7 @@
         "symfony/process": "^4.1",
         "vlucas/phpdotenv": "^2.5.1",
         "symfony/yaml": "^4.1",
-        "fortrabbit/craft-auto-migrate":"^1.0.0"
+        "fortrabbit/craft-auto-migrate":"^1.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^0.10.5",

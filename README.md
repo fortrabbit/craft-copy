@@ -1,4 +1,4 @@
-# Craft Copy Plugin (RC1)
+# Craft Copy Plugin (RC2)
 
 This little command line tool helps to speed up common tasks around Craft CMS deployment on [fortrabbit](https://www.fortrabbit.com/):
 
@@ -29,7 +29,7 @@ cd your/craft-project
 
 composer config platform --unset
 
-composer require fortrabbit/craft-copy:^1.0.0-RC1
+composer require fortrabbit/craft-copy:^1.0.0-RC2
 
 ./craft install/plugin copy
 ./craft copy/setup

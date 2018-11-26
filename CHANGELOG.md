@@ -1,5 +1,10 @@
 #  Changelog
 
+## 1.0.0-RC2 - 2018-11-26
+
+- Run migrations automatically via `fortrabbit/craft-auto-migrate`
+- Add configured git upstream automatically
+
 ## 1.0.0-RC1 - 2018-11-16
 
 - Removed support for config/copy.php
