@@ -139,10 +139,9 @@ Here you can find some use cases: [config/fortrabbit.example-config.yaml](https:
 
 ## Trouble shooting
 
-If you fulfill the system requirements of the plugin the setup is straight forward. 
-However, depending on your local setup you may run into errors, those are usually MAMP related and easy to fix. 
+The setup is uallay  is straight forward when the [system requirements](#requirements) are fullfilled. However, depending on your local setup, you may run into errors. May errors are MAMP related and easy to fix:
 
-### Local MySQL connection error:
+### Local MySQL connection error
 
 ```
 $ php craft install/plugin copy
@@ -182,7 +181,7 @@ echo 'export PATH=/Applications/MAMP/bin/php/php7.2.1/bin:$PATH' >>~/.bash_profi
 
 ### Composer version conflict
 
-When installing the plugin via composer you may an error like this:
+When installing the plugin via composer you may see an error like this:
 ```
 $ composer require fortrabbit/craft-copy:^1.0.0-RC2
   ./composer.json has been updated
