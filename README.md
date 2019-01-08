@@ -31,8 +31,8 @@ composer config platform --unset
 
 composer require fortrabbit/craft-copy:^1.0.0-RC2
 
-./craft install/plugin copy
-./craft copy/setup
+php craft install/plugin copy
+php craft copy/setup
 ```
 
 
@@ -42,40 +42,40 @@ composer require fortrabbit/craft-copy:^1.0.0-RC2
 
 ```shell
 # Get help
-./craft help copy
+php craft help copy
 
 # Tell the plugin which fortrabbit App to use
-./craft copy/setup
+php craft copy/setup
 
 # Environment checks
-./craft copy
-./craft copy/info
+php craft copy
+php craft copy/info
 ```
 
 ### Database
 
 ```shell
 # Dump local DB and import it on remote
-./craft copy/db/up
+php craft copy/db/up
 
 # Dump remote DB and import it locally
-./craft copy/db/down
+php craft copy/db/down
 
 # Export DB
-./craft copy/db/to-file {file}
+php craft copy/db/to-file {file}
 
 # Import DB
-./craft copy/db/from-file {file}
+php craft copy/db/from-file {file}
 ```
 
 ### Code
 
 ```shell
 # Git push
-./craft copy/code/up
+php craft copy/code/up
 
 # Git pull 
-./craft copy/code/down
+php craft copy/code/down
 
 ```
 
@@ -83,10 +83,10 @@ composer require fortrabbit/craft-copy:^1.0.0-RC2
 
 ```shell
 # Rsync local assets with remote
-./craft copy/assets/up {config} {?assetDir}
+php craft copy/assets/up {config} {?assetDir}
 
 # Rsync remote assets with local
-./craft copy/assets/down {config} {?assetDir}
+php craft copy/assets/down {config} {?assetDir}
 ```
 
 * {assetDir} defaults to `web/assets`
@@ -104,7 +104,7 @@ Once your Apps are in place, you connect your local environment with each App.
 
 ```
 # Run this command to setup a new deployment configuration
-./craft copy setup
+php craft copy setup
 ```
 
 The setup command creates a config files the Craft `/config` folder. You can modify and share them across your team.
@@ -137,3 +137,71 @@ Supported commands:
 
 Here you can find some use cases: [config/fortrabbit.example-config.yaml](https://github.com/fortrabbit/craft-copy/blob/master/src/fortrabbit.example-config.yaml)
 
+## Trouble shooting
+
+If you fulfill the system requirements of the plugin the setup is straight forward. 
+However, depending on your local setup you may run into errors, those are usually MAMP related and easy to fix. 
+
+### Local MySQL connection error:
+
+```
+$ php craft install/plugin copy
+  *** installing copy
+  *** failed to install copy: Craft CMS can’t connect to the database with the credentials in config/db.php.
+```
+**Fix:** Ensure "[Allow network access to MySQL](https://craftcms.stackexchange.com/a/26396/4538)" is ticked in MAMP.
+
+### The mysqldump command does not exist
+
+Find out if you can access mysqldump:
+```
+$ which mysqldump
+  mysqldump not found
+```
+
+**Fix:** Add the MAMP bin path to your Bash profile
+```
+echo 'export PATH=/Applications/MAMP/Library/bin:$PATH' >>~/.bash_profile
+```
+
+### PHP cli version is lower than 7.1
+
+Find out the php version on the command line:
+```
+$ php -v
+  PHP 7.0.8 (cli) (built: Jun 26 2016 12:30:44) ( NTS )
+  Copyright (c) 1997-2016 The PHP Group
+  Zend Engine v3.0.0, Copyright (c) 1998-2016 Zend Technologies
+     with Zend OPcache v7.0.8, Copyright (c) 1999-2016, by Zend Technologie
+```
+
+**Fix:** Add MAMP php bin path to your Bash profile
+```
+echo 'export PATH=/Applications/MAMP/bin/php/php7.2.1/bin:$PATH' >>~/.bash_profile
+```
+
+### Composer version conflict
+
+When installing the plugin via composer you may an error like this:
+```
+$ composer require fortrabbit/craft-copy:^1.0.0-RC2
+  ./composer.json has been updated
+  Loading composer repositories with package information
+  Updating dependencies (including require-dev)
+  Your requirements could not be resolved to an installable set of packages.
+  
+  Problem 1
+  - Installation request for fortrabbit/craft-copy ^1.0.0-RC2 -> satisfiable by fortrabbit/craft-copy[1.0.0-RC2].
+  - Conclusion: remove symfony/console v3.3.6
+  - Conclusion: don't install symfony/console v3.3.6
+  - fortrabbit/craft-copy 1.0.0-RC2 requires symfony/yaml ^4.1
+  [...]
+   Problem 99
+```
+
+**Fix:** Update all existing dependencies
+```
+$ composer config platform --unset
+$ composer update
+$ php craft migrate/all
+```
