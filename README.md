@@ -139,7 +139,7 @@ Here you can find some use cases: [config/fortrabbit.example-config.yaml](https:
 
 ## Trouble shooting
 
-The setup is uallay  is straight forward when the [system requirements](#requirements) are fullfilled. However, depending on your local setup, you may run into errors. May errors are MAMP related and easy to fix:
+The setup is usually straight forward when the [system requirements](#requirements) are fulfilled. However, depending on your local setup, you may run into errors. May errors are MAMP related and easy to fix:
 
 ### Local MySQL connection error
 
