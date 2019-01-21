@@ -19,6 +19,9 @@ use yii\helpers\Inflector;
 class SetupAction extends Action
 {
 
+    const TROUBLE_SHOOTING_MYSQLDUMP_URL = "https://github.com/fortrabbit/craft-copy#trouble-shooting";
+    const TROUBLE_SHOOTING_SSH_URL = "https://help.fortrabbit.com/ssh-keys";
+
     /**
      * @var bool Verbose output
      */
@@ -72,20 +75,15 @@ class SetupAction extends Action
         $ssh   = $this->checkAndWrite("Testing ssh access", $this->canExecBinary("ssh {$config->sshUrl} secrets"));
 
 
-        if (!$this->confirm("Do you want to install and enable the plugin with your App?", true)) {
-            $this->noteBlock('Abort');
-
-            return ExitCode::UNSPECIFIED_ERROR;
-        }
-
         if (!$mysql) {
-            $this->errorBlock('Mysqldump is required.');
-
+            $this->errorBlock('Mysqldump is required. ');
+            $this->line("Get Help: " . self::TROUBLE_SHOOTING_MYSQLDUMP_URL);
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
         if (!$ssh) {
             $this->errorBlock('SSH is required.');
+            $this->line("Get Help: " . self::TROUBLE_SHOOTING_SSH_URL);
 
             return ExitCode::UNSPECIFIED_ERROR;
         }
