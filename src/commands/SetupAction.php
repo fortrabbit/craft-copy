@@ -39,7 +39,7 @@ class SetupAction extends Action
     public function run()
     {
         $this->input->setInteractive(true);
-        $app = $this->ask("What's the name of your App?");
+        $app = $this->ask("What's the name of your fortrabbit App?");
         $this->input->setInteractive($this->interactive);
 
         if (strlen($app) < 3 || strlen($app) > 16) {
@@ -56,7 +56,7 @@ class SetupAction extends Action
 
 
         $configName = $this->anticipate(
-            "What's a good name for the environment? <fg=default>(use arrow keys or type)</>",
+            "What's a good name for the environment of the fortrabbit App? <fg=default>(use arrow keys or type)</>",
             ['production', 'staging', 'stage', 'dev', 'prod'],
             'production'
         );
@@ -69,17 +69,17 @@ class SetupAction extends Action
         $this->checkAndWrite("Testing rsync", $this->canExecBinary("rsync --help"));
 
         $mysql = $this->checkAndWrite("Testing mysqldump", $this->canExecBinary("mysqldump --help"));
-        $ssh   = $this->checkAndWrite("Testing ssh access", $this->canExecBinary("ssh {$config->sshUrl} secrets"));
+        $ssh   = $this->checkAndWrite("Testing SSH access", $this->canExecBinary("ssh {$config->sshUrl} secrets"));
 
 
-        if (!$this->confirm("Do you want to install and enable the plugin with your App?", true)) {
+        if (!$this->confirm("Please confirm to install and enable the plugin with your fortrabbit App:", true)) {
             $this->noteBlock('Abort');
 
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
         if (!$mysql) {
-            $this->errorBlock('Mysqldump is required.');
+            $this->errorBlock('mysqldump is required.');
 
             return ExitCode::UNSPECIFIED_ERROR;
         }
@@ -176,7 +176,7 @@ class SetupAction extends Action
 
         if ($plugin->ssh->exec("ls vendor/bin/craft-copy-installer.php | wc -l")) {
             if (trim($plugin->ssh->getOutput()) != "1") {
-                if ($this->confirm("The plugin is not installed with your App! Do you want to deploy now?", true)) {
+                if ($this->confirm("The plugin is not installed with your fortrabbit App! Do you want to deploy now?", true)) {
                     $this->cmdBlock('copy/code/up');
                     if (Craft::$app->runAction('copy/code/up', ['interactive' => $this->interactive]) != 0) {
                         return false;
