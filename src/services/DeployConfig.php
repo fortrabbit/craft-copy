@@ -101,10 +101,20 @@ class DeployConfig
      */
     public function getFullPathToConfig()
     {
-        $file = str_replace('{name}', $this->name, self::FILE_NAME_TEMPLATE);
+        $file = $this->getConfigFileName();
 
         return \Craft::$app->getPath()->getConfigPath() . DIRECTORY_SEPARATOR . $file;
     }
+
+    /**
+     * @return string
+     * @throws \yii\base\Exception
+     */
+    public function getConfigFileName()
+    {
+        return str_replace('{name}', $this->name, self::FILE_NAME_TEMPLATE);
+    }
+
 
     /**
      * @return \fortrabbit\Copy\models\DeployConfig

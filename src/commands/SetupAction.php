@@ -42,7 +42,7 @@ class SetupAction extends Action
     public function run()
     {
         $this->input->setInteractive(true);
-        $app = $this->ask("What's the name of your App?");
+        $app = $this->ask("What's the name of your fortrabbit App?");
         $this->input->setInteractive($this->interactive);
 
         if (strlen($app) < 3 || strlen($app) > 16) {
@@ -143,7 +143,8 @@ class SetupAction extends Action
 
         // Check if file already exist
         if (file_exists(Plugin::getInstance()->config->getFullPathToConfig())) {
-            if (!$this->confirm("Do you want to overwrite your existing config?", true)) {
+            $file = Plugin::getInstance()->config->getConfigFileName();
+            if (!$this->confirm("Do you want to overwrite your existing config? ($file)", true)) {
                 return $config;
             }
         }
@@ -173,6 +174,8 @@ class SetupAction extends Action
         $app    = $plugin->config->get()->app;
 
         if ($plugin->ssh->exec("ls vendor/bin/craft-copy-installer.php | wc -l")) {
+
+            // No code deployed?
             if (trim($plugin->ssh->getOutput()) != "1") {
                 if ($this->confirm("The plugin is not installed with your App! Do you want to deploy now?", true)) {
                     $this->cmdBlock('copy/code/up');
@@ -183,12 +186,20 @@ class SetupAction extends Action
                     return false;
                 }
             }
+
+            // Existing setup? Try to pull DB.
+            else {
+                $this->cmdBlock('php craft copy/db/down');
+                return (Craft::$app->runAction('copy/db/down') != 0) ? false : true;
+            }
         }
 
+        // Enable plugin
         if ($plugin->ssh->exec('php vendor/bin/craft-copy-installer.php')) {
             $this->output->write($plugin->ssh->getOutput());
         };
 
+        // Push DB
         $this->cmdBlock('php craft copy/db/up');
         if (Craft::$app->runAction('copy/db/up', ['interactive' => $this->interactive, 'force' => true]) != 0) {
             return false;
