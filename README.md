@@ -104,7 +104,7 @@ Once your Apps are in place, you connect your local environment with each App.
 
 ```
 # Run this command to setup a new deployment configuration
-php craft copy setup
+php craft copy/setup
 ```
 
 The setup command creates a config files the Craft `/config` folder. You can modify and share them across your team.
