@@ -1,5 +1,10 @@
 #  Changelog
 
+## 1.0.0-RC3 - 2019-01-31
+- changed wordings
+- changed setup flow
+- better Craft 3.1 project config support
+
 ## 1.0.0-RC2 - 2018-11-26
 
 - Run migrations automatically via `fortrabbit/craft-auto-migrate`
