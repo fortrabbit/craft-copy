@@ -18,7 +18,6 @@ use yii\helpers\Inflector;
  */
 class SetupAction extends Action
 {
-
     const TROUBLE_SHOOTING_MYSQLDUMP_URL = "https://github.com/fortrabbit/craft-copy#trouble-shooting";
     const TROUBLE_SHOOTING_SSH_URL = "https://help.fortrabbit.com/ssh-keys";
 
@@ -59,7 +58,7 @@ class SetupAction extends Action
 
 
         $configName = $this->anticipate(
-            "What's a good name for the environment? <fg=default>(use arrow keys or type)</>",
+            "What's a good name for the environment of the fortrabbit App? <fg=default>(use arrow keys or type)</>",
             ['production', 'staging', 'stage', 'dev', 'prod'],
             'production'
         );
@@ -72,7 +71,7 @@ class SetupAction extends Action
         $this->checkAndWrite("Testing rsync", $this->canExecBinary("rsync --help"));
 
         $mysql = $this->checkAndWrite("Testing mysqldump", $this->canExecBinary("mysqldump --help"));
-        $ssh   = $this->checkAndWrite("Testing ssh access", $this->canExecBinary("ssh {$config->sshUrl} secrets"));
+        $ssh   = $this->checkAndWrite("Testing SSH access", $this->canExecBinary("ssh {$config->sshUrl} secrets"));
 
 
         if (!$mysql) {
@@ -180,7 +179,6 @@ class SetupAction extends Action
 
             // Yes. Existing setup? Try to pull DB.
             if (trim($plugin->ssh->getOutput()) == "1") {
-
                 $this->cmdBlock('php craft copy/db/down');
                 return (Craft::$app->runAction('copy/db/down') != 0) ? false : true;
             }

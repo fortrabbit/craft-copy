@@ -49,7 +49,6 @@ class DbImportAction extends Action
             }
 
             return ExitCode::OK;
-
         } catch (ShellCommandException $exception) {
             $this->errorBlock(['Mysql Import error', $exception->getMessage()]);
             return ExitCode::UNSPECIFIED_ERROR;
@@ -57,6 +56,5 @@ class DbImportAction extends Action
             $this->errorBlock([$exception->getMessage()]);
             return ExitCode::UNSPECIFIED_ERROR;
         }
-
     }
 }

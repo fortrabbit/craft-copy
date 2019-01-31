@@ -126,7 +126,7 @@ class InfoAction extends Action
             $configFile = $plugin->config->getFullPathToConfig();
             $rawYaml    = file_get_contents($configFile);
             $this->table([$configFile], [[$rawYaml]]);
-            $this->output->writeln(PHP_EOL.PHP_EOL);
+            $this->output->writeln(PHP_EOL . PHP_EOL);
         }
 
         return ExitCode::OK;
