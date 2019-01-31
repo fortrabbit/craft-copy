@@ -76,17 +76,19 @@ class SetupAction extends Action
 
 
         if (!$mysql) {
-            $this->errorBlock('Mysqldump is required. ');
+            $this->errorBlock('Mysqldump is required.');
             $this->line("Get Help: " . self::TROUBLE_SHOOTING_MYSQLDUMP_URL);
-            return ExitCode::UNSPECIFIED_ERROR;
         }
 
         if (!$ssh) {
             $this->errorBlock('SSH is required.');
             $this->line("Get Help: " . self::TROUBLE_SHOOTING_SSH_URL);
+        }
 
+        if ($mysql != true || $ssh != true) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
+
 
         return ($this->setupRemote())
             ? ExitCode::OK
@@ -173,24 +175,30 @@ class SetupAction extends Action
         $plugin = Plugin::getInstance();
         $app    = $plugin->config->get()->app;
 
+        // Is copy deployed aready?
         if ($plugin->ssh->exec("ls vendor/bin/craft-copy-installer.php | wc -l")) {
 
-            // No code deployed?
-            if (trim($plugin->ssh->getOutput()) != "1") {
+            // Yes. Existing setup? Try to pull DB.
+            if (trim($plugin->ssh->getOutput()) == "1") {
+
+                $this->cmdBlock('php craft copy/db/down');
+                return (Craft::$app->runAction('copy/db/down') != 0) ? false : true;
+            }
+
+            // Not installed
+            else {
+
+                // Try to deploy code
                 if ($this->confirm("The plugin is not installed with your App! Do you want to deploy now?", true)) {
                     $this->cmdBlock('copy/code/up');
                     if (Craft::$app->runAction('copy/code/up', ['interactive' => $this->interactive]) != 0) {
+                        // failed
                         return false;
                     }
                 } else {
+                    // failed
                     return false;
                 }
-            }
-
-            // Existing setup? Try to pull DB.
-            else {
-                $this->cmdBlock('php craft copy/db/down');
-                return (Craft::$app->runAction('copy/db/down') != 0) ? false : true;
             }
         }
 
