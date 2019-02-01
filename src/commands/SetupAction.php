@@ -89,7 +89,7 @@ class SetupAction extends Action
         }
 
 
-        return ($this->setupRemote())
+        return ($this->setupRemote($config))
             ? ExitCode::OK
             : ExitCode::UNSPECIFIED_ERROR;
     }
@@ -138,9 +138,7 @@ class SetupAction extends Action
         $config->app       = $app;
         $config->sshUrl    = "{$app}@deploy.{$region}.frbit.com";
         $config->gitRemote = "$app/master";
-
-        // Write yaml
-        Plugin::getInstance()->config->setName($configName);
+        $config->setName($configName);
 
         // Check if file already exist
         if (file_exists(Plugin::getInstance()->config->getFullPathToConfig())) {
@@ -152,6 +150,7 @@ class SetupAction extends Action
 
         // Write
         Plugin::getInstance()->config->persist($config);
+        Plugin::getInstance()->config->setName($configName);
 
         // Write .env
         foreach ([Plugin::ENV_DEFAULT_CONFIG => $configName] as $name => $value) {
@@ -169,7 +168,7 @@ class SetupAction extends Action
      * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
      * @throws \fortrabbit\Copy\exceptions\RemoteException
      */
-    protected function setupRemote()
+    protected function setupRemote(DeployConfig $config)
     {
         $plugin = Plugin::getInstance();
         $app    = $plugin->config->get()->app;
@@ -179,6 +178,12 @@ class SetupAction extends Action
 
             // Yes. Existing setup? Try to pull DB.
             if (trim($plugin->ssh->getOutput()) == "1") {
+
+                $this->head(
+                    "Craft was detected on remote.",
+                    "<comment>{$config}</comment> {$config->app}.frb.io"
+                );
+
                 $this->cmdBlock('php craft copy/db/down');
                 return (Craft::$app->runAction('copy/db/down') != 0) ? false : true;
             }
