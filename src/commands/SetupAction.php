@@ -174,9 +174,9 @@ class SetupAction extends Action
         $app    = $plugin->config->get()->app;
 
         // Is copy deployed aready?
-        if ($plugin->ssh->exec("ls vendor/bin/craft-copy-installer.php | wc -l")) {
+        if ($plugin->ssh->exec("ls vendor/bin/craft-copy-import-db.php | wc -l")) {
 
-            // Yes. Existing setup? Try to pull DB.
+            // Yes. Existing setup?
             if (trim($plugin->ssh->getOutput()) == "1") {
 
                 $this->head(
@@ -184,24 +184,25 @@ class SetupAction extends Action
                     "<comment>{$config}</comment> {$config->app}.frb.io"
                 );
 
-                $this->cmdBlock('php craft copy/db/down');
-                return (Craft::$app->runAction('copy/db/down') != 0) ? false : true;
+                $this->section('Do you need a copy of the remote?');
+                $this->line("craft copy/db/down" . PHP_EOL);
+                $this->line("craft copy/code/down" . PHP_EOL);
+
+                return true;
             }
 
             // Not installed
-            else {
 
-                // Try to deploy code
-                if ($this->confirm("The plugin is not installed with your App! Do you want to deploy now?", true)) {
-                    $this->cmdBlock('copy/code/up');
-                    if (Craft::$app->runAction('copy/code/up', ['interactive' => $this->interactive]) != 0) {
-                        // failed
-                        return false;
-                    }
-                } else {
+            // Try to deploy code
+            if ($this->confirm("The plugin is not installed with your App! Do you want to deploy now?", true)) {
+                $this->cmdBlock('copy/code/up');
+                if (Craft::$app->runAction('copy/code/up', ['interactive' => $this->interactive]) != 0) {
                     // failed
                     return false;
                 }
+            } else {
+                // failed
+                return false;
             }
         }
 
