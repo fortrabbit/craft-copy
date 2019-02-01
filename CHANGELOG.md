@@ -1,5 +1,10 @@
 #  Changelog
 
+## 1.0.0-RC4 - 2019-02-01
+- `copy/setup` is more resilient 
+- `copy/db/up --force` does not require the plugin to be enabled on the remote 
+- `copy/code/up` shows recent commits 
+
 ## 1.0.0-RC3 - 2019-01-31
 - changed wordings
 - changed setup flow
