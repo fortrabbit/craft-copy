@@ -1,4 +1,4 @@
-# Craft Copy Plugin (RC3)
+# Craft Copy Plugin (RC4)
 
 This little command line tool helps to speed up common tasks around Craft CMS deployment on [fortrabbit](https://www.fortrabbit.com/):
 
@@ -29,7 +29,7 @@ cd your/craft-project
 
 composer config platform --unset
 
-composer require fortrabbit/craft-copy:^1.0.0-RC3
+composer require fortrabbit/craft-copy:^1.0.0-RC4
 
 php craft install/plugin copy
 php craft copy/setup
@@ -55,8 +55,11 @@ php craft copy/info
 ### Database
 
 ```shell
-# Dump local DB and import it on remote
+# Dump local DB (backup remote db) and import it on remote
 php craft copy/db/up
+
+# Dump local DB and import it on remote (useful if the remote db is broken)
+php craft copy/db/up --force
 
 # Dump remote DB and import it locally
 php craft copy/db/down
@@ -183,17 +186,17 @@ echo 'export PATH=/Applications/MAMP/bin/php/php7.2.1/bin:$PATH' >>~/.bash_profi
 
 When installing the plugin via composer you may see an error like this:
 ```
-$ composer require fortrabbit/craft-copy:^1.0.0-RC3
+$ composer require fortrabbit/craft-copy:^1.0.0-RC4
   ./composer.json has been updated
   Loading composer repositories with package information
   Updating dependencies (including require-dev)
   Your requirements could not be resolved to an installable set of packages.
   
   Problem 1
-  - Installation request for fortrabbit/craft-copy ^1.0.0-RC3 -> satisfiable by fortrabbit/craft-copy[1.0.0-RC3].
+  - Installation request for fortrabbit/craft-copy ^1.0.0-RC4 -> satisfiable by fortrabbit/craft-copy[1.0.0-RC4].
   - Conclusion: remove symfony/console v3.3.6
   - Conclusion: don't install symfony/console v3.3.6
-  - fortrabbit/craft-copy 1.0.0-RC3 requires symfony/yaml ^4.1
+  - fortrabbit/craft-copy 1.0.0-RC4 requires symfony/yaml ^4.1
   [...]
    Problem 99
 ```
