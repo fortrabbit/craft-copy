@@ -36,18 +36,28 @@ class CodeUpAction extends ConfigAwareBaseAction
             $git->run('checkout', $branch);
         }
 
-        if (!$git->getWorkingCopy()->hasChanges()) {
-            if (!$this->confirm("No changes uncommitted detected. Push anyway?", true)) {
-                return ExitCode::OK;
-            }
-        }
-
         // Ask for remote
         // or create one
         // or pick the only one
         if (!$upstream = $this->getUpstream($git)) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
+
+        //$git->getWorkingCopy()->fetch($upstream);
+
+        try {
+            if ($log = $git->getWorkingCopy()->log("--format=(%h) %cr: %s ", "$upstream/master..HEAD")) {
+                $this->noteBlock("Recent changes:" . PHP_EOL . trim($log));
+            }
+        } catch (\Exception $e) {}
+
+
+        if (!$git->getWorkingCopy()->hasChanges()) {
+            if (!$this->confirm("About to push latest commits, proceed?", true)) {
+                return ExitCode::OK;
+            }
+        }
+
 
         if ($status = $git->getWorkingCopy()->getStatus()) {
 
