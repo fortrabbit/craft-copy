@@ -2,7 +2,7 @@
     "name": "fortrabbit/craft-copy",
     "description": "Tooling for Craft on fortrabbit",
     "type": "craft-plugin",
-    "version": "1.0.0-RC3",
+    "version": "1.0.0-RC4",
     "keywords": [
         "craft",
         "cms",
@@ -55,7 +55,6 @@
         "stan": "@ps"
     },
     "bin": [
-        "bin/craft-copy-installer.php",
         "bin/craft-copy-import-db.php",
         "bin/craft-copy-env.php"
     ]
