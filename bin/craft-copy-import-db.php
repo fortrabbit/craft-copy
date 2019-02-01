@@ -25,6 +25,7 @@ if (file_exists($root . '/.env')) {
 }
 
 // Bootstrap Craft
+/** @var \craft\console\Application $app */
 $app = require $root . '/vendor/craftcms/cms/bootstrap/console.php';
 
 if (count($argv) < 2 || stristr($argv[1], '.sql') == false) {
@@ -39,7 +40,7 @@ if (!file_exists($file)) {
     exit(1);
 }
 
-if (\Craft::$app->getIsInstalled()) {
+if ($app->getIsInstalled()) {
     echo "Craft is already installed!" . PHP_EOL;
     if (!in_array('--force', $argv)) {
         echo "Abort. No --force flag given." . PHP_EOL;
@@ -47,22 +48,22 @@ if (\Craft::$app->getIsInstalled()) {
     }
 }
 
-if (!getenv('DB_USER')) {
-    echo "No DB ENV vars found." . PHP_EOL;
+if (!$app->getConfig()->getDb()->database) {
+    echo "No DB Config found." . PHP_EOL;
     exit(1);
 }
 
-$cmd = 'mysql -u {DB_USER} -p{DB_PASSWORD} -h {DB_SERVER} {DB_DATABASE} < {file} && echo 1';
+$db     = $app->getConfig()->getDb();
+$cmd    = 'mysql -u {DB_USER} -p{DB_PASSWORD} -h {DB_SERVER} {DB_DATABASE} < {file} && echo 1';
 $tokens = [
-    '{file}' => $file,
-    '{DB_USER}' => getenv('DB_USER'),
-    '{DB_PASSWORD}' => getenv('DB_PASSWORD'),
-    '{DB_SERVER}' => getenv('DB_SERVER'),
-    '{DB_DATABASE}' => getenv('DB_DATABASE'),
+    '{file}'        => $file,
+    '{DB_USER}'     => $db->user,
+    '{DB_PASSWORD}' => $db->password,
+    '{DB_SERVER}'   => $db->server,
+    '{DB_DATABASE}' => $db->database,
 ];
 
-$cmd = str_replace(array_keys($tokens), array_values($tokens), $cmd);
-
+$cmd     = str_replace(array_keys($tokens), array_values($tokens), $cmd);
 $process = new \Symfony\Component\Process\Process($cmd);
 $process->run();
 
