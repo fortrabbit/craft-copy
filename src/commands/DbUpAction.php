@@ -78,7 +78,7 @@ class DbUpAction extends ConfigAwareBaseAction
 
             // Import on remote (does not require craft or copy on remote)
             $bar->setMessage($messages[] = "Importing dump on remote (raw)");
-            if ($plugin->ssh->importMysql($transferFile)) {
+            if ($plugin->ssh->exec("php vendor/bin/import-db.php {$transferFile} --force")) {
                 $bar->advance();
                 $bar->setMessage("Dump imported");
             }
