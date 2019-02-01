@@ -21,6 +21,8 @@ class Ssh extends Component
 
     const DOWNLOAD_COMMAND = 'ssh {remote} "cat {src} | gzip" | zcat > {target}';
 
+    const IMPORT_DUMP_COMMAND = 'ssh {remote} \'mysql -u "$MYSQL_USER" -p"$MYSQL_PASSWORD" -h "$MYSQL_HOST" "$APP_NAME" < {file} && echo 1\'';
+
     const SSH_EXEC_TIMEOUT = 1200;
 
     /**
@@ -117,6 +119,27 @@ class Ssh extends Component
 
 
     /**
+     * Run 'mysql < file' on remote
+     *
+     * @param string $file
+     *
+     * @return bool
+     * @throws \fortrabbit\Copy\exceptions\RemoteException
+     */
+    public function importMysql($file)
+    {
+        $process = new Process($this->getImportDumpCommand($file));
+        $process->setTimeout(self::SSH_EXEC_TIMEOUT);
+        $process->run();
+
+        if ($process->isSuccessful()) {
+            return true;
+        }
+
+        throw new RemoteException($process->getCommandLine() . PHP_EOL . $process->getErrorOutput());
+    }
+
+    /**
      * Plugin check on remote
      *
      * @throws \fortrabbit\Copy\exceptions\CraftNotInstalledException
@@ -158,6 +181,17 @@ class Ssh extends Component
         $tokens = [
             '{src}'    => $src,
             '{target}' => $target,
+            '{remote}' => $this->remote,
+        ];
+
+        return str_replace(array_keys($tokens), array_values($tokens), $cmd);
+    }
+
+    protected function getImportDumpCommand(string $file)
+    {
+        $cmd    = self::IMPORT_DUMP_COMMAND;
+        $tokens = [
+            '{file}' => $file,
             '{remote}' => $this->remote,
         ];
 

@@ -6,7 +6,7 @@ use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
 
 /**
- * Class DbDownAction
+ * Class DbUpAction
  *
  * @package fortrabbit\DeployTools\commands
  */
@@ -36,7 +36,7 @@ class DbUpAction extends ConfigAwareBaseAction
         $path         = './storage/';
         $transferFile = $path . 'craft-copy-transfer.sql';
         $backupFile   = $path . 'craft-copy-recent.sql';
-        $steps        = 4;
+        $steps        = ($this->force) ? 3 : 4;
         $messages     = [];
 
         $this->head(
@@ -74,26 +74,43 @@ class DbUpAction extends ConfigAwareBaseAction
             $bar->advance();
         }
 
-        // Step 3: Backup the remote database before importing the uploaded dump
-        $bar->setMessage($messages[] = "Creating DB Backup on remote ({$backupFile})");
-        if ($plugin->ssh->exec("php craft copy/db/to-file {$backupFile} --interactive=0")) {
-            $bar->advance();
+        if ($this->force) {
+
+            // Import on remote (does not require craft or copy on remote)
+            $bar->setMessage($messages[] = "Importing dump on remote (raw)");
+            if ($plugin->ssh->importMysql($transferFile)) {
+                $bar->advance();
+                $bar->setMessage("Dump imported");
+            }
+
+        } else {
+
+            // Step 3: Backup the remote database before importing the uploaded dump
+            $bar->setMessage($messages[] = "Creating DB Backup on remote ({$backupFile})");
+            if ($plugin->ssh->exec("php craft copy/db/to-file {$backupFile} --interactive=0")) {
+                $bar->advance();
+            }
+
+            // Step 4: Import on remote
+            $bar->setMessage($messages[] = "Importing dump on remote");
+            if ($plugin->ssh->exec("php craft copy/db/from-file {$transferFile} --interactive=0")) {
+                $bar->advance();
+                $bar->setMessage("Dump imported");
+            }
+
         }
 
-        // Step 4: Import on remote
-        $bar->setMessage($messages[] = "Importing dump on remote");
-        if ($plugin->ssh->exec("php craft copy/db/from-file {$transferFile} --interactive=0")) {
-            $bar->advance();
-            $bar->setMessage("Dump imported");
-        }
+
 
         $bar->finish();
 
         $this->section('Performed steps:');
         $this->listing($messages);
 
-        $this->section('Rollback?');
-        $this->line("ssh {$plugin->ssh->remote} 'php craft copy/db/from-file {$backupFile}'" . PHP_EOL);
+        if (!$this->force) {
+            $this->section('Rollback?');
+            $this->line("ssh {$plugin->ssh->remote} 'php craft copy/db/from-file {$backupFile}'" . PHP_EOL);
+        }
 
         return ExitCode::OK;
     }
