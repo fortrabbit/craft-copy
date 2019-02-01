@@ -37,7 +37,7 @@ class CodeUpAction extends ConfigAwareBaseAction
         }
 
         if (!$git->getWorkingCopy()->hasChanges()) {
-            if (!$this->confirm("No changes detected. Push anyway?", true)) {
+            if (!$this->confirm("No changes uncommitted detected. Push anyway?", true)) {
                 return ExitCode::OK;
             }
         }
