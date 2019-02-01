@@ -56,7 +56,7 @@
     },
     "bin": [
         "bin/craft-copy-installer.php",
-        "bin/craft-copy-env.php",
-        "bin/import-db.php"
+        "bin/craft-copy-import-db.php",
+        "bin/craft-copy-env.php"
     ]
 }
