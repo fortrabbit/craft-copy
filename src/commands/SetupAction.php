@@ -139,6 +139,7 @@ class SetupAction extends Action
         $config->sshUrl    = "{$app}@deploy.{$region}.frbit.com";
         $config->gitRemote = "$app/master";
         $config->setName($configName);
+        Plugin::getInstance()->config->setName($configName);
 
         // Check if file already exist
         if (file_exists(Plugin::getInstance()->config->getFullPathToConfig())) {

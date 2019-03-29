@@ -1,5 +1,9 @@
 #  Changelog
 
+## 1.0.0-RC5 - 2019-02-01
+- Fixed: use the correct environment name for config files
+- The non-existing `/storage` folder is created on the remote
+
 ## 1.0.0-RC4 - 2019-02-01
 - `copy/setup` is more resilient 
 - `copy/db/up --force` does not require the plugin to be enabled on the remote 

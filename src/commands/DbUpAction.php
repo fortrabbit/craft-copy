@@ -78,6 +78,10 @@ class DbUpAction extends ConfigAwareBaseAction
 
             // Import on remote (does not require craft or copy on remote)
             $bar->setMessage($messages[] = "Importing dump on remote (raw)");
+
+            // Try to create storage path first
+            $plugin->ssh->exec("mkdir -p $path");
+
             if ($plugin->ssh->exec("php vendor/bin/craft-copy-import-db.php {$transferFile} --force")) {
                 $bar->advance();
                 $bar->setMessage("Dump imported");
