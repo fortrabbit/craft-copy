@@ -2,9 +2,15 @@
 
 This little command line tool helps to speed up common tasks around Craft CMS deployment on [fortrabbit](https://www.fortrabbit.com/):
 
-* dump the database,
-* sync the assets folder,
-* push and pull code changes.
+* dump the database
+* sync the assets folder
+* push and pull code changes
+
+## What is does
+
+
+
+## How is works
 
 ## Requirements
 
