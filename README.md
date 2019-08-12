@@ -1,4 +1,4 @@
-# Craft Copy Plugin (RC5)
+# Craft Copy Plugin (RC6)
 
 This little command line tool helps to speed up common tasks around Craft CMS deployment on [fortrabbit](https://www.fortrabbit.com/):
 
@@ -29,7 +29,7 @@ cd your/craft-project
 
 composer config platform --unset
 
-composer require fortrabbit/craft-copy:^1.0.0-RC5
+composer require fortrabbit/craft-copy:^1.0.0-RC6
 
 php craft install/plugin copy
 php craft copy/setup
@@ -147,7 +147,6 @@ The setup is usually straight forward when the [system requirements](#requiremen
 ### Local MySQL connection error
 
 ```
-$ php craft install/plugin copy
   *** installing copy
   *** failed to install copy: Craft CMS can’t connect to the database with the credentials in config/db.php.
 ```

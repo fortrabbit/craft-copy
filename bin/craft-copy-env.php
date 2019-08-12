@@ -13,9 +13,11 @@ while (!file_exists($root . '/craft')) {
 // Composer autoloader
 require_once $root . '/vendor/autoload.php';
 
-// dotenv?
+// dotenv? 3.x vs 2.x
 if (file_exists($root . '/.env')) {
-    $dotenv = new Dotenv\Dotenv($root);
+    $dotenv = (method_exists('DotEnv\DotEnv', 'create'))
+        ? DotEnv\DotEnv::create($root)
+        : new Dotenv\Dotenv($root);
     $dotenv->load();
 }
 
