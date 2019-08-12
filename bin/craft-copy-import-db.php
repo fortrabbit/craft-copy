@@ -20,9 +20,9 @@ define('YII_DEBUG', false);
 
 // dotenv? 3.x vs 2.x
 if (file_exists($root . '/.env')) {
-    $dotenv = (method_exists('DotEnv\DotEnv', 'create'))
-        ? DotEnv\DotEnv::create($root)
-        : new Dotenv\Dotenv($root);
+    $dotenv = (method_exists('\Dotenv\Dotenv', 'create'))
+        ? \Dotenv\Dotenv::create($root)
+        : new \Dotenv\Dotenv($root);
     $dotenv->load();
 }
 
