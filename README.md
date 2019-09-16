@@ -1,19 +1,7 @@
+
 # Craft Copy Plugin (RC6)
 
-This little command line tool helps to speed up common tasks around Craft CMS deployment on [fortrabbit](https://www.fortrabbit.com/):
-
-* dump the database,
-* sync the assets folder,
-* push and pull code changes.
-
-## Requirements
-
-* macOS or Linux (no Windows support so far)
-* Craft 3
-* PHP 7.1
-* Composer installed
-* Executable binaries: `php`, `mysqldump`, `git` and `rsync` installed locally
-* SSH key installed with fortrabbit (no password auth so far)
+This little command line tool helps to speed up common tasks around Craft CMS deployment on [fortrabbit](https://www.fortrabbit.com/). Craft Copy syncs your local development environment with your fortrabbit App — up and down. It conveniently deploys deploys code changes and synchronizes latest images and database entries. This Craft CMS plugin will be installed locally and on the fortrabbit App.
 
 ## Demos
 
@@ -21,20 +9,59 @@ This little command line tool helps to speed up common tasks around Craft CMS de
 
 ![demo](https://github.com/fortrabbit/craft-copy/blob/master/resources/craft-copy-code-up.gif "Code sync")
 
+## Workflow
 
-## Installation (locally)
+### Initial development
+
+We assume that your are having a local development environment, where Craft CMS websites are developed mainly. Especially when getting started with a fresh project, **local is the master**. 
+
+### Go live
+
+Craft Copy comes in when you want to deploy your application to an App at fortrabbit. Initially,  when going live, or handing off the project to a content editor or showcasing it to a client. Craft Copy will help to deploy the application easily. 
+
+### Maintain
+
+Craft Copy is especially useful when your website project is evolving. Say your client is updating contents on the live application while you are tweaking design or working on a new feature. Craft Copy helps you merging the latest contents into your local development environment.
+
+## How it works
+
+With fortrabbit you can already use Git to deploy code, including Composer. Craft Copy enhances on that by adding support for assets and database contents. There are four data types: 
+
+1. **Template code** — configuration, templates and other logic you are writing is under version control and deployed via **Git**
+2. **Dependencies** — The Craft CMS core code and all plugins (including this one) are in the vendor folder, managed by **Composer (via Git)**
+3. **Assets** — Images and other media uploaded via the Craft Control Panel in the assets folder are excluded from Git and **rsynced**
+4. **Database** — MySQL contents are dumped, downloaded and imported with **mysqldump**
+
+## Requirements
+
+Apart from an App on fortrabbit, you'll need a local development environment (macOS or Linux) including:
+
+* Craft 3+
+* PHP 7.1+
+* Composer
+* Executable binaries: `php`, `mysqldump`, `git` and `rsync`
+* SSH key installed with fortrabbit (no password auth so far)
+
+## Installation
+
+Craft Copy is available in the [Craft CMS plugin store](https://plugins.craftcms.com/copy). Best install Craft Copy **locally** in the terminal with Composer like so:
 
 ```shell
+# Jump into your local Craft CMS folder
 cd your/craft-project
 
+# Require Craft Copy via Composer
 composer config platform --unset
-
 composer require fortrabbit/craft-copy:^1.0.0-RC6
 
+# Install the plugin with Craft CMS
 php craft install/plugin copy
+
+# Initialize the setup
 php craft copy/setup
 ```
 
+You will be guided through a form to connect your local App with the App on fortrabbit.
 
 ## Usage
 
@@ -79,7 +106,6 @@ php craft copy/code/up
 
 # Git pull 
 php craft copy/code/down
-
 ```
 
 ### Assets
@@ -127,7 +153,7 @@ php craft copy/code/up staging
 php craft copy/db/up staging
 ```
 
-### Run scripts before/after commands
+## Run scripts before/after commands
 
 Supported commands:
 
@@ -140,13 +166,14 @@ Supported commands:
 
 Here you can find some use cases: [config/fortrabbit.example-config.yaml](https://github.com/fortrabbit/craft-copy/blob/master/src/fortrabbit.example-config.yaml)
 
-## Trouble shooting
+## Troubleshooting
 
 The setup is usually straight forward when the [system requirements](#requirements) are fulfilled. However, depending on your local setup, you may run into errors. May errors are MAMP related and easy to fix:
 
 ### Local MySQL connection error
 
 ```
+php craft install/plugin copy
   *** installing copy
   *** failed to install copy: Craft CMS can’t connect to the database with the credentials in config/db.php.
 ```
@@ -156,7 +183,7 @@ The setup is usually straight forward when the [system requirements](#requiremen
 
 Find out if you can access mysqldump:
 ```
-$ which mysqldump
+which mysqldump
   mysqldump not found
 ```
 
@@ -169,11 +196,11 @@ echo 'export PATH=/Applications/MAMP/Library/bin:$PATH' >>~/.bash_profile
 
 Find out the php version on the command line:
 ```
-$ php -v
+php -v
   PHP 7.0.8 (cli) (built: Jun 26 2016 12:30:44) ( NTS )
   Copyright (c) 1997-2016 The PHP Group
   Zend Engine v3.0.0, Copyright (c) 1998-2016 Zend Technologies
-     with Zend OPcache v7.0.8, Copyright (c) 1999-2016, by Zend Technologie
+     with Zend OPcache v7.0.8, Copyright (c) 1999-2016, by Zend Technologies
 ```
 
 **Fix:** Add MAMP php bin path to your Bash profile
@@ -185,7 +212,7 @@ echo 'export PATH=/Applications/MAMP/bin/php/php7.2.1/bin:$PATH' >>~/.bash_profi
 
 When installing the plugin via composer you may see an error like this:
 ```
-$ composer require fortrabbit/craft-copy:^1.0.0-RC5
+composer require fortrabbit/craft-copy:^1.0.0-RC5
   ./composer.json has been updated
   Loading composer repositories with package information
   Updating dependencies (including require-dev)
@@ -202,7 +229,7 @@ $ composer require fortrabbit/craft-copy:^1.0.0-RC5
 
 **Fix:** Update all existing dependencies
 ```
-$ composer config platform --unset
-$ composer update
-$ php craft migrate/all
+composer config platform --unset
+composer update
+php craft migrate/all
 ```
