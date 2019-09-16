@@ -18,9 +18,11 @@ define('CRAFT_VENDOR_PATH', $root . '/vendor');
 define('CRAFT_BASE_PATH', $root);
 define('YII_DEBUG', false);
 
-// dotenv?
+// dotenv? 3.x vs 2.x
 if (file_exists($root . '/.env')) {
-    $dotenv = new Dotenv\Dotenv($root);
+    $dotenv = (method_exists('\Dotenv\Dotenv', 'create'))
+        ? \Dotenv\Dotenv::create($root)
+        : new \Dotenv\Dotenv($root);
     $dotenv->load();
 }
 
