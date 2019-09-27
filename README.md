@@ -1,5 +1,5 @@
 
-# Craft Copy Plugin (RC6)
+# Craft Copy Plugin (RC7)
 
 This little command line tool helps to speed up common tasks around Craft CMS deployment on [fortrabbit](https://www.fortrabbit.com/). Craft Copy syncs your local development environment with your fortrabbit App — up and down. It conveniently deploys deploys code changes and synchronizes latest images and database entries. This Craft CMS plugin will be installed locally and on the fortrabbit App.
 
@@ -52,7 +52,7 @@ cd your/craft-project
 
 # Require Craft Copy via Composer
 composer config platform --unset
-composer require fortrabbit/craft-copy:^1.0.0-RC6
+composer require fortrabbit/craft-copy:^1.0.0-RC7
 
 # Install the plugin with Craft CMS
 php craft install/plugin copy
