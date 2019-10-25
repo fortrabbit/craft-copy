@@ -29,18 +29,20 @@ With fortrabbit you can already use Git to deploy code, including Composer. Craf
 
 1. **Template code** — configuration, templates and other logic you are writing is under version control and deployed via **Git**
 2. **Dependencies** — The Craft CMS core code and all plugins (including this one) are in the vendor folder, managed by **Composer (via Git)**
-3. **Assets** — Images and other media uploaded via the Craft Control Panel in the assets folder are excluded from Git and **rsynced**
+3. **Assets** — Images and other media uploaded via the Craft Control Panel in the assets folder are excluded from Git and **rsynced** (Uni Apps only)
 4. **Database** — MySQL contents are dumped, downloaded and imported with **mysqldump**
 
 ## Requirements
 
-Apart from an App on fortrabbit, you'll need a local development environment (macOS or Linux) including:
+You'll need a local development environment (macOS or Linux) including:
 
 * Craft 3+
 * PHP 7.1+
 * Composer
 * Executable binaries: `php`, `mysqldump`, `git` and `rsync`
 * SSH key installed with fortrabbit (no password auth so far)
+
+And of course you will need an App with fortrabbit. Craft Copy works for Universal Apps and Professional Apps. Asset synchronisation is only available for Universal Apps with local asset volumes.
 
 ## Installation
 
