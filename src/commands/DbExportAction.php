@@ -2,6 +2,7 @@
 
 namespace fortrabbit\Copy\commands;
 
+use Craft;
 use craft\errors\ShellCommandException;
 use fortrabbit\Copy\Plugin;
 use yii\base\Exception;
@@ -26,6 +27,7 @@ class DbExportAction extends Action
     public function run(string $file = null)
     {
         $plugin = Plugin::getInstance();
+        $this->assureMyCfnForMysqldump();
         $this->info("Creating DB Dump in '{$file}'");
 
         try {
@@ -39,5 +41,20 @@ class DbExportAction extends Action
             $this->errorBlock([$exception->getMessage()]);
             return ExitCode::UNSPECIFIED_ERROR;
         }
+    }
+
+    /**
+     * @return bool
+     */
+    protected function assureMyCfnForMysqldump(): bool
+    {
+        $mycnfDest = Craft::getAlias("@root") . "/.gitignore";
+        $mycnfSrc  = Plugin::PLUGIN_ROOT_PATH . "/.my.cnf.example";
+
+        if (!file_exists($mycnfDest)) {
+            return copy($mycnfSrc, $mycnfDest);
+        }
+
+        return true;
     }
 }

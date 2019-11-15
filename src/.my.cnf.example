@@ -1,0 +1,5 @@
+[mysqldump]
+quick
+quote-names
+max_allowed_packet=64M
+set-gtid-purged=OFF

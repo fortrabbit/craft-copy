@@ -49,7 +49,8 @@ class Ssh extends Component
     public function exec(string $cmd)
     {
         $cmd     = sprintf('ssh %s "%s"', $this->remote, $cmd);
-        $process = new Process($cmd, CRAFT_BASE_PATH);
+        $process = Process::fromShellCommandline($cmd, CRAFT_BASE_PATH);
+
         $process->setTimeout(self::SSH_EXEC_TIMEOUT);
         $process->run();
 
