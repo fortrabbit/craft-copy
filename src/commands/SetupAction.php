@@ -117,8 +117,8 @@ class SetupAction extends Action
      */
     protected function canExecBinary(string $cmd)
     {
-        $proc     = new Process($cmd);
-        $exitCode = $proc->run();
+        $process  = Process::fromShellCommandline($cmd, CRAFT_BASE_PATH);
+        $exitCode = $process->run();
 
         return ($exitCode == 0) ? true : false;
     }
