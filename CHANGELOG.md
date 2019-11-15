@@ -1,5 +1,9 @@
 #  Changelog
 
+## 1.0.0-RC8 - 2019-11-15
+- More verbose SSH errors
+- Default .my.cnf to prevent GTID_PURGED errors
+
 ## 1.0.0-RC5 - 2019-02-01
 - Fixed: use the correct environment name for config files
 - The non-existing `/storage` folder is created on the remote
