@@ -67,7 +67,14 @@ class Ssh extends Component
             throw new PluginNotInstalledException("Plugin is not installed on remote.");
         }
 
-        throw new RemoteException("SSH Remote error: " . $process->getErrorOutput());
+        throw new RemoteException(
+            implode(PHP_EOL, [
+                "SSH Remote error: " . $process->getExitCode(),
+                "Command: " . $process->getCommandLine(),
+                "Output:",
+                $process->getErrorOutput()
+            ])
+        );
     }
 
 
