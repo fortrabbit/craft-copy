@@ -1,5 +1,8 @@
 #  Changelog
 
+## 1.0.0-RC9 - 2019-12-04
+- Fixed a bug where a .gitignore file was written instead of .my.cnf
+
 ## 1.0.0-RC8 - 2019-11-15
 - More verbose SSH errors
 - Default .my.cnf to prevent GTID_PURGED errors

@@ -48,7 +48,7 @@ class DbExportAction extends Action
      */
     protected function assureMyCfnForMysqldump(): bool
     {
-        $mycnfDest = Craft::getAlias("@root") . "/.gitignore";
+        $mycnfDest = Craft::getAlias("@root") . "/.my.cnf";
         $mycnfSrc  = Plugin::PLUGIN_ROOT_PATH . "/.my.cnf.example";
 
         if (!file_exists($mycnfDest)) {
