@@ -4,6 +4,7 @@ namespace fortrabbit\Copy;
 
 use Craft;
 use craft\base\Plugin as BasePlugin;
+use craft\db\Connection;
 use fortrabbit\Copy\Commands\AssetsDownAction;
 use fortrabbit\Copy\Commands\AssetsUpAction;
 use fortrabbit\Copy\Commands\CodeDownAction;
@@ -14,6 +15,8 @@ use fortrabbit\Copy\Commands\DbImportAction;
 use fortrabbit\Copy\Commands\DbUpAction;
 use fortrabbit\Copy\Commands\InfoAction;
 use fortrabbit\Copy\Commands\SetupAction;
+use fortrabbit\Copy\EventHandlers\CommandOutputFormatHandler;
+use fortrabbit\Copy\EventHandlers\IgnoredBackupTablesHandler;
 use fortrabbit\Copy\Services\DeployConfig;
 use fortrabbit\Copy\Services\Git;
 use fortrabbit\Copy\Services\Rsync;
@@ -96,6 +99,10 @@ class Plugin extends BasePlugin
             // Register console commands
             Bridge::registerGroup($group);
 
+            // Register Event Handlers
+            Event::on(Commands::class, Commands::EVENT_BEFORE_ACTION, new CommandOutputFormatHandler());
+            Event::on(Connection::class, Connection::EVENT_BEFORE_CREATE_BACKUP, new IgnoredBackupTablesHandler());
+
             // Register services
             $this->setComponents([
                 'config' => DeployConfig::class,
@@ -113,20 +120,6 @@ class Plugin extends BasePlugin
                 },
             ]);
 
-            Event::on(
-            /**
-             * @param \yii\base\ActionEvent $event
-             */
-                Commands::class,
-                Commands::EVENT_BEFORE_ACTION,
-                function (ActionEvent $event) {
-                    /** @var \ostark\Yii2ArtisanBridge\base\Action $action */
-                    $action = $event->action;
-                    $style = new OutputFormatterStyle('blue');
-                    $action->output->getFormatter()->setStyle('comment', $style);
-                    $action->output->getFormatter()->setStyle('info', $style);
-                }
-            );
         }
     }
 
