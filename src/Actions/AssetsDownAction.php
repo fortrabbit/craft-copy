@@ -1,6 +1,6 @@
 <?php
 
-namespace fortrabbit\Copy\Commands;
+namespace fortrabbit\Copy\Actions;
 
 use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Helpers\PathHelper;
@@ -8,11 +8,11 @@ use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
 
 /**
- * Class AssetsUpAction
+ * Class AssetsDownAction
  *
  * @package fortrabbit\Copy\Commands
  */
-class AssetsUpAction extends ConfigAwareBaseAction
+class AssetsDownAction extends ConfigAwareBaseAction
 {
     public $dryRun = false;
 
@@ -22,10 +22,10 @@ class AssetsUpAction extends ConfigAwareBaseAction
     use PathHelper;
 
     /**
-     * Upload Assets
+     * Download Assets
      *
      * @param string|null $config Name of the deploy config
-     * @param string|null $dir    Directory, relative to the project root, defaults to web/assets
+     * @param string|null $dir Directory, relative to the project root, defaults to web/assets
      *
      * @return int
      */
@@ -35,7 +35,7 @@ class AssetsUpAction extends ConfigAwareBaseAction
         $dir    = $dir ?: $this->getDefaultRelativeAssetPath();
         $dir    = $this->prepareForRsync($dir);
 
-        $this->section('Copy assets up');
+        $this->section('Copy assets down');
 
         // Info
         $this->rsyncInfo($dir, $plugin->rsync->remoteUrl);
@@ -47,7 +47,7 @@ class AssetsUpAction extends ConfigAwareBaseAction
 
         // Configure rsync
         $plugin->rsync->setOption('dryRun', $this->dryRun);
-        $plugin->rsync->setOption('remoteOrigin', false);
+        $plugin->rsync->setOption('remoteOrigin', true);
 
         // Type cmd
         if ($this->verbose) {

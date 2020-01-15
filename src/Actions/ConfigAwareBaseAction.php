@@ -1,6 +1,6 @@
 <?php
 
-namespace fortrabbit\Copy\Commands;
+namespace fortrabbit\Copy\Actions;
 
 use fortrabbit\Copy\Exceptions\DeployConfigNotFoundException;
 use fortrabbit\Copy\Helpers\ConfigHelper;

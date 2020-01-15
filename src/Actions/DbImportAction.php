@@ -1,6 +1,6 @@
 <?php
 
-namespace fortrabbit\Copy\Commands;
+namespace fortrabbit\Copy\Actions;
 
 use craft\errors\ShellCommandException;
 use craft\helpers\FileHelper;

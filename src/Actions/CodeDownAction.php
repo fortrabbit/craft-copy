@@ -1,6 +1,6 @@
 <?php
 
-namespace fortrabbit\Copy\Commands;
+namespace fortrabbit\Copy\Actions;
 
 use GitWrapper\GitException;
 use yii\console\ExitCode;

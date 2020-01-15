@@ -5,16 +5,16 @@ namespace fortrabbit\Copy;
 use Craft;
 use craft\base\Plugin as BasePlugin;
 use craft\db\Connection;
-use fortrabbit\Copy\Commands\AssetsDownAction;
-use fortrabbit\Copy\Commands\AssetsUpAction;
-use fortrabbit\Copy\Commands\CodeDownAction;
-use fortrabbit\Copy\Commands\CodeUpAction;
-use fortrabbit\Copy\Commands\DbDownAction;
-use fortrabbit\Copy\Commands\DbExportAction;
-use fortrabbit\Copy\Commands\DbImportAction;
-use fortrabbit\Copy\Commands\DbUpAction;
-use fortrabbit\Copy\Commands\InfoAction;
-use fortrabbit\Copy\Commands\SetupAction;
+use fortrabbit\Copy\Actions\AssetsDownAction;
+use fortrabbit\Copy\Actions\AssetsUpAction;
+use fortrabbit\Copy\Actions\CodeDownAction;
+use fortrabbit\Copy\Actions\CodeUpAction;
+use fortrabbit\Copy\Actions\DbDownAction;
+use fortrabbit\Copy\Actions\DbExportAction;
+use fortrabbit\Copy\Actions\DbImportAction;
+use fortrabbit\Copy\Actions\DbUpAction;
+use fortrabbit\Copy\Actions\InfoAction;
+use fortrabbit\Copy\Actions\SetupAction;
 use fortrabbit\Copy\EventHandlers\CommandOutputFormatHandler;
 use fortrabbit\Copy\EventHandlers\IgnoredBackupTablesHandler;
 use fortrabbit\Copy\Services\DeployConfig;
@@ -48,18 +48,14 @@ use fortrabbit\Copy\Services\Git as GitService;
  */
 class Plugin extends BasePlugin
 {
-    const ENV_NAME_APP = "APP_NAME";
+    const DASHBOARD_URL = "https://dashboard.fortrabbit.com";
     const ENV_DEPLOY_ENVIRONMENT = "DEPLOY_ENVIRONMENT";
     const ENV_DEFAULT_CONFIG = "DEFAULT_CONFIG";
-
-    const ENV_NAME_SSH_REMOTE = "APP_SSH_REMOTE";
     const PLUGIN_ROOT_PATH = __DIR__;
     const REGIONS = [
         'us1' => 'US (AWS US-EAST-1 / Virginia)',
         'eu2' => 'EU (AWS EU-WEST-1 / Ireland)'
     ];
-
-    const DASHBOARD_URL = "https://dashboard.fortrabbit.com";
 
     /**
      * Initialize Plugin
@@ -125,14 +121,4 @@ class Plugin extends BasePlugin
 
     }
 
-
-    /**
-     * Creates and returns the model used to store the plugin’s settings.
-     *
-     * @return \yii\base\Model
-     */
-    protected function createSettingsModel()
-    {
-        return new Model();
-    }
 }
