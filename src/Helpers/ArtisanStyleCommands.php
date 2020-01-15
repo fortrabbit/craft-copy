@@ -1,6 +1,6 @@
 <?php
 
-namespace fortrabbit\Copy\helpers;
+namespace fortrabbit\Copy\Helpers;
 
 use ostark\Yii2ArtisanBridge\base\Commands;
 

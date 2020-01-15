@@ -1,6 +1,6 @@
 <?php
 
-namespace fortrabbit\Copy\commands;
+namespace fortrabbit\Copy\Commands;
 
 use Craft;
 use craft\errors\ShellCommandException;
@@ -12,7 +12,7 @@ use ostark\Yii2ArtisanBridge\base\Action;
 /**
  * Class DbExportAction
  *
- * @package fortrabbit\DeployTools\commands
+ * @package fortrabbit\Copy\Commands
  */
 class DbExportAction extends Action
 {

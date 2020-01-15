@@ -1,11 +1,15 @@
 <?php
 
-namespace fortrabbit\Copy\commands;
+namespace fortrabbit\Copy\Commands;
 
-use fortrabbit\Copy\Plugin;
 use GitWrapper\GitException;
 use yii\console\ExitCode;
 
+/**
+ * Class CodeDownAction
+ *
+ * @package fortrabbit\Copy\Commands
+ */
 class CodeDownAction extends ConfigAwareBaseAction
 {
 

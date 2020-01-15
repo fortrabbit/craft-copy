@@ -1,6 +1,6 @@
 <?php
 
-namespace fortrabbit\Copy\services;
+namespace fortrabbit\Copy\Services;
 
 use fortrabbit\Copy\Plugin;
 use GitWrapper\GitException;
@@ -31,7 +31,7 @@ final class Git
      *
      * @param string $directory Path to the directory containing the working copy.
      *
-     * @return \fortrabbit\Copy\services\Git
+     * @return \fortrabbit\Copy\Services\Git
      */
     public static function fromDirectory(string $directory)
     {
@@ -48,7 +48,7 @@ final class Git
      * @param string  $directory  The directory that the repository will be cloned into.
      * @param mixed[] $options    An associative array of command line options.
      *
-     * @return \fortrabbit\Copy\services\Git
+     * @return \fortrabbit\Copy\Services\Git
      */
     public static function fromClone(string $repository, ?string $directory = null, array $options = [])
     {

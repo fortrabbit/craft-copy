@@ -1,9 +1,9 @@
 <?php
 
-namespace fortrabbit\Copy\commands;
+namespace fortrabbit\Copy\Commands;
 
-use fortrabbit\Copy\exceptions\DeployConfigNotFoundException;
-use fortrabbit\Copy\helpers\ConfigHelper;
+use fortrabbit\Copy\Exceptions\DeployConfigNotFoundException;
+use fortrabbit\Copy\Helpers\ConfigHelper;
 use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
 use ostark\Yii2ArtisanBridge\base\Commands;
@@ -21,7 +21,7 @@ abstract class ConfigAwareBaseAction extends Action
     public $env = null;
 
     /**
-     * @var null|\fortrabbit\Copy\models\DeployConfig
+     * @var null|\fortrabbit\Copy\Models\DeployConfig
      */
     protected $config = null;
 

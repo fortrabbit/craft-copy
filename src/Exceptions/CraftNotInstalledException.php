@@ -6,7 +6,7 @@
  * Time: 22:45
  */
 
-namespace fortrabbit\Copy\exceptions;
+namespace fortrabbit\Copy\Exceptions;
 
 class CraftNotInstalledException extends RemoteException
 {

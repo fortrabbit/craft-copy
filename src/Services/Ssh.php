@@ -1,11 +1,11 @@
 <?php
 
-namespace fortrabbit\Copy\services;
+namespace fortrabbit\Copy\Services;
 
 use craft\base\Component;
-use fortrabbit\Copy\exceptions\CraftNotInstalledException;
-use fortrabbit\Copy\exceptions\PluginNotInstalledException;
-use fortrabbit\Copy\exceptions\RemoteException;
+use fortrabbit\Copy\Exceptions\CraftNotInstalledException;
+use fortrabbit\Copy\Exceptions\PluginNotInstalledException;
+use fortrabbit\Copy\Exceptions\RemoteException;
 use Symfony\Component\Process\Process;
 
 /**
@@ -42,9 +42,9 @@ class Ssh extends Component
      * @param string $cmd
      *
      * @return bool
-     * @throws \fortrabbit\Copy\exceptions\CraftNotInstalledException
-     * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
-     * @throws \fortrabbit\Copy\exceptions\RemoteException
+     * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException
+     * @throws \fortrabbit\Copy\Exceptions\PluginNotInstalledException
+     * @throws \fortrabbit\Copy\Exceptions\RemoteException
      */
     public function exec(string $cmd)
     {
@@ -86,7 +86,7 @@ class Ssh extends Component
      * @param string $target
      *
      * @return bool
-     * @throws \fortrabbit\Copy\exceptions\RemoteException
+     * @throws \fortrabbit\Copy\Exceptions\RemoteException
      */
     public function upload($src, $target)
     {
@@ -108,7 +108,7 @@ class Ssh extends Component
      * @param string $target
      *
      * @return bool
-     * @throws \fortrabbit\Copy\exceptions\RemoteException
+     * @throws \fortrabbit\Copy\Exceptions\RemoteException
      */
     public function download($src, $target)
     {
@@ -127,9 +127,9 @@ class Ssh extends Component
     /**
      * Plugin check on remote
      *
-     * @throws \fortrabbit\Copy\exceptions\CraftNotInstalledException
-     * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
-     * @throws \fortrabbit\Copy\exceptions\RemoteException
+     * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException
+     * @throws \fortrabbit\Copy\Exceptions\PluginNotInstalledException
+     * @throws \fortrabbit\Copy\Exceptions\RemoteException
      */
     public function checkPlugin()
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace fortrabbit\Copy\helpers;
+namespace fortrabbit\Copy\Helpers;
 
 use fortrabbit\Copy\Plugin;
 use Symfony\Component\Console\Helper\TableSeparator;

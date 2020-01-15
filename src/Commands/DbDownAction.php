@@ -1,6 +1,6 @@
 <?php
 
-namespace fortrabbit\Copy\commands;
+namespace fortrabbit\Copy\Commands;
 
 use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
@@ -8,7 +8,7 @@ use yii\console\ExitCode;
 /**
  * Class DbDownAction
  *
- * @package fortrabbit\DeployTools\commands
+ * @package fortrabbit\Copy\Commands
  */
 class DbDownAction extends ConfigAwareBaseAction
 {
@@ -22,9 +22,9 @@ class DbDownAction extends ConfigAwareBaseAction
      *
      * @throws \craft\errors\FileException
      * @throws \craft\errors\ShellCommandException
-     * @throws \fortrabbit\Copy\exceptions\CraftNotInstalledException
-     * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
-     * @throws \fortrabbit\Copy\exceptions\RemoteException
+     * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException
+     * @throws \fortrabbit\Copy\Exceptions\PluginNotInstalledException
+     * @throws \fortrabbit\Copy\Exceptions\RemoteException
      * @throws \yii\base\Exception
      */
     public function run(string $config = null)

@@ -1,10 +1,10 @@
 <?php
 
-namespace fortrabbit\Copy\commands;
+namespace fortrabbit\Copy\Commands;
 
 use Craft;
-use fortrabbit\Copy\helpers\ConsoleOutputHelper;
-use fortrabbit\Copy\models\DeployConfig;
+use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
+use fortrabbit\Copy\Models\DeployConfig;
 use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
 use Symfony\Component\Process\Process;
@@ -14,7 +14,7 @@ use yii\helpers\Inflector;
 /**
  * Class SetupAction
  *
- * @package fortrabbit\Copy\commands
+ * @package fortrabbit\Copy\Commands
  */
 class SetupAction extends Action
 {
@@ -34,9 +34,9 @@ class SetupAction extends Action
      * Setup your App
      *
      * @return int
-     * @throws \fortrabbit\Copy\exceptions\CraftNotInstalledException
-     * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
-     * @throws \fortrabbit\Copy\exceptions\RemoteException
+     * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException
+     * @throws \fortrabbit\Copy\Exceptions\PluginNotInstalledException
+     * @throws \fortrabbit\Copy\Exceptions\RemoteException
      */
     public function run()
     {
@@ -129,7 +129,7 @@ class SetupAction extends Action
      * @param string $region
      * @param string $configName
      *
-     * @return \fortrabbit\Copy\models\DeployConfig
+     * @return \fortrabbit\Copy\Models\DeployConfig
      * @throws \yii\base\Exception
      */
     protected function writeDeployConfig(string $app, string $region, string $configName)
@@ -165,9 +165,9 @@ class SetupAction extends Action
 
     /**
      * @return bool
-     * @throws \fortrabbit\Copy\exceptions\CraftNotInstalledException
-     * @throws \fortrabbit\Copy\exceptions\PluginNotInstalledException
-     * @throws \fortrabbit\Copy\exceptions\RemoteException
+     * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException
+     * @throws \fortrabbit\Copy\Exceptions\PluginNotInstalledException
+     * @throws \fortrabbit\Copy\Exceptions\RemoteException
      */
     protected function setupRemote(DeployConfig $config)
     {

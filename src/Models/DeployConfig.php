@@ -1,6 +1,6 @@
 <?php
 
-namespace fortrabbit\Copy\models;
+namespace fortrabbit\Copy\Models;
 
 use craft\base\Model;
 use craft\helpers\StringHelper;

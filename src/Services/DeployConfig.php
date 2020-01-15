@@ -7,11 +7,11 @@
  * @copyright Copyright (c) 2018 Oliver Stark
  */
 
-namespace fortrabbit\Copy\services;
+namespace fortrabbit\Copy\Services;
 
-use fortrabbit\Copy\exceptions\DeployConfigNotFoundException;
+use fortrabbit\Copy\Exceptions\DeployConfigNotFoundException;
 use Symfony\Component\Yaml\Yaml;
-use fortrabbit\Copy\models\DeployConfig as DeployConfigModel;
+use fortrabbit\Copy\Models\DeployConfig as DeployConfigModel;
 
 class DeployConfig
 {
@@ -23,7 +23,7 @@ class DeployConfig
     protected $name = 'production';
 
     /**
-     * @var \fortrabbit\Copy\models\DeployConfig | null $config
+     * @var \fortrabbit\Copy\Models\DeployConfig | null $config
      */
     protected $config;
 
@@ -41,8 +41,8 @@ class DeployConfig
     }
 
     /**
-     * @return \fortrabbit\Copy\models\DeployConfig
-     * @throws \fortrabbit\Copy\exceptions\DeployConfigNotFoundException
+     * @return \fortrabbit\Copy\Models\DeployConfig
+     * @throws \fortrabbit\Copy\Exceptions\DeployConfigNotFoundException
      */
     public function get(): DeployConfigModel
     {
@@ -75,7 +75,7 @@ class DeployConfig
     }
 
     /**
-     * @param \fortrabbit\Copy\models\DeployConfig $config
+     * @param \fortrabbit\Copy\Models\DeployConfig $config
      *
      * @return bool
      * @throws \yii\base\Exception
@@ -117,8 +117,8 @@ class DeployConfig
 
 
     /**
-     * @return \fortrabbit\Copy\models\DeployConfig
-     * @throws \fortrabbit\Copy\exceptions\DeployConfigNotFoundException
+     * @return \fortrabbit\Copy\Models\DeployConfig
+     * @throws \fortrabbit\Copy\Exceptions\DeployConfigNotFoundException
      */
     protected function getConfigDataFromFile(): DeployConfigModel
     {

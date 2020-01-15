@@ -4,19 +4,19 @@ namespace fortrabbit\Copy;
 
 use Craft;
 use craft\base\Plugin as BasePlugin;
-use fortrabbit\Copy\commands\AssetsDownAction;
-use fortrabbit\Copy\commands\AssetsUpAction;
-use fortrabbit\Copy\commands\CodeDownAction;
-use fortrabbit\Copy\commands\CodeUpAction;
-use fortrabbit\Copy\commands\DbDownAction;
-use fortrabbit\Copy\commands\DbExportAction;
-use fortrabbit\Copy\commands\DbImportAction;
-use fortrabbit\Copy\commands\DbUpAction;
-use fortrabbit\Copy\commands\InfoAction;
-use fortrabbit\Copy\commands\SetupAction;
-use fortrabbit\Copy\services\DeployConfig;
-use fortrabbit\Copy\services\Git;
-use fortrabbit\Copy\services\Rsync;
+use fortrabbit\Copy\Commands\AssetsDownAction;
+use fortrabbit\Copy\Commands\AssetsUpAction;
+use fortrabbit\Copy\Commands\CodeDownAction;
+use fortrabbit\Copy\Commands\CodeUpAction;
+use fortrabbit\Copy\Commands\DbDownAction;
+use fortrabbit\Copy\Commands\DbExportAction;
+use fortrabbit\Copy\Commands\DbImportAction;
+use fortrabbit\Copy\Commands\DbUpAction;
+use fortrabbit\Copy\Commands\InfoAction;
+use fortrabbit\Copy\Commands\SetupAction;
+use fortrabbit\Copy\Services\DeployConfig;
+use fortrabbit\Copy\Services\Git;
+use fortrabbit\Copy\Services\Rsync;
 
 use ostark\Yii2ArtisanBridge\ActionGroup;
 use ostark\Yii2ArtisanBridge\base\Commands;
@@ -28,10 +28,10 @@ use yii\base\Event;
 use yii\base\Model;
 use yii\console\Application as ConsoleApplication;
 
-use fortrabbit\Copy\services\Ssh as SshService;
-use fortrabbit\Copy\services\Dump as DumpService;
-use fortrabbit\Copy\services\Rsync as RsyncService;
-use fortrabbit\Copy\services\Git as GitService;
+use fortrabbit\Copy\Services\Ssh as SshService;
+use fortrabbit\Copy\Services\Dump as DumpService;
+use fortrabbit\Copy\Services\Rsync as RsyncService;
+use fortrabbit\Copy\Services\Git as GitService;
 
 /**
  * Class Plugin

@@ -1,6 +1,6 @@
 <?php
 
-namespace fortrabbit\Copy\exceptions;
+namespace fortrabbit\Copy\Exceptions;
 
 use yii\base\Exception;
 

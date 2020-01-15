@@ -1,14 +1,19 @@
 <?php
 
-namespace fortrabbit\Copy\commands;
+namespace fortrabbit\Copy\Commands;
 
-use fortrabbit\Copy\helpers\ConsoleOutputHelper;
+use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Yaml\Yaml;
 use yii\console\ExitCode;
 
+/**
+ * Class InfoAction
+ *
+ * @package fortrabbit\Copy\Commands
+ */
 class InfoAction extends Action
 {
     public $verbose = false;

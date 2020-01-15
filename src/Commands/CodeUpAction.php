@@ -1,11 +1,16 @@
 <?php
 
-namespace fortrabbit\Copy\commands;
+namespace fortrabbit\Copy\Commands;
 
-use fortrabbit\Copy\services\Git;
+use fortrabbit\Copy\Services\Git;
 use GitWrapper\GitException;
 use yii\console\ExitCode;
 
+/**
+ * Class CodeUpAction
+ *
+ * @package fortrabbit\Copy\Commands
+ */
 class CodeUpAction extends ConfigAwareBaseAction
 {
 
@@ -106,7 +111,7 @@ class CodeUpAction extends ConfigAwareBaseAction
     /**
      * Dialog helper to choose the Remote
      *
-     * @param \fortrabbit\Copy\services\Git $git
+     * @param \fortrabbit\Copy\Services\Git $git
      *
      * @return string upstream
      */

@@ -1,6 +1,6 @@
 <?php
 
-namespace fortrabbit\Copy\commands;
+namespace fortrabbit\Copy\Commands;
 
 use craft\errors\ShellCommandException;
 use craft\helpers\FileHelper;
@@ -12,7 +12,7 @@ use yii\console\ExitCode;
 /**
  * Class DbImportAction
  *
- * @package fortrabbit\DeployTools\commands
+ * @package fortrabbit\Copy\Commands
  */
 class DbImportAction extends Action
 {

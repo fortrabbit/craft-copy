@@ -6,7 +6,7 @@
  * Time: 22:46
  */
 
-namespace fortrabbit\Copy\exceptions;
+namespace fortrabbit\Copy\Exceptions;
 
 class PluginNotInstalledException extends RemoteException
 {

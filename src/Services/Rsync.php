@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2018 Oliver Stark
  */
 
-namespace fortrabbit\Copy\services;
+namespace fortrabbit\Copy\Services;
 
 /**
  * Rsync Service
