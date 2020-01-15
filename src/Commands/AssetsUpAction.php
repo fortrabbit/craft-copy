@@ -25,13 +25,14 @@ class AssetsUpAction extends ConfigAwareBaseAction
      * Upload Assets
      *
      * @param string|null $config Name of the deploy config
-     * @param string $dir Directory, relative to the project root
+     * @param string|null $dir    Directory, relative to the project root, defaults to web/assets
      *
      * @return int
      */
-    public function run(string $config = null, $dir = 'web/assets')
+    public function run(string $config = null, string $dir = null)
     {
         $plugin = Plugin::getInstance();
+        $dir    = $dir ?: $this->getDefaultRelativeAssetPath();
         $dir    = $this->prepareForRsync($dir);
 
         $this->section('Copy assets up');

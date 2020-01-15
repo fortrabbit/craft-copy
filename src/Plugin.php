@@ -25,8 +25,6 @@ use ostark\Yii2ArtisanBridge\ActionGroup;
 use ostark\Yii2ArtisanBridge\base\Commands;
 use ostark\Yii2ArtisanBridge\Bridge;
 
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
-use yii\base\ActionEvent;
 use yii\base\Event;
 use yii\base\Model;
 use yii\console\Application as ConsoleApplication;
@@ -70,57 +68,61 @@ class Plugin extends BasePlugin
     {
         parent::init();
 
-        if (Craft::$app instanceof ConsoleApplication) {
-            $group = (new ActionGroup('copy', 'Copy Craft between environments.'))
-                ->setActions([
-                    'assets/up'    => AssetsUpAction::class,
-                    'assets/down'  => AssetsDownAction::class,
-                    'code/up'      => CodeUpAction::class,
-                    'code/down'    => CodeDownAction::class,
-                    'db/up'        => DbUpAction::class,
-                    'db/down'      => DbDownAction::class,
-                    'db/to-file'   => DbExportAction::class,
-                    'db/from-file' => DbImportAction::class,
-                    'setup'        => SetupAction::class,
-                    'info'         => InfoAction::class
-                ])
-                ->setDefaultAction('info')
-                ->setOptions(
-                    [
-                        'v' => 'verbose',
-                        'd' => 'directory',
-                        'n' => 'dryRun',
-                        'a' => 'app',
-                        'e' => 'env',
-                        'f' => 'force'
-                    ]
-                );
-
-            // Register console commands
-            Bridge::registerGroup($group);
-
-            // Register Event Handlers
-            Event::on(Commands::class, Commands::EVENT_BEFORE_ACTION, new CommandOutputFormatHandler());
-            Event::on(Connection::class, Connection::EVENT_BEFORE_CREATE_BACKUP, new IgnoredBackupTablesHandler());
-
-            // Register services
-            $this->setComponents([
-                'config' => DeployConfig::class,
-                'dump'   => function () {
-                    return new DumpService(['db' => Craft::$app->getDb()]);
-                },
-                'git'    => function () {
-                    return GitService::fromDirectory(\Craft::getAlias('@root') ?: CRAFT_BASE_PATH);
-                },
-                'rsync'  => function () {
-                    return RsyncService::remoteFactory($this->config->get()->sshUrl);
-                },
-                'ssh'    => function () {
-                    return new SshService(['remote' => $this->config->get()->sshUrl]);
-                },
-            ]);
-
+        // Only console matters
+        if (!(Craft::$app instanceof ConsoleApplication)) {
+            return;
         }
+
+        // Console commands
+        $group = (new ActionGroup('copy', 'Copy Craft between environments.'))
+            ->setActions([
+                'assets/up'    => AssetsUpAction::class,
+                'assets/down'  => AssetsDownAction::class,
+                'code/up'      => CodeUpAction::class,
+                'code/down'    => CodeDownAction::class,
+                'db/up'        => DbUpAction::class,
+                'db/down'      => DbDownAction::class,
+                'db/to-file'   => DbExportAction::class,
+                'db/from-file' => DbImportAction::class,
+                'setup'        => SetupAction::class,
+                'info'         => InfoAction::class
+            ])
+            ->setDefaultAction('info')
+            ->setOptions(
+                [
+                    'v' => 'verbose',
+                    'd' => 'directory',
+                    'n' => 'dryRun',
+                    'a' => 'app',
+                    'e' => 'env',
+                    'f' => 'force'
+                ]
+            );
+
+        // Register console commands
+        Bridge::registerGroup($group);
+
+        // Register Event Handlers
+        Event::on(Commands::class, Commands::EVENT_BEFORE_ACTION, new CommandOutputFormatHandler());
+        Event::on(Connection::class, Connection::EVENT_BEFORE_CREATE_BACKUP, new IgnoredBackupTablesHandler());
+
+        // Register (singleton) services
+        $this->setComponents([
+            'config' => DeployConfig::class,
+            'dump'   => function () {
+                return new DumpService(['db' => Craft::$app->getDb()]);
+            },
+            'git'    => function () {
+                return GitService::fromDirectory(\Craft::getAlias('@root') ?: CRAFT_BASE_PATH);
+            },
+            'rsync'  => function () {
+                return RsyncService::remoteFactory($this->config->get()->sshUrl);
+            },
+            'ssh'    => function () {
+                return new SshService(['remote' => $this->config->get()->sshUrl]);
+            },
+        ]);
+
     }
 
 
