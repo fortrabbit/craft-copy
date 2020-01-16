@@ -3,6 +3,7 @@
 namespace fortrabbit\Copy\Actions;
 
 use fortrabbit\Copy\Plugin;
+use PHP_CodeSniffer\Exceptions\RuntimeException;
 use yii\console\ExitCode;
 
 /**
@@ -58,7 +59,13 @@ class DbUpAction extends ConfigAwareBaseAction
         $bar = $this->output->createProgressBar($steps);
 
         // Custom format
-        $bar->setFormat('%message%' . PHP_EOL . '%bar% %percent:3s% %' . PHP_EOL . 'time:  %elapsed:6s%/%estimated:-6s%' . PHP_EOL . PHP_EOL);
+        $lines = [
+            '%message%',
+            '%bar% %percent:3s% %',
+            'time:  %elapsed:6s%/%estimated:-6s%'
+        ];
+
+        $bar->setFormat(implode(PHP_EOL, $lines) . PHP_EOL . PHP_EOL);
         $bar->setBarCharacter('<info>' . $bar->getBarCharacter() . '</info>');
         $bar->setBarWidth(70);
 
@@ -75,7 +82,6 @@ class DbUpAction extends ConfigAwareBaseAction
         }
 
         if ($this->force) {
-
             // Import on remote (does not require craft or copy on remote)
             $bar->setMessage($messages[] = "Importing dump on remote (raw)");
 
@@ -86,9 +92,7 @@ class DbUpAction extends ConfigAwareBaseAction
                 $bar->advance();
                 $bar->setMessage("Dump imported");
             }
-
         } else {
-
             // Step 3: Backup the remote database before importing the uploaded dump
             $bar->setMessage($messages[] = "Creating DB Backup on remote ({$backupFile})");
             if ($plugin->ssh->exec("php craft copy/db/to-file {$backupFile} --interactive=0")) {
@@ -101,7 +105,6 @@ class DbUpAction extends ConfigAwareBaseAction
                 $bar->advance();
                 $bar->setMessage("Dump imported");
             }
-
         }
 
 

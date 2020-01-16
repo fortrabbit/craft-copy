@@ -10,16 +10,17 @@ use yii\console\ExitCode;
 /**
  * Class AssetsUpAction
  *
- * @package fortrabbit\Copy\Commands
+ * @package fortrabbit\Copy\Actions
  */
 class AssetsUpAction extends ConfigAwareBaseAction
 {
+    use ConsoleOutputHelper;
+    use PathHelper;
+
     public $dryRun = false;
 
     public $verbose = false;
 
-    use ConsoleOutputHelper;
-    use PathHelper;
 
     /**
      * Upload Assets

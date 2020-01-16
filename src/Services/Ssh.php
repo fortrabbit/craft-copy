@@ -17,11 +17,11 @@ use Symfony\Component\Process\Process;
  */
 class Ssh extends Component
 {
-    const UPLOAD_COMMAND = 'cat {src} | gzip | ssh {remote} "zcat > {target}"';
+    public const UPLOAD_COMMAND = 'cat {src} | gzip | ssh {remote} "zcat > {target}"';
 
-    const DOWNLOAD_COMMAND = 'ssh {remote} "cat {src} | gzip" | zcat > {target}';
+    public const DOWNLOAD_COMMAND = 'ssh {remote} "cat {src} | gzip" | zcat > {target}';
 
-    const SSH_EXEC_TIMEOUT = 1200;
+    public const SSH_EXEC_TIMEOUT = 1200;
 
     /**
      * @var string
@@ -37,6 +37,86 @@ class Ssh extends Component
     // =========================================================================
 
     /**
+     * Upload a single file
+     *
+     * @param string $src
+     * @param string $target
+     *
+     * @return bool
+     * @throws \fortrabbit\Copy\Exceptions\RemoteException
+     */
+    public function upload($src, $target)
+    {
+        $process = new Process($this->getUploadCommand($src, $target));
+        $process->setTimeout(self::SSH_EXEC_TIMEOUT);
+        $process->run();
+
+        if ($process->isSuccessful()) {
+            return true;
+        }
+
+        throw new RemoteException($process->getCommandLine() . PHP_EOL . $process->getErrorOutput());
+    }
+
+    protected function getUploadCommand(string $src, string $target)
+    {
+        $cmd = self::UPLOAD_COMMAND;
+        $tokens = [
+            '{src}' => $src,
+            '{target}' => $target,
+            '{remote}' => $this->remote,
+        ];
+
+        return str_replace(array_keys($tokens), array_values($tokens), $cmd);
+    }
+
+    /**
+     * Download a single file
+     *
+     * @param string $src
+     * @param string $target
+     *
+     * @return bool
+     * @throws \fortrabbit\Copy\Exceptions\RemoteException
+     */
+    public function download($src, $target)
+    {
+        $process = new Process($this->getDownloadCommand($src, $target));
+        $process->setTimeout(self::SSH_EXEC_TIMEOUT);
+        $process->run();
+
+        if ($process->isSuccessful()) {
+            return true;
+        }
+
+        throw new RemoteException($process->getCommandLine() . PHP_EOL . $process->getErrorOutput());
+    }
+
+    protected function getDownloadCommand(string $src, string $target)
+    {
+        $cmd = self::DOWNLOAD_COMMAND;
+        $tokens = [
+            '{src}' => $src,
+            '{target}' => $target,
+            '{remote}' => $this->remote,
+        ];
+
+        return str_replace(array_keys($tokens), array_values($tokens), $cmd);
+    }
+
+    /**
+     * Plugin check on remote
+     *
+     * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException
+     * @throws \fortrabbit\Copy\Exceptions\PluginNotInstalledException
+     * @throws \fortrabbit\Copy\Exceptions\RemoteException
+     */
+    public function checkPlugin()
+    {
+        $this->exec("php craft help copy");
+    }
+
+    /**
      * Execute a command via ssh on remote
      *
      * @param string $cmd
@@ -48,7 +128,7 @@ class Ssh extends Component
      */
     public function exec(string $cmd)
     {
-        $cmd     = sprintf('ssh %s "%s"', $this->remote, $cmd);
+        $cmd = sprintf('ssh %s "%s"', $this->remote, $cmd);
         $process = Process::fromShellCommandline($cmd, CRAFT_BASE_PATH);
 
         $process->setTimeout(self::SSH_EXEC_TIMEOUT);
@@ -78,65 +158,6 @@ class Ssh extends Component
         );
     }
 
-
-    /**
-     * Upload a single file
-     *
-     * @param string $src
-     * @param string $target
-     *
-     * @return bool
-     * @throws \fortrabbit\Copy\Exceptions\RemoteException
-     */
-    public function upload($src, $target)
-    {
-        $process = new Process($this->getUploadCommand($src, $target));
-        $process->setTimeout(self::SSH_EXEC_TIMEOUT);
-        $process->run();
-
-        if ($process->isSuccessful()) {
-            return true;
-        }
-
-        throw new RemoteException($process->getCommandLine() . PHP_EOL . $process->getErrorOutput());
-    }
-
-    /**
-     * Download a single file
-     *
-     * @param string $src
-     * @param string $target
-     *
-     * @return bool
-     * @throws \fortrabbit\Copy\Exceptions\RemoteException
-     */
-    public function download($src, $target)
-    {
-        $process = new Process($this->getDownloadCommand($src, $target));
-        $process->setTimeout(self::SSH_EXEC_TIMEOUT);
-        $process->run();
-
-        if ($process->isSuccessful()) {
-            return true;
-        }
-
-        throw new RemoteException($process->getCommandLine() . PHP_EOL . $process->getErrorOutput());
-    }
-
-
-    /**
-     * Plugin check on remote
-     *
-     * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException
-     * @throws \fortrabbit\Copy\Exceptions\PluginNotInstalledException
-     * @throws \fortrabbit\Copy\Exceptions\RemoteException
-     */
-    public function checkPlugin()
-    {
-        $this->exec("php craft help copy");
-    }
-
-
     /**
      * Get output of command execution
      *
@@ -146,30 +167,4 @@ class Ssh extends Component
     {
         return $this->output;
     }
-
-
-    protected function getUploadCommand(string $src, string $target)
-    {
-        $cmd    = self::UPLOAD_COMMAND;
-        $tokens = [
-            '{src}'    => $src,
-            '{target}' => $target,
-            '{remote}' => $this->remote,
-        ];
-
-        return str_replace(array_keys($tokens), array_values($tokens), $cmd);
-    }
-
-    protected function getDownloadCommand(string $src, string $target)
-    {
-        $cmd    = self::DOWNLOAD_COMMAND;
-        $tokens = [
-            '{src}'    => $src,
-            '{target}' => $target,
-            '{remote}' => $this->remote,
-        ];
-
-        return str_replace(array_keys($tokens), array_values($tokens), $cmd);
-    }
-
 }

@@ -22,13 +22,12 @@ trait PathHelper
         $assetBasePath = \Craft::alias('@assetBasePath') ?: getenv('ASSET_BASE_PATH');
 
         if (!$assetBasePath) {
-           return "web/assets";
+            return "web/assets";
         }
 
         $lastPart = array_slice(explode('/', $assetBasePath), -1)[0];
 
         return "web/$lastPart";
-
     }
 
 

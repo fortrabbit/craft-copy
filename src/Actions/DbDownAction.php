@@ -54,7 +54,13 @@ class DbDownAction extends ConfigAwareBaseAction
         $bar = $this->output->createProgressBar($steps);
 
         // Custom format
-        $bar->setFormat('%message%' . PHP_EOL . '%bar% %percent:3s% %' . PHP_EOL . 'time:  %elapsed:6s%/%estimated:-6s%' . PHP_EOL . PHP_EOL);
+
+        $lines = [
+            '%message%',
+            '%bar% %percent:3s% %',
+            'time:  %elapsed:6s%/%estimated:-6s%'
+        ];
+        $bar->setFormat(implode(PHP_EOL, $lines) . PHP_EOL . PHP_EOL);
         $bar->setBarCharacter('<info>' . $bar->getBarCharacter() . '</info>');
         $bar->setBarWidth(70);
 

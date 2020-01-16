@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copy plugin for Craft CMS 3.x
  *

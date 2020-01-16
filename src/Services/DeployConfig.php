@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copy plugin for Craft CMS 3.x
  **
@@ -15,7 +16,7 @@ use fortrabbit\Copy\Models\DeployConfig as DeployConfigModel;
 
 class DeployConfig
 {
-    const FILE_NAME_TEMPLATE = 'fortrabbit.{name}.yaml';
+    public const FILE_NAME_TEMPLATE = 'fortrabbit.{name}.yaml';
 
     /**
      * @var string $name Default config

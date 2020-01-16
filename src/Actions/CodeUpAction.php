@@ -9,7 +9,7 @@ use yii\console\ExitCode;
 /**
  * Class CodeUpAction
  *
- * @package fortrabbit\Copy\Commands
+ * @package fortrabbit\Copy\Actions
  */
 class CodeUpAction extends ConfigAwareBaseAction
 {
@@ -37,7 +37,8 @@ class CodeUpAction extends ConfigAwareBaseAction
         $branch        = $git->getLocalHead();
 
         if (count($localBranches) > 1) {
-            $branch = str_replace('* ', '', $this->choice('Select a local branch (checkout):', $localBranches, $branch));
+            $question = 'Select a local branch (checkout):';
+            $branch = str_replace('* ', '', $this->choice($question, $localBranches, $branch));
             $git->run('checkout', $branch);
         }
 
@@ -54,7 +55,8 @@ class CodeUpAction extends ConfigAwareBaseAction
             if ($log = $git->getWorkingCopy()->log("--format=(%h) %cr: %s ", "$upstream/master..HEAD")) {
                 $this->noteBlock("Recent changes:" . PHP_EOL . trim($log));
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
 
         if (!$git->getWorkingCopy()->hasChanges()) {
@@ -65,7 +67,6 @@ class CodeUpAction extends ConfigAwareBaseAction
 
 
         if ($status = $git->getWorkingCopy()->getStatus()) {
-
             // Changed files
             $this->noteBlock("Uncommitted changes:" . PHP_EOL . $status);
             $defaultMessage = ($this->interactive) ? null : 'init Craft';

@@ -10,16 +10,17 @@ use yii\console\ExitCode;
 /**
  * Class AssetsDownAction
  *
- * @package fortrabbit\Copy\Commands
+ * @package fortrabbit\Copy\Actions
  */
 class AssetsDownAction extends ConfigAwareBaseAction
 {
-    public $dryRun = false;
-
-    public $verbose = false;
-
     use ConsoleOutputHelper;
     use PathHelper;
+
+    public $dryRun = false;
+    public $verbose = false;
+
+
 
     /**
      * Download Assets

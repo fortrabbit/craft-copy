@@ -8,7 +8,7 @@ use yii\console\ExitCode;
 /**
  * Class CodeDownAction
  *
- * @package fortrabbit\Copy\Commands
+ * @package fortrabbit\Copy\Actions
  */
 class CodeDownAction extends ConfigAwareBaseAction
 {
@@ -30,7 +30,8 @@ class CodeDownAction extends ConfigAwareBaseAction
         $branch        = $git->getLocalHead();
 
         if (count($localBranches) > 1) {
-            $branch = str_replace('* ', '', $this->choice('Select a local branch (checkout):', $localBranches, $branch));
+            $question = 'Select a local branch (checkout):';
+            $branch = str_replace('* ', '', $this->choice($question, $localBranches, $branch));
             $git->run('checkout', $branch);
         }
 

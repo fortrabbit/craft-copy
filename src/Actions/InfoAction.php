@@ -6,7 +6,6 @@ use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
 use Symfony\Component\Console\Helper\TableSeparator;
-use Symfony\Component\Yaml\Yaml;
 use yii\console\ExitCode;
 
 /**
@@ -16,10 +15,11 @@ use yii\console\ExitCode;
  */
 class InfoAction extends Action
 {
+    use ConsoleOutputHelper;
+
     public $verbose = false;
     private $remoteInfo = [];
 
-    use ConsoleOutputHelper;
 
     /**
      * @param string|bool   $localValue

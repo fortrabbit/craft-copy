@@ -18,8 +18,11 @@ use yii\helpers\Inflector;
  */
 class SetupAction extends Action
 {
-    const TROUBLE_SHOOTING_MYSQLDUMP_URL = "https://github.com/fortrabbit/craft-copy#trouble-shooting";
-    const TROUBLE_SHOOTING_SSH_URL = "https://help.fortrabbit.com/ssh-keys";
+    use ConsoleOutputHelper;
+
+    public const TROUBLE_SHOOTING_MYSQLDUMP_URL = "https://github.com/fortrabbit/craft-copy#trouble-shooting";
+    public const TROUBLE_SHOOTING_SSH_URL = "https://help.fortrabbit.com/ssh-keys";
+
 
     /**
      * @var bool Verbose output
@@ -27,8 +30,6 @@ class SetupAction extends Action
     public $verbose = false;
 
     protected $sshUrl;
-
-    use ConsoleOutputHelper;
 
     /**
      * Setup your App
@@ -176,10 +177,8 @@ class SetupAction extends Action
 
         // Is copy deployed aready?
         if ($plugin->ssh->exec("ls vendor/bin/craft-copy-import-db.php | wc -l")) {
-
             // Yes. Existing setup?
             if (trim($plugin->ssh->getOutput()) == "1") {
-
                 $this->head(
                     "Craft was detected on remote.",
                     "<comment>{$config}</comment> {$config->app}.frb.io"

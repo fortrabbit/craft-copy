@@ -1,8 +1,6 @@
 <?php
 
-
 namespace fortrabbit\Copy\EventHandlers;
-
 
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use yii\base\ActionEvent;
@@ -10,7 +8,7 @@ use yii\base\ActionEvent;
 class CommandOutputFormatHandler
 {
 
-    function __invoke(ActionEvent $event)
+    public function __invoke(ActionEvent $event)
     {
         /** @var \ostark\Yii2ArtisanBridge\base\Action $action */
         $action = $event->action;

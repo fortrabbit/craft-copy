@@ -20,15 +20,12 @@ use fortrabbit\Copy\EventHandlers\IgnoredBackupTablesHandler;
 use fortrabbit\Copy\Services\DeployConfig;
 use fortrabbit\Copy\Services\Git;
 use fortrabbit\Copy\Services\Rsync;
-
 use ostark\Yii2ArtisanBridge\ActionGroup;
 use ostark\Yii2ArtisanBridge\base\Commands;
 use ostark\Yii2ArtisanBridge\Bridge;
-
 use yii\base\Event;
 use yii\base\Model;
 use yii\console\Application as ConsoleApplication;
-
 use fortrabbit\Copy\Services\Ssh as SshService;
 use fortrabbit\Copy\Services\Dump as DumpService;
 use fortrabbit\Copy\Services\Rsync as RsyncService;
@@ -48,11 +45,11 @@ use fortrabbit\Copy\Services\Git as GitService;
  */
 class Plugin extends BasePlugin
 {
-    const DASHBOARD_URL = "https://dashboard.fortrabbit.com";
-    const ENV_DEPLOY_ENVIRONMENT = "DEPLOY_ENVIRONMENT";
-    const ENV_DEFAULT_CONFIG = "DEFAULT_CONFIG";
-    const PLUGIN_ROOT_PATH = __DIR__;
-    const REGIONS = [
+    public const DASHBOARD_URL = "https://dashboard.fortrabbit.com";
+    public const ENV_DEPLOY_ENVIRONMENT = "DEPLOY_ENVIRONMENT";
+    public const ENV_DEFAULT_CONFIG = "DEFAULT_CONFIG";
+    public const PLUGIN_ROOT_PATH = __DIR__;
+    public const REGIONS = [
         'us1' => 'US (AWS US-EAST-1 / Virginia)',
         'eu2' => 'EU (AWS EU-WEST-1 / Ireland)'
     ];
@@ -118,7 +115,5 @@ class Plugin extends BasePlugin
                 return new SshService(['remote' => $this->config->get()->sshUrl]);
             },
         ]);
-
     }
-
 }

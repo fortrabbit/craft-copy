@@ -14,6 +14,7 @@ use yii\console\ExitCode;
 
 abstract class ConfigAwareBaseAction extends Action
 {
+    use ConfigHelper;
 
     /**
      * @var string Name of the Environment (to apply multi staging configs)
@@ -30,8 +31,6 @@ abstract class ConfigAwareBaseAction extends Action
      */
     protected $plugin;
 
-
-    use ConfigHelper;
 
     public function __construct(string $id, Commands $controller, array $config = [])
     {

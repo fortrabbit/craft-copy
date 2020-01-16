@@ -44,9 +44,9 @@ final class Git
     /**
      * Clone Factory
      *
-     * @param string  $repository The Git URL of the repository being cloned.
-     * @param string  $directory  The directory that the repository will be cloned into.
-     * @param mixed[] $options    An associative array of command line options.
+     * @param string $repository The Git URL of the repository being cloned.
+     * @param string $directory The directory that the repository will be cloned into.
+     * @param mixed[] $options An associative array of command line options.
      *
      * @return \fortrabbit\Copy\Services\Git
      */
@@ -56,14 +56,6 @@ final class Git
         $wrapper->setTimeout(300);
 
         return new Git($wrapper->cloneRepository($repository, $directory, $options));
-    }
-
-    /**
-     * @return \GitWrapper\GitWorkingCopy
-     */
-    public function getWorkingCopy(): GitWorkingCopy
-    {
-        return $this->gitWorkingCopy;
     }
 
     /**
@@ -88,21 +80,6 @@ final class Git
         return $this->gitWorkingCopy->pull($upstream, $branch);
     }
 
-
-    /**
-     * @return array
-     */
-    public function getLocalBranches(): array
-    {
-        $localBranches = [];
-        foreach (explode(PHP_EOL, trim($this->gitWorkingCopy->run('branch'))) as $branch) {
-            $localBranches[trim(ltrim($branch, '*'))] = $branch;
-        };
-
-        return $localBranches;
-    }
-
-
     /**
      * @return null|string
      */
@@ -117,6 +94,18 @@ final class Git
         return null;
     }
 
+    /**
+     * @return array
+     */
+    public function getLocalBranches(): array
+    {
+        $localBranches = [];
+        foreach (explode(PHP_EOL, trim($this->gitWorkingCopy->run('branch'))) as $branch) {
+            $localBranches[trim(ltrim($branch, '*'))] = $branch;
+        };
+
+        return $localBranches;
+    }
 
     /**
      * @param null|string $for 'push' or 'pull'
@@ -126,7 +115,12 @@ final class Git
     public function getRemotes(?string $for = 'push'): array
     {
         if (!in_array($for, ['push', 'pull'])) {
-            throw new \LogicException(sprintf('Argument 1 passed to fortrabbit\Copy\services\Git::getRemotes() must be "pull" or "push", %s given.', $for));
+            throw new \LogicException(
+                sprintf(
+                    'Argument 1 passed to fortrabbit\Copy\services\Git::getRemotes() must be "pull" or "push", %s given.',
+                    $for
+                )
+            );
         }
 
         try {
@@ -166,26 +160,8 @@ final class Git
     }
 
     /**
-     * @param string $sshRemote
-     *
-     * @return string $app Name of the remote
-     */
-    public function addRemote(string $sshRemote)
-    {
-        if (!stristr($sshRemote, 'frbit.com')) {
-            throw new \InvalidArgumentException(sprintf('Wrong $sshRemote must follow this pattern {app}@deploy.{region}.frbit.com, %s given.', $sshRemote));
-        }
-
-        $app = explode('@', $sshRemote)[0];
-        $this->getWorkingCopy()->addRemote($app, "{$sshRemote}:{$app}.git");
-
-        return $app;
-    }
-
-
-    /**
      * @param string $command
-     * @param array  ...$argsAndOptions
+     * @param array ...$argsAndOptions
      *
      * @return string
      */
@@ -194,6 +170,35 @@ final class Git
         return $this->gitWorkingCopy->run($command, $argsAndOptions);
     }
 
+    /**
+     * @param string $sshRemote
+     *
+     * @return string $app Name of the remote
+     */
+    public function addRemote(string $sshRemote)
+    {
+        if (!stristr($sshRemote, 'frbit.com')) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Wrong $sshRemote must follow this pattern {app}@deploy.{region}.frbit.com, %s given.',
+                    $sshRemote
+                )
+            );
+        }
+
+        $app = explode('@', $sshRemote)[0];
+        $this->getWorkingCopy()->addRemote($app, "{$sshRemote}:{$app}.git");
+
+        return $app;
+    }
+
+    /**
+     * @return \GitWrapper\GitWorkingCopy
+     */
+    public function getWorkingCopy(): GitWorkingCopy
+    {
+        return $this->gitWorkingCopy;
+    }
 
     /**
      * Create .gitignore or adjust the existing
@@ -203,8 +208,8 @@ final class Git
      */
     public function assureDotGitignore()
     {
-        $path                 = $this->getWorkingCopy()->getDirectory();
-        $gitignoreFile        = "$path/.gitignore";
+        $path = $this->getWorkingCopy()->getDirectory();
+        $gitignoreFile = "$path/.gitignore";
         $gitignoreExampleFile = Plugin::PLUGIN_ROOT_PATH . "/.gitignore.example";
 
         if (!file_exists($gitignoreExampleFile)) {
