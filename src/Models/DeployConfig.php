@@ -12,6 +12,8 @@ use craft\helpers\StringHelper;
  */
 class DeployConfig extends Model
 {
+    public const DEPREACTED_PROPERTIES = ['sshPath'];
+
     /**
      * @var string Name of App
      */
@@ -64,7 +66,11 @@ class DeployConfig extends Model
     {
         foreach ($config as $key => $value) {
             unset($config[$key]);
-            $config[StringHelper::toCamelCase($key)] = $value;
+            $prop = StringHelper::toCamelCase($key);
+            if (in_array($prop, self::DEPREACTED_PROPERTIES)) {
+                continue;
+            }
+            $config[$prop] = $value;
         }
         parent::__construct($config);
     }

@@ -5,6 +5,8 @@ namespace fortrabbit\Copy;
 use Craft;
 use craft\base\Plugin as BasePlugin;
 use craft\db\Connection;
+use fortrabbit\Copy\Actions\AllDownAction;
+use fortrabbit\Copy\Actions\AllUpAction;
 use fortrabbit\Copy\Actions\AssetsDownAction;
 use fortrabbit\Copy\Actions\AssetsUpAction;
 use fortrabbit\Copy\Actions\CodeDownAction;
@@ -36,10 +38,10 @@ use fortrabbit\Copy\Services\Git as GitService;
  *
  * @package fortrabbit\Copy
  *
- * @property  SshService   $ssh
- * @property  DumpService  $dump
+ * @property  SshService $ssh
+ * @property  DumpService $dump
  * @property  RsyncService $rsync
- * @property  GitService   $git
+ * @property  GitService $git
  * @property  DeployConfig $config
  *
  */
@@ -68,18 +70,22 @@ class Plugin extends BasePlugin
 
         // Console commands
         $group = (new ActionGroup('copy', 'Copy Craft between environments.'))
-            ->setActions([
-                'assets/up'    => AssetsUpAction::class,
-                'assets/down'  => AssetsDownAction::class,
-                'code/up'      => CodeUpAction::class,
-                'code/down'    => CodeDownAction::class,
-                'db/up'        => DbUpAction::class,
-                'db/down'      => DbDownAction::class,
-                'db/to-file'   => DbExportAction::class,
-                'db/from-file' => DbImportAction::class,
-                'setup'        => SetupAction::class,
-                'info'         => InfoAction::class
-            ])
+            ->setActions(
+                [
+                    'all/up' => AllUpAction::class,
+                    'all/down' => AllDownAction::class,
+                    'assets/up' => AssetsUpAction::class,
+                    'assets/down' => AssetsDownAction::class,
+                    'code/up' => CodeUpAction::class,
+                    'code/down' => CodeDownAction::class,
+                    'db/up' => DbUpAction::class,
+                    'db/down' => DbDownAction::class,
+                    'db/to-file' => DbExportAction::class,
+                    'db/from-file' => DbImportAction::class,
+                    'setup' => SetupAction::class,
+                    'info' => InfoAction::class
+                ]
+            )
             ->setDefaultAction('info')
             ->setOptions(
                 [
@@ -100,20 +106,22 @@ class Plugin extends BasePlugin
         Event::on(Connection::class, Connection::EVENT_BEFORE_CREATE_BACKUP, new IgnoredBackupTablesHandler());
 
         // Register (singleton) services
-        $this->setComponents([
-            'config' => DeployConfig::class,
-            'dump'   => function () {
-                return new DumpService(['db' => Craft::$app->getDb()]);
-            },
-            'git'    => function () {
-                return GitService::fromDirectory(\Craft::getAlias('@root') ?: CRAFT_BASE_PATH);
-            },
-            'rsync'  => function () {
-                return RsyncService::remoteFactory($this->config->get()->sshUrl);
-            },
-            'ssh'    => function () {
-                return new SshService(['remote' => $this->config->get()->sshUrl]);
-            },
-        ]);
+        $this->setComponents(
+            [
+                'config' => DeployConfig::class,
+                'dump' => function () {
+                    return new DumpService(['db' => Craft::$app->getDb()]);
+                },
+                'git' => function () {
+                    return GitService::fromDirectory(\Craft::getAlias('@root') ?: CRAFT_BASE_PATH);
+                },
+                'rsync' => function () {
+                    return RsyncService::remoteFactory($this->config->get()->sshUrl);
+                },
+                'ssh' => function () {
+                    return new SshService(['remote' => $this->config->get()->sshUrl]);
+                },
+            ]
+        );
     }
 }
