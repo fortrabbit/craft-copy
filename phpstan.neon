@@ -4,3 +4,5 @@ parameters:
         - %currentWorkingDirectory%/vendor/craftcms/cms/src/Craft.php
     ignoreErrors:
         - '#Constant CRAFT_BASE_PATH not found#'
+        - '#Call to an undefined static method Craft::alias().#'
+

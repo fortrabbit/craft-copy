@@ -88,12 +88,6 @@ trait ConfigHelper
      */
     protected function hasDeprecatedEnvOption()
     {
-        if (is_string($this->env)) {
-            $this->errorBlock(
-                'Invalid option: -e/--env is not supported anymore. Use the $config argument. '
-            );
-            return true;
-        }
         if (getenv(Plugin::ENV_DEPLOY_ENVIRONMENT)) {
             $this->errorBlock(
                 sprintf(

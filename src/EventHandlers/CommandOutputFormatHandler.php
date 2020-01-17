@@ -8,7 +8,7 @@ use yii\base\ActionEvent;
 class CommandOutputFormatHandler
 {
 
-    public function __invoke(ActionEvent $event)
+    public function __invoke(ActionEvent $event) : void
     {
         /** @var \ostark\Yii2ArtisanBridge\base\Action $action */
         $action = $event->action;
