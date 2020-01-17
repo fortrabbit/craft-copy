@@ -2,13 +2,22 @@
 
 namespace fortrabbit\Copy\EventHandlers;
 
-use yii\base\Event;
+use craft\db\Table;
+use craft\events\BackupEvent;
 
 class IgnoredBackupTablesHandler
 {
 
-    public function __invoke(Event $event)
+    /**
+     * Modify the ignored BackupTables from
+     * from craft\db\Connection::getIgnoredBackupTables()
+     *
+     * @param BackupEvent $event
+     */
+    public function __invoke(BackupEvent $event): void
     {
-        // TODO: Implement __invoke() method.
+        // Since we sync assets, we keep assettransformindex
+        $event->ignoreTables[Table::ASSETTRANSFORMINDEX];
     }
+
 }
