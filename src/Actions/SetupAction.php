@@ -4,6 +4,7 @@ namespace fortrabbit\Copy\Actions;
 
 use Craft;
 use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
+use fortrabbit\Copy\Helpers\PathHelper;
 use fortrabbit\Copy\Models\DeployConfig;
 use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
@@ -19,6 +20,7 @@ use yii\helpers\Inflector;
 class SetupAction extends Action
 {
     use ConsoleOutputHelper;
+    use PathHelper;
 
     public const TROUBLE_SHOOTING_MYSQLDUMP_URL = "https://github.com/fortrabbit/craft-copy#trouble-shooting";
     public const TROUBLE_SHOOTING_SSH_URL = "https://help.fortrabbit.com/ssh-keys";
@@ -28,8 +30,6 @@ class SetupAction extends Action
      * @var bool Verbose output
      */
     public $verbose = false;
-
-    protected $sshUrl;
 
     /**
      * Setup your App
@@ -72,7 +72,7 @@ class SetupAction extends Action
         $this->checkAndWrite("Testing rsync", $this->canExecBinary("rsync --help"));
 
         $mysql = $this->checkAndWrite("Testing mysqldump", $this->canExecBinary("mysqldump --help"));
-        $ssh   = $this->checkAndWrite("Testing SSH access", $this->canExecBinary("ssh {$config->sshUrl} secrets"));
+        $ssh = $this->checkAndWrite("Testing SSH access", $this->canExecBinary("ssh {$config->sshUrl} secrets"));
 
 
         if (!$mysql) {
@@ -110,21 +110,6 @@ class SetupAction extends Action
         return null;
     }
 
-
-    /**
-     * @param string $cmd
-     *
-     * @return bool
-     */
-    protected function canExecBinary(string $cmd)
-    {
-        $process  = Process::fromShellCommandline($cmd, CRAFT_BASE_PATH);
-        $exitCode = $process->run();
-
-        return ($exitCode == 0) ? true : false;
-    }
-
-
     /**
      * @param string $app
      * @param string $region
@@ -135,10 +120,11 @@ class SetupAction extends Action
      */
     protected function writeDeployConfig(string $app, string $region, string $configName)
     {
-        $config            = new DeployConfig();
-        $config->app       = $app;
-        $config->sshUrl    = "{$app}@deploy.{$region}.frbit.com";
+        $config = new DeployConfig();
+        $config->app = $app;
+        $config->sshUrl = "{$app}@deploy.{$region}.frbit.com";
         $config->gitRemote = "$app/master";
+        $config->assetPath = $this->getDefaultRelativeAssetPath();
         $config->setName($configName);
         Plugin::getInstance()->config->setName($configName);
 
@@ -164,6 +150,27 @@ class SetupAction extends Action
     }
 
 
+    protected function checkAndWrite(string $message, bool $success)
+    {
+        $this->output->write(PHP_EOL . $message);
+        $this->output->write($success ? " <info>OK</info>" : " <error>⚠ Error</error>");
+
+        return $success;
+    }
+
+    /**
+     * @param string $cmd
+     *
+     * @return bool
+     */
+    protected function canExecBinary(string $cmd): bool
+    {
+        $process = Process::fromShellCommandline($cmd, CRAFT_BASE_PATH);
+        $exitCode = $process->run();
+
+        return ($exitCode == 0) ? true : false;
+    }
+
     /**
      * @return bool
      * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException
@@ -173,7 +180,7 @@ class SetupAction extends Action
     protected function setupRemote(DeployConfig $config)
     {
         $plugin = Plugin::getInstance();
-        $app    = $plugin->config->get()->app;
+        $app = $plugin->config->get()->app;
 
         // Is copy deployed aready?
         if ($plugin->ssh->exec("ls vendor/bin/craft-copy-import-db.php | wc -l")) {
@@ -215,14 +222,5 @@ class SetupAction extends Action
         $this->successBlock("Check it in the browser: https://{$app}.frb.io");
 
         return true;
-    }
-
-
-    protected function checkAndWrite($message, $success)
-    {
-        $this->output->write(PHP_EOL . $message);
-        $this->output->write($success ? " <info>OK</info>" : " <error>⚠ Error</error>");
-
-        return $success;
     }
 }

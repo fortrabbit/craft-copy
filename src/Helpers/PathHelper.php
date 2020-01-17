@@ -21,13 +21,17 @@ trait PathHelper
         // or /full/path/web/assets
         $assetBasePath = \Craft::alias('@assetBasePath') ?: getenv('ASSET_BASE_PATH');
 
-        if (!$assetBasePath) {
-            return "web/assets";
+        if ($assetBasePath) {
+            $lastPart = array_slice(explode('/', $assetBasePath), -1)[0];
+
+            foreach (['web', 'public', 'public_html', 'html'] as $path) {
+                if (is_dir(\Craft::getAlias("@root/{$path}/{$lastPart}"))) {
+                    return "$path/$lastPart";
+                }
+            }
         }
 
-        $lastPart = array_slice(explode('/', $assetBasePath), -1)[0];
-
-        return "web/$lastPart";
+        return "web/assets";
     }
 
 

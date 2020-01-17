@@ -5,19 +5,45 @@ namespace fortrabbit\Copy\Models;
 use craft\base\Model;
 use craft\helpers\StringHelper;
 
+/**
+ * Class that represents the yml config
+ * see src/fortrabbit.example-config.yml
+ *
+ */
 class DeployConfig extends Model
 {
+    /**
+     * @var string Name of App
+     */
     public $app;
+
+    /**
+     * @var string SSH endpoint
+     */
     public $sshUrl;
-    public $sshPath;
+
+    /**
+     * @var string Git remote/branch
+     */
     public $gitRemote;
 
+    /**
+     * @var string Relative path to assets
+     */
+    public $assetPath = 'web/assets';
+
+    /**
+     * @var array Scripts that run before commands locally
+     */
     public $before = [
         'code/up' => [
             'echo  "Script example: " $(git rev-parse HEAD)'
         ]
     ];
 
+    /**
+     * @var array Scripts that run after commands locally
+     */
     public $after = [
         'code/down' => [
             'php craft migrate/all'
@@ -25,7 +51,7 @@ class DeployConfig extends Model
     ];
 
     /**
-     * @var string
+     * @var string Name of deploy config (base of the file name)
      */
     protected $name = '';
 

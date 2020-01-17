@@ -33,8 +33,7 @@ class AssetsDownAction extends ConfigAwareBaseAction
     public function run(string $config = null, string $dir = null)
     {
         $plugin = Plugin::getInstance();
-        $dir    = $dir ?: $this->getDefaultRelativeAssetPath();
-        $dir    = $this->prepareForRsync($dir);
+        $dir    = $this->prepareForRsync($dir ?: $this->config->assetPath);
 
         $this->section('Copy assets down');
 

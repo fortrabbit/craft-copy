@@ -2,6 +2,8 @@ app: your_app
 
 ssh_url: your_app@deploy.us1.frbit.com
 git_remote: your_app/master
+asset_path: web/assets
+
 
 # Scripts
 before:
