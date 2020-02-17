@@ -18,7 +18,7 @@ class IgnoredBackupTablesHandler
     {
         // Since we sync assets, we keep assettransformindex
         if (property_exists($event, 'ignoreTables')) {
-            $event->ignoreTables[Table::ASSETTRANSFORMINDEX];
+            $event->ignoreTables = array_diff($event->ignoreTables, [Table::ASSETTRANSFORMINDEX]);
         }
     }
 
