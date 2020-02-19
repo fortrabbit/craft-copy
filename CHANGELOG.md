@@ -1,5 +1,10 @@
 #  Changelog
 
+## 1.0.0-RC10 - 2020-02-19
+- Craft 3.4 fix for new config/db.php structure
+- Exclude `assettransformindex` table from irgnoredTables
+- Make no assumptions about the `assets` directory
+
 ## 1.0.0-RC9 - 2019-12-04
 - Fixed a bug where a .gitignore file was written instead of .my.cnf
 

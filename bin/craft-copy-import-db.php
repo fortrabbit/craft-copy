@@ -50,7 +50,7 @@ if ($app->getIsInstalled()) {
     }
 }
 
-if (!$app->getConfig()->getDb()->database) {
+if (!$app->getConfig()->getDb()->password) {
     echo "No DB Config found." . PHP_EOL;
     exit(1);
 }
@@ -61,8 +61,8 @@ $tokens = [
     '{file}'        => $file,
     '{DB_USER}'     => $db->user,
     '{DB_PASSWORD}' => $db->password,
-    '{DB_SERVER}'   => $db->server,
-    '{DB_DATABASE}' => $db->database,
+    '{DB_SERVER}'   => $db->server ?: getenv('DB_SERVER'),
+    '{DB_DATABASE}' => $db->database ?: getenv('DB_DATABASE'),
 ];
 
 $cmd     = str_replace(array_keys($tokens), array_values($tokens), $cmd);
