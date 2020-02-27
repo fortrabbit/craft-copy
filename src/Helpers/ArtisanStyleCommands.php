@@ -13,6 +13,6 @@ class ArtisanStyleCommands extends Commands
 {
     public function getHelpSummary()
     {
-        return 'Copy Craft between environments.';
+        return 'Craft Copy - deployment tooling for fortrabbit.';
     }
 }
