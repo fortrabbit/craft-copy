@@ -234,7 +234,7 @@ It is planned to change that in a future update.
 
 ## Troubleshooting
 
-The setup is usually straight forward when the [system requirements](#requirements) are fulfilled. However, depending on your local setup, you may run into errors. May errors are MAMP related and easy to fix:
+The setup is usually straight forward when the [system requirements](#requirements) are fulfilled. However, depending on your local setup, you may run into errors. Many errors are MAMP related and easy to fix:
 
 ### Local MySQL connection error
 
