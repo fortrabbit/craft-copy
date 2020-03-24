@@ -163,11 +163,16 @@ Any asset files and folders, including image transformations can be synced up an
 The MySQL database is getting copied over by using `mysqldump`. So it basically will export the current status of the database as an `file.sql` and will replace the other database with that file. In other words: This can be a desctrutive operation. You need to make sure that any content changes affecting the database, like new entries or editing entries are only done in one enviornment, either locally or on the fortrabbit App. It can not merge changes, like with assets or code. Good news s, that Craft Copy will always create a snapshot file which you can use to roll back.
 
 
-#### Project config
+### Project config
 
-Craft CMS is offering a `project.yml` which is a master to hold your configuraton data. We highly recommend to enable the Project config via `general.php`. That way you can completley separate the configuraton of the database from the database contents. In other words, you can make structural changes to the database structure locally, by adding new fields or modifying fields and still sync those changes up, even when database contents are updated on the App. 
+Craft CMS is offering a `project.yml` which is a master to hold your configuraton data. We highly recommend to enable the Project config via `general.php`. That way you can completley separate the configuraton of the database from the database contents. In other words, you can make structural changes to the database structure locally, by adding new fields or modifying fields and still sync those changes up, even when database contents are updated on the App. The `project.yml` is controlled via Git and therfore will be pushed along with code updates via Git. 
 
-The `project.yml` is controlled via Git and therfore will be pushed along with code updates via Git. Craft Copy also incorporates [Craft auto migrate](https://github.com/fortrabbit/craft-auto-migrate), so every time you'll push a database migration will be triggered, so changes from `project.yml` are always applied right away.
+Make sure that your local development enviornment stays the master for structural changes. A best practice is to disable admin changes on the App itself by setting `'allowAdminChanges' => false` for production in `general.php`. Also see the [Craft CMS help](https://docs.craftcms.com/v3/config/config-settings.html#allowadminchanges) on that setting.
+
+
+### Automatic migrations
+
+Craft Copy incorporates another plugin called [Craft auto migrate](https://github.com/fortrabbit/craft-auto-migrate). It makes sure that database migrations will always run when deploying. That means that every time you'll push code via Git a database migration will be triggered, so that changes from `project.yml` will always be applied right away, without the need to trigger them manually by clicking the apply changes button with the Control Panel.
 
 
 ### Multi staging
