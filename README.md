@@ -172,7 +172,7 @@ Make sure that your local development enviornment stays the master for structura
 
 ### Automatic migrations
 
-Craft Copy incorporates another plugin called [Craft auto migrate](https://github.com/fortrabbit/craft-auto-migrate). It makes sure that database migrations will always run when deploying. That means that every time you'll push code via Git a database migration will be triggered, so that changes from `project.yml` will always be applied right away, without the need to trigger them manually by clicking the apply changes button with the Control Panel.
+Craft Copy incorporates another package called [Craft auto migrate](https://github.com/fortrabbit/craft-auto-migrate). It makes sure that database migrations will always run when deploying. That means that every time you'll push code via Git, a database migration will be triggered and changes from `project.yml` will be applied right away, without the need to click the apply changes button with the Control Panel.
 
 
 ### Multi staging
