@@ -2,7 +2,7 @@
     "name": "fortrabbit/craft-copy",
     "description": "Tooling for Craft on fortrabbit",
     "type": "craft-plugin",
-    "version": "1.0.0-RC10",
+    "version": "1.0.0-RC11",
     "keywords": [
         "craft",
         "cms",
@@ -24,12 +24,12 @@
     "require": {
         "php": "^7.2.0",
         "albertofem/rsync-lib": "^1.0.0",
-        "cpliakas/git-wrapper": "^2.0",
-        "craftcms/cms": "^3.4.0-RC",
+        "cpliakas/git-wrapper": "^2.0 | ^3.0",
+        "craftcms/cms": "^3.4.0",
         "ostark/yii2-artisan-bridge": "^1.2.0",
-        "symfony/process": "^4.2",
+        "symfony/process": "^4.2 | ^5.0",
         "vlucas/phpdotenv": "^2.5.1 | ^3.4.0",
-        "symfony/yaml": "^4.2",
+        "symfony/yaml": "^4.2 | ^5.0",
         "fortrabbit/craft-auto-migrate":"^2.0"
     },
     "require-dev": {
