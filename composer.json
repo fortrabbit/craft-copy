@@ -24,7 +24,7 @@
     "require": {
         "php": "^7.2.0",
         "albertofem/rsync-lib": "^1.0.0",
-        "cpliakas/git-wrapper": "^2.0 | ^3.0",
+        "cpliakas/git-wrapper": "^3.0",
         "craftcms/cms": "^3.4.0",
         "ostark/yii2-artisan-bridge": "^1.2.0",
         "symfony/process": "^4.2 | ^5.0",

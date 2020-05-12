@@ -3,7 +3,7 @@
 namespace fortrabbit\Copy\Services;
 
 use fortrabbit\Copy\Plugin;
-use GitWrapper\GitException;
+use GitWrapper\Exception\GitException;
 use GitWrapper\GitWorkingCopy;
 use GitWrapper\GitWrapper;
 
