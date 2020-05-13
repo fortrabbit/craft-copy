@@ -3,7 +3,7 @@
 namespace fortrabbit\Copy\Actions;
 
 use fortrabbit\Copy\Services\Git;
-use GitWrapper\GitException;
+use GitWrapper\Exception\GitException;
 use yii\console\ExitCode;
 
 /**

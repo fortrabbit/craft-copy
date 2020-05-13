@@ -28,6 +28,7 @@ if (file_exists($root . '/.env')) {
 
 // Bootstrap Craft
 /** @var \craft\console\Application $app */
+define('CRAFT_ENVIRONMENT', getenv('ENVIRONMENT') ?: 'production');
 $app = require $root . '/vendor/craftcms/cms/bootstrap/console.php';
 
 if (count($argv) < 2 || stristr($argv[1], '.sql') == false) {

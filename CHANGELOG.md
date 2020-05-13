@@ -1,5 +1,9 @@
 #  Changelog
 
+## 1.0.0-RC11 - 2020-05-12
+- Updated various dependencies
+- Fixed a bug when Craft expects `CRAFT_ENVIRONMENT` 
+
 ## 1.0.0-RC10 - 2020-02-19
 - Craft 3.4 fix for new config/db.php structure
 - Exclude `assettransformindex` table from irgnoredTables

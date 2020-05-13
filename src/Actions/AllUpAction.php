@@ -30,17 +30,17 @@ class AllUpAction extends ConfigAwareBaseAction
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        if (\Craft::$app->runAction('copy/db/up', ['interactive' => true, 'force' => true]) != 0) {
+        if (\Craft::$app->runAction('copy/db/up', ['interactive' => true, 'force' => true]) !== 0) {
             $this->errorBlock('Failed to copy the database');
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        if (\Craft::$app->runAction('copy/assets/up', ['interactive' => true]) != 0) {
+        if (\Craft::$app->runAction('copy/assets/up', ['interactive' => true]) !== 0) {
             $this->errorBlock('Failed to copy the assets');
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        if (\Craft::$app->runAction('copy/code/up', ['interactive' => true]) != 0) {
+        if (\Craft::$app->runAction('copy/code/up', ['interactive' => true]) !== 0) {
             $this->errorBlock('Failed to copy the code');
             return ExitCode::UNSPECIFIED_ERROR;
         }
