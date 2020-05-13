@@ -30,7 +30,7 @@ class AllDownAction extends ConfigAwareBaseAction
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        if (\Craft::$app->runAction('copy/db/down', ['interactive' => true, 'force' => true]) !== 0) {
+        if (\Craft::$app->runAction('copy/db/down', ['interactive' => true]) !== 0) {
             $this->errorBlock('Failed to copy the database');
             return ExitCode::UNSPECIFIED_ERROR;
         }
