@@ -51,7 +51,7 @@
         "changelogUrl": "https://raw.githubusercontent.com/fortrabbit/craft-copy/master/CHANGELOG.md"
     },
     "scripts": {
-        "ps": "phpstan analyse src --level=6 -c phpstan.neon",
+        "ps": "phpstan analyse src --level=5 -c phpstan.neon",
         "php-cs-fixer": "php-cs-fixer fix",
         "csf": "@php-cs-fixer",
         "stan": "@ps",

@@ -203,7 +203,7 @@ class SetupAction extends Action
             // Try to deploy code
             if ($this->confirm("The plugin is not installed with your App! Do you want to deploy now?", true)) {
                 $this->cmdBlock('copy/code/up');
-                if (Craft::$app->runAction('copy/code/up', ['interactive' => $this->interactive]) != 0) {
+                if (Craft::$app->runAction('copy/code/up', ['interactive' => $this->interactive]) !== 0) {
                     // failed
                     return false;
                 }
@@ -215,7 +215,7 @@ class SetupAction extends Action
 
         // Push DB
         $this->cmdBlock('php craft copy/db/up');
-        if (Craft::$app->runAction('copy/db/up', ['interactive' => true, 'force' => true]) != 0) {
+        if (Craft::$app->runAction('copy/db/up', ['interactive' => true, 'force' => true]) !== 0) {
             return false;
         }
 
