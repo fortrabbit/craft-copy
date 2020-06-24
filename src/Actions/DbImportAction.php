@@ -34,7 +34,7 @@ class DbImportAction extends Action
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        $this->info("Importing DB Database from '{$file}'");
+        $this->info("Importing DB Dump from '{$file}'");
 
         try {
             $file = Plugin::getInstance()->database->import($file);
@@ -45,7 +45,7 @@ class DbImportAction extends Action
             }
 
             if (FileHelper::unlink($file)) {
-                $this->successBlock("Database removed");
+                $this->successBlock("Dump removed");
             }
 
             return ExitCode::OK;

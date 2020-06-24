@@ -28,7 +28,7 @@ class DbExportAction extends Action
     {
         $plugin = Plugin::getInstance();
         $this->assureMyCfnForMysqldump();
-        $this->info("Creating DB Database in '{$file}'");
+        $this->info("Creating DB Dump in '{$file}'");
 
         try {
             $plugin->database->export($file);

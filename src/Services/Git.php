@@ -9,8 +9,6 @@ use GitWrapper\GitWrapper;
 
 /**
  * Git Service
- *
- * @package fortrabbit\Copy\services
  */
 final class Git
 {

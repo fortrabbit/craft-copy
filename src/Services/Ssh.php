@@ -10,10 +10,6 @@ use Symfony\Component\Process\Process;
 
 /**
  * Ssh Service
- *
- * @author    Oliver Stark
- * @package   Copy
- * @since     1.0.0
  */
 class Ssh extends Component
 {

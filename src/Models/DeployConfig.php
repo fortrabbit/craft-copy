@@ -52,12 +52,7 @@ class DeployConfig extends Model
      */
     protected $name = '';
 
-    /**
-     * DeployConfig constructor.
-     *
-     * @param array $config
-     */
-    public function __construct($config = [])
+    public function __construct(array $config = [])
     {
         foreach ($config as $key => $value) {
             unset($config[$key]);
@@ -73,15 +68,12 @@ class DeployConfig extends Model
     /**
      * Converts the model into an array
      * with SnakeCase keys
-     *
-     * @param array $fields
-     * @param array $expand
-     * @param bool  $recursive
-     *
-     * @return array
      */
-    public function toArray(array $fields = [], array $expand = [], $recursive = true)
-    {
+    public function toArray(
+        array $fields = [],
+        array $expand = [],
+        $recursive = true
+    ): array {
         $array = parent::toArray($fields, $expand, $recursive);
 
         foreach ($array as $key => $value) {
@@ -92,18 +84,12 @@ class DeployConfig extends Model
         return $array;
     }
 
-    /**
-     * @param string $name
-     */
     public function setName(string $name)
     {
         $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name;
     }

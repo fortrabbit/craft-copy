@@ -6,6 +6,9 @@ use fortrabbit\Copy\Exceptions\DeployConfigNotFoundException;
 use Symfony\Component\Yaml\Yaml;
 use fortrabbit\Copy\Models\DeployConfig as DeployConfigModel;
 
+/**
+ * DeployConfig Service
+ */
 class DeployConfig
 {
     public const FILE_NAME_TEMPLATE = 'fortrabbit.{name}.yaml';

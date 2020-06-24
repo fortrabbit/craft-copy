@@ -4,10 +4,6 @@ namespace fortrabbit\Copy\Services;
 
 /**
  * Rsync Service
- *
- * @author    Oliver Stark
- * @package   Copy
- * @since     1.0.0
  */
 class Rsync
 {

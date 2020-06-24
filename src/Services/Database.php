@@ -7,10 +7,6 @@ use craft\helpers\FileHelper;
 
 /**
  * Database Service
- *
- * @author    Oliver Stark
- * @package   Copy
- * @since     1.0.0
  */
 class Database extends Component
 {

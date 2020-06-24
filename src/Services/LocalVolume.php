@@ -8,6 +8,9 @@ use craft\base\VolumeInterface;
 use craft\services\Volumes;
 use fortrabbit\Copy\Exceptions\VolumeNotFound;
 
+/**
+ * LocalVolume Service
+ */
 class LocalVolume
 {
     /**

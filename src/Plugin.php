@@ -35,16 +35,13 @@ use fortrabbit\Copy\Services\Rsync as RsyncService;
 use fortrabbit\Copy\Services\Git as GitService;
 
 /**
- * Class Plugin
+ * Craft Copy main plugin class
  *
- * @package fortrabbit\Copy
- *
- * @property  SshService $ssh
- * @property  DatabaseService $database
- * @property  RsyncService $rsync
- * @property  GitService $git
- * @property  DeployConfig $config
- *
+ * @property SshService $ssh
+ * @property DatabaseService $database
+ * @property RsyncService $rsync
+ * @property GitService $git
+ * @property DeployConfig $config
  */
 class Plugin extends BasePlugin
 {
@@ -69,7 +66,16 @@ class Plugin extends BasePlugin
             return;
         }
 
-        // Console commands
+        $this->registerConsoleCommands();
+
+        $this->registerComponents();
+
+        $this->registerEventHandlers();
+    }
+
+
+    private function registerConsoleCommands(): void
+    {
         $group = (new ActionGroup('copy', 'Copy Craft between environments.'))
             ->setActions(
                 [
@@ -103,12 +109,11 @@ class Plugin extends BasePlugin
 
         // Register console commands
         Bridge::registerGroup($group);
+    }
 
-        // Register Event Handlers
-        Event::on(Commands::class, Commands::EVENT_BEFORE_ACTION, new CommandOutputFormatHandler());
-        Event::on(Connection::class, Connection::EVENT_BEFORE_CREATE_BACKUP, new IgnoredBackupTablesHandler());
 
-        // Register (singleton) services
+    private function registerComponents(): void
+    {
         $this->setComponents(
             [
                 'config' => DeployConfig::class,
@@ -123,8 +128,23 @@ class Plugin extends BasePlugin
                 },
                 'ssh' => function () {
                     return new SshService(['remote' => $this->config->get()->sshUrl]);
-                },
+                }
             ]
+        );
+    }
+
+
+    private function registerEventHandlers(): void
+    {
+        Event::on(
+            Commands::class,
+            Commands::EVENT_BEFORE_ACTION,
+            new CommandOutputFormatHandler()
+        );
+        Event::on(
+            Connection::class,
+            Connection::EVENT_BEFORE_CREATE_BACKUP,
+            new IgnoredBackupTablesHandler()
         );
     }
 }
