@@ -9,11 +9,6 @@ use ostark\Yii2ArtisanBridge\base\Action;
 use yii\base\Exception;
 use yii\console\ExitCode;
 
-/**
- * Class DbImportAction
- *
- * @package fortrabbit\Copy\Commands
- */
 class DbImportAction extends Action
 {
     /**

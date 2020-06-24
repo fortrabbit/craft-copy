@@ -5,11 +5,6 @@ namespace fortrabbit\Copy\Actions;
 use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
 
-/**
- * Class DbUpAction
- *
- * @package fortrabbit\Copy\Commands
- */
 class DbUpAction extends ConfigAwareBaseAction
 {
     /**

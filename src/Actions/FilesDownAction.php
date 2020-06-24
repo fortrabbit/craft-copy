@@ -4,15 +4,9 @@ namespace fortrabbit\Copy\Actions;
 
 use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Helpers\PathHelper;
-use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
 
-/**
- * Class AssetsDownAction
- *
- * @package fortrabbit\Copy\Actions
- */
-class AssetsDownAction extends ConfigAwareBaseAction
+class FilesDownAction extends ConfigAwareBaseAction
 {
     use ConsoleOutputHelper;
     use PathHelper;
@@ -20,25 +14,22 @@ class AssetsDownAction extends ConfigAwareBaseAction
     public $dryRun = false;
     public $verbose = false;
 
-
-
     /**
-     * Download Assets
+     * Download Files
      *
      * @param string|null $config Name of the deploy config
      * @param string|null $dir Directory, relative to the project root, defaults to web/assets
      *
      * @return int
      */
-    public function run(string $config = null, string $dir = null)
+    public function run(string $config = null, string $dir = 'web/assets')
     {
-        $plugin = Plugin::getInstance();
-        $dir    = $this->prepareForRsync($dir ?: $this->config->assetPath);
+        $dir = $this->prepareForRsync($dir);
 
-        $this->section('Copy assets down');
+        $this->section('Copy files down');
 
         // Info
-        $this->rsyncInfo($dir, $plugin->rsync->remoteUrl);
+        $this->rsyncInfo($dir, $this->plugin->rsync->remoteUrl);
 
         // Ask
         if (!$this->confirm("Are you sure?", true)) {
@@ -46,12 +37,12 @@ class AssetsDownAction extends ConfigAwareBaseAction
         }
 
         // Configure rsync
-        $plugin->rsync->setOption('dryRun', $this->dryRun);
-        $plugin->rsync->setOption('remoteOrigin', true);
+        $this->plugin->rsync->setOption('dryRun', $this->dryRun);
+        $this->plugin->rsync->setOption('remoteOrigin', true);
 
         // Type cmd
         if ($this->verbose) {
-            $this->cmdBlock($plugin->rsync->getCommand($dir));
+            $this->cmdBlock($this->plugin->rsync->getCommand($dir));
         }
 
         // Run 'before' commands and stop on error
@@ -61,7 +52,7 @@ class AssetsDownAction extends ConfigAwareBaseAction
 
         // Execute
         $this->section(($this->dryRun) ? 'Rsync dry-run' : 'Rsync started');
-        $plugin->rsync->sync($dir);
+        $this->plugin->rsync->sync($dir);
         $this->section(PHP_EOL . 'done');
 
         return ExitCode::OK;

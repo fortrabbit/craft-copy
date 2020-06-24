@@ -6,11 +6,6 @@ use fortrabbit\Copy\Services\Git;
 use GitWrapper\Exception\GitException;
 use yii\console\ExitCode;
 
-/**
- * Class CodeUpAction
- *
- * @package fortrabbit\Copy\Actions
- */
 class CodeUpAction extends ConfigAwareBaseAction
 {
 

@@ -12,11 +12,6 @@ use Symfony\Component\Process\Process;
 use yii\console\ExitCode;
 use yii\helpers\Inflector;
 
-/**
- * Class SetupAction
- *
- * @package fortrabbit\Copy\Commands
- */
 class SetupAction extends Action
 {
     use ConsoleOutputHelper;

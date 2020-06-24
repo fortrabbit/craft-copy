@@ -7,8 +7,8 @@ use craft\base\Plugin as BasePlugin;
 use craft\db\Connection;
 use fortrabbit\Copy\Actions\AllDownAction;
 use fortrabbit\Copy\Actions\AllUpAction;
-use fortrabbit\Copy\Actions\AssetsDownAction;
-use fortrabbit\Copy\Actions\AssetsUpAction;
+use fortrabbit\Copy\Actions\FilesDownAction;
+use fortrabbit\Copy\Actions\FilesUpAction;
 use fortrabbit\Copy\Actions\CodeDownAction;
 use fortrabbit\Copy\Actions\CodeUpAction;
 use fortrabbit\Copy\Actions\DbDownAction;
@@ -81,8 +81,8 @@ class Plugin extends BasePlugin
                 [
                     'all/up' => AllUpAction::class,
                     'all/down' => AllDownAction::class,
-                    'assets/up' => AssetsUpAction::class,
-                    'assets/down' => AssetsDownAction::class,
+                    'files/up' => FilesUpAction::class,
+                    'files/down' => FilesDownAction::class,
                     'volumes/up' => VolumesUpAction::class,
                     'volumes/down' => VolumesDownAction::class,
                     'code/up' => CodeUpAction::class,

@@ -10,11 +10,6 @@ use fortrabbit\Copy\Services\Volumes;
 use ostark\Yii2ArtisanBridge\base\Commands;
 use yii\console\ExitCode;
 
-/**
- * Class VolumesUpAction
- *
- * @package fortrabbit\Copy\Actions
- */
 class VolumesDownAction extends ConfigAwareBaseAction
 {
     use ConsoleOutputHelper;

@@ -8,11 +8,6 @@ use ostark\Yii2ArtisanBridge\base\Action;
 use Symfony\Component\Console\Helper\TableSeparator;
 use yii\console\ExitCode;
 
-/**
- * Class InfoAction
- *
- * @package fortrabbit\Copy\Commands
- */
 class InfoAction extends Action
 {
     use ConsoleOutputHelper;

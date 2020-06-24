@@ -5,11 +5,6 @@ namespace fortrabbit\Copy\Actions;
 use GitWrapper\Exception\GitException;
 use yii\console\ExitCode;
 
-/**
- * Class CodeDownAction
- *
- * @package fortrabbit\Copy\Actions
- */
 class CodeDownAction extends ConfigAwareBaseAction
 {
 
