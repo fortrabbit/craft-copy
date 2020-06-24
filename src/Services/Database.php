@@ -1,26 +1,18 @@
 <?php
 
-/**
- * Copy plugin for Craft CMS 3.x
- **
- *
- * @link      https://www.fortrabbit.com/
- * @copyright Copyright (c) 2018 Oliver Stark
- */
-
 namespace fortrabbit\Copy\Services;
 
 use craft\base\Component;
 use craft\helpers\FileHelper;
 
 /**
- * Dump Service
+ * Database Service
  *
  * @author    Oliver Stark
  * @package   Copy
  * @since     1.0.0
  */
-class Dump extends Component
+class Database extends Component
 {
     /**
      * @var \craft\db\Connection
@@ -43,6 +35,22 @@ class Dump extends Component
         return $file;
     }
 
+    /**
+     * @param string $file
+     *
+     * @return string
+     */
+    protected function prepareFile($file)
+    {
+        $file = FileHelper::normalizePath($file);
+        $dir = dirname($file);
+
+        if (!is_dir($dir)) {
+            FileHelper::createDirectory($dir);
+        }
+
+        return $file;
+    }
 
     /**
      * @param string $file
@@ -58,24 +66,6 @@ class Dump extends Component
         $file = $this->prepareFile($file);
 
         $this->db->restore($file);
-
-        return $file;
-    }
-
-
-    /**
-     * @param string $file
-     *
-     * @return string
-     */
-    protected function prepareFile($file)
-    {
-        $file = FileHelper::normalizePath($file);
-        $dir  = dirname($file);
-
-        if (!is_dir($dir)) {
-            FileHelper::createDirectory($dir);
-        }
 
         return $file;
     }

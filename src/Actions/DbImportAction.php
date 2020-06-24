@@ -34,18 +34,18 @@ class DbImportAction extends Action
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        $this->info("Importing DB Dump from '{$file}'");
+        $this->info("Importing DB Database from '{$file}'");
 
         try {
-            $file = Plugin::getInstance()->dump->import($file);
-            $this->successBlock("Dump imported");
+            $file = Plugin::getInstance()->database->import($file);
+            $this->successBlock("Database imported");
 
             if (!$this->confirm("Do you really want to remove the {$file} file?", true)) {
                 return ExitCode::OK;
             }
 
             if (FileHelper::unlink($file)) {
-                $this->successBlock("Dump removed");
+                $this->successBlock("Database removed");
             }
 
             return ExitCode::OK;

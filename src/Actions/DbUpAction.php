@@ -3,7 +3,6 @@
 namespace fortrabbit\Copy\Actions;
 
 use fortrabbit\Copy\Plugin;
-use PHP_CodeSniffer\Exceptions\RuntimeException;
 use yii\console\ExitCode;
 
 /**
@@ -71,7 +70,7 @@ class DbUpAction extends ConfigAwareBaseAction
 
         // Step 1: Create dump of the current database
         $bar->setMessage($messages[] = "Creating local dump");
-        if ($plugin->dump->export($transferFile)) {
+        if ($plugin->database->export($transferFile)) {
             $bar->advance();
         }
 
@@ -90,7 +89,7 @@ class DbUpAction extends ConfigAwareBaseAction
 
             if ($plugin->ssh->exec("php vendor/bin/craft-copy-import-db.php {$transferFile} --force")) {
                 $bar->advance();
-                $bar->setMessage("Dump imported");
+                $bar->setMessage("Database imported");
             }
         } else {
             // Step 3: Backup the remote database before importing the uploaded dump
@@ -103,7 +102,7 @@ class DbUpAction extends ConfigAwareBaseAction
             $bar->setMessage($messages[] = "Importing dump on remote");
             if ($plugin->ssh->exec("php craft copy/db/from-file {$transferFile} --interactive=0")) {
                 $bar->advance();
-                $bar->setMessage("Dump imported");
+                $bar->setMessage("Database imported");
             }
         }
 

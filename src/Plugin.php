@@ -17,6 +17,8 @@ use fortrabbit\Copy\Actions\DbImportAction;
 use fortrabbit\Copy\Actions\DbUpAction;
 use fortrabbit\Copy\Actions\InfoAction;
 use fortrabbit\Copy\Actions\SetupAction;
+use fortrabbit\Copy\Actions\VolumesDownAction;
+use fortrabbit\Copy\Actions\VolumesUpAction;
 use fortrabbit\Copy\EventHandlers\CommandOutputFormatHandler;
 use fortrabbit\Copy\EventHandlers\IgnoredBackupTablesHandler;
 use fortrabbit\Copy\Services\DeployConfig;
@@ -26,10 +28,9 @@ use ostark\Yii2ArtisanBridge\ActionGroup;
 use ostark\Yii2ArtisanBridge\base\Commands;
 use ostark\Yii2ArtisanBridge\Bridge;
 use yii\base\Event;
-use yii\base\Model;
 use yii\console\Application as ConsoleApplication;
 use fortrabbit\Copy\Services\Ssh as SshService;
-use fortrabbit\Copy\Services\Dump as DumpService;
+use fortrabbit\Copy\Services\Database as DatabaseService;
 use fortrabbit\Copy\Services\Rsync as RsyncService;
 use fortrabbit\Copy\Services\Git as GitService;
 
@@ -39,7 +40,7 @@ use fortrabbit\Copy\Services\Git as GitService;
  * @package fortrabbit\Copy
  *
  * @property  SshService $ssh
- * @property  DumpService $dump
+ * @property  DatabaseService $database
  * @property  RsyncService $rsync
  * @property  GitService $git
  * @property  DeployConfig $config
@@ -76,6 +77,8 @@ class Plugin extends BasePlugin
                     'all/down' => AllDownAction::class,
                     'assets/up' => AssetsUpAction::class,
                     'assets/down' => AssetsDownAction::class,
+                    'volumes/up' => VolumesUpAction::class,
+                    'volumes/down' => VolumesDownAction::class,
                     'code/up' => CodeUpAction::class,
                     'code/down' => CodeDownAction::class,
                     'db/up' => DbUpAction::class,
@@ -109,8 +112,8 @@ class Plugin extends BasePlugin
         $this->setComponents(
             [
                 'config' => DeployConfig::class,
-                'dump' => function () {
-                    return new DumpService(['db' => Craft::$app->getDb()]);
+                'database' => function () {
+                    return new DatabaseService(['db' => Craft::$app->getDb()]);
                 },
                 'git' => function () {
                     return GitService::fromDirectory(\Craft::getAlias('@root') ?: CRAFT_BASE_PATH);

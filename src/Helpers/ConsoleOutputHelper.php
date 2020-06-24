@@ -15,21 +15,24 @@ use Symfony\Component\Console\Helper\TableSeparator;
  */
 trait ConsoleOutputHelper
 {
-    /**
-     * @param string      $dir
-     * @param string|null $remoteUrl
-     */
-    public function rsyncInfo(string $dir, string $remoteUrl = null)
+    public function rsyncInfo(string $dir, string $remoteUrl = null, string $volumeHandle = null)
     {
+        $rows = [
+            ['Directory', $dir],
+            new TableSeparator(),
+            ['SSH remote', $remoteUrl],
+            new TableSeparator(),
+            ['Dry run', $this->dryRun ? 'true' : 'false']
+        ];
+
+        if ($volumeHandle) {
+            $rows[] =  new TableSeparator();
+            $rows[] =  ['Volume', $volumeHandle];
+        }
+
         $this->table(
             ['Key', 'Value'],
-            [
-                ['Asset directory', $dir],
-                new TableSeparator(),
-                ['SSH remote', $remoteUrl],
-                new TableSeparator(),
-                ['Dry run', $this->dryRun ? 'true' : 'false']
-            ]
+            $rows
         );
     }
 

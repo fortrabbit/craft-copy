@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Copy plugin for Craft CMS 3.x
- *
- * @link      https://www.fortrabbit.com/
- * @copyright Copyright (c) 2018 Oliver Stark
- */
-
 namespace fortrabbit\Copy\Services;
 
 /**

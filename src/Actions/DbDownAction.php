@@ -80,15 +80,15 @@ class DbDownAction extends ConfigAwareBaseAction
         // Step 3: Backup the local database before importing the downloaded dump
         $bar->setMessage($messages[] = "Creating backup of local DB ({$backupFile})");
 
-        if ($plugin->dump->export($backupFile)) {
+        if ($plugin->database->export($backupFile)) {
             $bar->advance();
         }
 
         // Step 4: Import
         $bar->setMessage($messages[] = "Importing dump");
-        if ($plugin->dump->import($transferFile)) {
+        if ($plugin->database->import($transferFile)) {
             $bar->advance();
-            $bar->setMessage("Dump imported");
+            $bar->setMessage("Database imported");
         }
 
         $bar->finish();

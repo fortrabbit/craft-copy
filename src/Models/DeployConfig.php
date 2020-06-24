@@ -8,11 +8,10 @@ use craft\helpers\StringHelper;
 /**
  * Class that represents the yml config
  * see src/fortrabbit.example-config.yml
- *
  */
 class DeployConfig extends Model
 {
-    public const DEPREACTED_PROPERTIES = ['sshPath'];
+    public const DEPREACTED_PROPERTIES = ['sshPath', 'assetPath'];
 
     /**
      * @var string Name of App
@@ -29,10 +28,6 @@ class DeployConfig extends Model
      */
     public $gitRemote;
 
-    /**
-     * @var string Relative path to assets
-     */
-    public $assetPath = 'web/assets';
 
     /**
      * @var array Scripts that run before commands locally

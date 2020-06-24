@@ -63,6 +63,19 @@ abstract class ConfigAwareBaseAction extends Action
             return false;
         };
 
+        // Let the user choose
+        if ("?" === $configName) {
+
+            $options = $this->plugin->config->getConfigOptions();
+            $options = array_combine($options, $options);
+
+            $configName = $this->choice(
+                "Select a config",
+                $options,
+                $configName
+            );
+        }
+
 
         try {
             $this->plugin->config->setName($configName);

@@ -2,7 +2,6 @@
 
 namespace fortrabbit\Copy\Exceptions;
 
-
 class PluginNotInstalledException extends RemoteException
 {
     /**

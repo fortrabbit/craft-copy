@@ -28,10 +28,10 @@ class DbExportAction extends Action
     {
         $plugin = Plugin::getInstance();
         $this->assureMyCfnForMysqldump();
-        $this->info("Creating DB Dump in '{$file}'");
+        $this->info("Creating DB Database in '{$file}'");
 
         try {
-            $plugin->dump->export($file);
+            $plugin->database->export($file);
             $this->info("OK");
             return ExitCode::OK;
         } catch (ShellCommandException $exception) {
