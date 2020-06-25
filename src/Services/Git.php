@@ -115,7 +115,8 @@ final class Git
         if (!in_array($for, ['push', 'pull'])) {
             throw new \LogicException(
                 sprintf(
-                    'Argument 1 passed to fortrabbit\Copy\services\Git::getRemotes() must be "pull" or "push", %s given.',
+                    'Argument 1 passed to %s must be "pull" or "push", %s given.',
+                    'fortrabbit\Copy\Services\Git::getRemotes()',
                     $for
                 )
             );

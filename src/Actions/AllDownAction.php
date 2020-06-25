@@ -26,7 +26,7 @@ class AllDownAction extends ConfigAwareBaseAction
     public function run(string $config = null): int
     {
         // Ask
-        if (!$this->confirm("Do you want to copy all <underline>assets</underline>, the <underline>code</underline> and the <underline>db</underline> down?", true)) {
+        if (!$this->confirm("Do you want to copy all volumes, the code and the database down?", true)) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -35,7 +35,7 @@ class AllDownAction extends ConfigAwareBaseAction
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        if (\Craft::$app->runAction('copy/assets/down', ['interactive' => true]) !== 0) {
+        if (\Craft::$app->runAction('copy/volumes/down', ['interactive' => true]) !== 0) {
             $this->errorBlock('Failed to copy the assets');
             return ExitCode::UNSPECIFIED_ERROR;
         }
@@ -48,4 +48,3 @@ class AllDownAction extends ConfigAwareBaseAction
         return ExitCode::OK;
     }
 }
-

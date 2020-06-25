@@ -23,5 +23,4 @@ class IgnoredBackupTablesHandler
             $event->ignoreTables = array_diff($event->ignoreTables, [Table::ASSETTRANSFORMINDEX]);
         }
     }
-
 }

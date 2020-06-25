@@ -1,5 +1,13 @@
 #  Changelog
 
+## 1.0.0-XXX - 2020-06-..
+- Added `copy/volumes/up` command
+- Added `copy/volumes/down` command
+- Added `copy/folder/up` command
+- Added `copy/folder/down` command
+- Removed `copy/assets/up` command
+- Removed `copy/assets/down` command
+
 ## 1.0.0-RC11 - 2020-05-12
 - Updated various dependencies
 - Fixed a bug when Craft expects `CRAFT_ENVIRONMENT` 

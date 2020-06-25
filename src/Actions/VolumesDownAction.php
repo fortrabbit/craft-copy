@@ -35,7 +35,7 @@ class VolumesDownAction extends ConfigAwareBaseAction
     }
 
     /**
-     * Upload Volumes
+     * Download Volumes
      *
      * @param string|null $config Name of the deploy config. Use '?' to choose.
      * @param array|null $volumeHandles Limit the command to specific volumes
@@ -55,7 +55,6 @@ class VolumesDownAction extends ConfigAwareBaseAction
         $this->section("Copy volumes down");
 
         foreach ($volumes as $volume) {
-
             $path = $this->prepareForRsync($volume->path);
 
             // Info
@@ -87,5 +86,4 @@ class VolumesDownAction extends ConfigAwareBaseAction
 
         return ExitCode::OK;
     }
-
 }

@@ -55,7 +55,6 @@ class VolumesUpAction extends ConfigAwareBaseAction
         $this->section("Copy volumes up");
 
         foreach ($volumes as $volume) {
-
             $path = $this->prepareForRsync($volume->path);
 
             // Info
@@ -87,5 +86,4 @@ class VolumesUpAction extends ConfigAwareBaseAction
 
         return ExitCode::OK;
     }
-
 }

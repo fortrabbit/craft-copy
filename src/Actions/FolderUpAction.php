@@ -6,7 +6,7 @@ use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Helpers\PathHelper;
 use yii\console\ExitCode;
 
-class FilesUpAction extends ConfigAwareBaseAction
+class FolderUpAction extends ConfigAwareBaseAction
 {
     use ConsoleOutputHelper;
     use PathHelper;
@@ -15,7 +15,7 @@ class FilesUpAction extends ConfigAwareBaseAction
     public $verbose = false;
 
     /**
-     * Upload Files
+     * Upload Folder
      *
      * @param string|null $config Name of the deploy config
      * @param string|null $dir Directory, relative to the project root, defaults to web/assets
@@ -26,7 +26,7 @@ class FilesUpAction extends ConfigAwareBaseAction
     {
         $dir = $this->prepareForRsync($dir);
 
-        $this->section('Copy files up');
+        $this->section('Copy folder up');
 
         // Info
         $this->rsyncInfo($dir, $this->plugin->rsync->remoteUrl);

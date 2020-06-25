@@ -34,7 +34,7 @@ With fortrabbit you can already use Git to deploy code, including Composer. Craf
 
 1. **Template code** — configuration, templates and other logic you are writing is under version control and deployed via **Git**
 2. **Dependencies** — The Craft CMS core code and all plugins (including this one) are in the vendor folder, managed by **Composer (via Git)**
-3. **Assets** — Images and other media uploaded via the Craft Control Panel in the assets folder are excluded from Git and **rsynced** (Uni Apps only)
+3. **Volumes** — Images and other media uploaded via the Craft Control Panel in the assets folder are excluded from Git and **rsynced** (Uni Apps only)
 4. **Database** — MySQL contents are dumped, downloaded and imported with **mysqldump**
 
 
@@ -122,19 +122,26 @@ php craft copy/code/down
 ```
 
 
-### Assets
+### Volume Assets
 
 ```shell
-# Rsync local assets with remote
-php craft copy/assets/up {config} {?assetDir}
+# Rsync local volumes with remote
+php craft copy/volumes/up {config} {?volumeHandle}
 
 # Rsync remote assets with local
-php craft copy/assets/down {config} {?assetDir}
+php craft copy/volumes/down {config} {?volumeHandle}
 ```
 
-* {assetDir} defaults to `web/assets`
+* To copy all volumes don't used {volumeHandle} 
 * No remote volumes (S3, Object Storage, ..) so far.
 
+
+### Folders
+
+```
+# Rsync folder which are not in git or not in a volume
+php craft copy/folder/up {config} web/build/prod
+```
 
 ## Advanced usage
 
@@ -153,19 +160,19 @@ Craft Copy offers a light weight Git wrapper with auto-suggestions for Composer 
 The `composer.json` is also managed in Git and when you push a change to that file, Composer will run during deployment on fortrabbit. That's not Craft Copy but a fortrabbit feature. So you don't need to login by SSH and run Composer manually. Also you should not trigger any updates with the Craft CMS Control Panel on the fortrabbit App itself.
 
 
-#### Assets
+#### Volumes
 
-Any asset files and folders, including image transformations can be synced up and down with the assets command. Here rsync will be used. The transport flags are set to be non-destructive. No files will be deleted and you can safely run this operation in any directon without having to fear any data loss. You might need to keep your assset library clean from time to time. Take care to have your assets excluded from Git.
+Any asset files and folders, including image transformations can be synced up and down with the volumes command. Here rsync will be used. The transport flags are set to be non-destructive. No files will be deleted and you can safely run this operation in any direction without having to fear any data loss. You might need to keep your assets library clean from time to time. 
 
 
 #### Database
 
-The MySQL database is getting copied over by using `mysqldump`. So it basically will export the current status of the database as an `file.sql` and will replace the other database with that file. In other words: This can be a desctrutive operation. You need to make sure that any content changes affecting the database, like new entries or editing entries are only done in one enviornment, either locally or on the fortrabbit App. It can not merge changes, like with assets or code. Good news s, that Craft Copy will always create a snapshot file which you can use to roll back.
+The MySQL database is getting copied over by using `mysqldump`. So it basically will export the current status of the database as an `file.sql` and will replace the other database with that file. In other words: This can be a desctrutive operation. You need to make sure that any content changes affecting the database, like new entries or editing entries are only done in one environment, either locally or on the fortrabbit App. It can not merge changes, like with assets or code. Good news s, that Craft Copy will always create a snapshot file which you can use to roll back.
 
 
 ### Project config
 
-Craft CMS is offering a `project.yml` which is a master to hold your configuraton data. We highly recommend to enable the Project config via `general.php`. That way you can completley separate the configuraton of the database from the database contents. In other words, you can make structural changes to the database structure locally, by adding new fields or modifying fields and still sync those changes up, even when database contents are updated on the App. The `project.yml` is controlled via Git and therfore will be pushed along with code updates via Git. 
+Craft CMS is offering a `project.yml` which is a master to hold your configuraton data. We highly recommend to enable the Project config via `general.php`. That way you can completely separate the configuration of the database from the database contents. In other words, you can make structural changes to the database structure locally, by adding new fields or modifying fields and still sync those changes up, even when database contents are updated on the App. The `project.yml` is controlled via Git and therefore will be pushed along with code updates via Git. 
 
 Make sure that your local development enviornment stays the master for structural changes. A best practice is to disable admin changes on the App itself by setting `'allowAdminChanges' => false` for production in `general.php`. Also see the [Craft CMS help](https://docs.craftcms.com/v3/config/config-settings.html#allowadminchanges) on that setting.
 
@@ -188,7 +195,7 @@ Once your Apps are in place, you connect your local environment with each App.
 php craft copy/setup
 ```
 
-The setup command creates a config files the Craft `/config` folder. You can modify and share them across your team.
+The setup command creates `.yml` config files the Craft `/config` folder. You can modify and share them across your team.
 
 ### Multi staging usage
 
@@ -213,28 +220,13 @@ Supported commands:
 * code/down
 * db/up
 * db/down
-* assets/up
-* assets/down
+* volumes/up
+* volumes/down
 
 Here you can find some use cases: [config/fortrabbit.example-config.yaml](https://github.com/fortrabbit/craft-copy/blob/master/src/fortrabbit.example-config.yaml)
 
 
 
-
-
-## Quirks and known issues
-
-### Asset folder location
-
-As noted above, it is currently expected by deafult, that your file uploads are stored in a folder called `assets` within the folder `web`. That a common practice anyways. 
-
-It is planned to change that in a future update.
-
-### Image transforms are not copied
-
-Currently, the image transforms table is not copied when copying the database. That means, that Craft CMS assumes that all images need to regenerated once you have imported the database. That will trigger imageMagick to squeeze your images again and can slow down the website for the first unlucky user. After all transforms have been re-run, the images are delivered quickly.
-
-It is planned to change that in a future update.
 
 
 ## Troubleshooting

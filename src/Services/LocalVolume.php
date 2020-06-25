@@ -85,5 +85,4 @@ class LocalVolume
         // Return path relative to @root
         return ltrim(str_replace(\Craft::parseEnv('@root'), '', $path), '/');
     }
-
 }
