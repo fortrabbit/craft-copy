@@ -1,4 +1,4 @@
-# Craft Copy Plugin (RC11)
+# Craft Copy Plugin (RC12)
 
 This little command line tool helps to speed up common tasks around Craft CMS deployment on [fortrabbit](https://www.fortrabbit.com/). Craft Copy syncs your local development environment with your fortrabbit App — up and down. It conveniently deploys deploys code changes and synchronizes latest images and database entries. This Craft CMS plugin will be installed locally and on the fortrabbit App.
 
@@ -61,7 +61,7 @@ cd your/craft-project
 
 # Require Craft Copy via Composer
 composer config platform --unset
-composer require fortrabbit/craft-copy:^1.0.0-RC11
+composer require fortrabbit/craft-copy:dev-assets
 
 # Install the plugin with Craft CMS
 php craft install/plugin copy
@@ -128,19 +128,21 @@ php craft copy/code/down
 # Rsync local volumes with remote
 php craft copy/volumes/up {config} {?volumeHandle}
 
-# Rsync remote assets with local
+# Rsync remote volumes with local
 php craft copy/volumes/down {config} {?volumeHandle}
 ```
 
-* To copy all volumes don't used {volumeHandle} 
+* To copy all volumes don't provide a {volumeHandle} 
 * No remote volumes (S3, Object Storage, ..) so far.
 
 
 ### Folders
 
 ```
-# Rsync folder which are not in git or not in a volume
-php craft copy/folder/up {config} web/build/prod
+# Rsync folders which are not in git or not a volume
+php craft copy/folder/up {config} {relativePathToFolder}
+php craft copy/folder/up production web/build/prod
+
 ```
 
 ## Advanced usage
