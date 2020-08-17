@@ -119,7 +119,6 @@ class SetupAction extends Action
         $config->app = $app;
         $config->sshUrl = "{$app}@deploy.{$region}.frbit.com";
         $config->gitRemote = "$app/master";
-        $config->assetPath = $this->getDefaultRelativeAssetPath();
         $config->setName($configName);
         Plugin::getInstance()->config->setName($configName);
 
