@@ -7,7 +7,7 @@ use craft\helpers\StringHelper;
 
 /**
  * Class that represents the yml config
- * see src/fortrabbit.example-config.yml
+ * see src/fortrabbit.example.yml
  */
 class DeployConfig extends Model
 {

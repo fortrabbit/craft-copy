@@ -1,4 +1,4 @@
-# Craft Copy Plugin (RC12)
+# Craft Copy Plugin (1.0.0)
 
 This little command line tool helps to speed up common tasks around Craft CMS deployment on [fortrabbit](https://www.fortrabbit.com/). Craft Copy syncs your local development environment with your fortrabbit App — up and down. It conveniently deploys deploys code changes and synchronizes latest images and database entries. This Craft CMS plugin will be installed locally and on the fortrabbit App.
 
@@ -10,50 +10,19 @@ This little command line tool helps to speed up common tasks around Craft CMS de
 ![demo](https://github.com/fortrabbit/craft-copy/blob/master/resources/craft-copy-code-up.gif "Code sync")
 
 
-## Workflow
-
-
-### Initial development
-
-We assume that your are having a local development environment, where Craft CMS websites are developed mainly. Especially when getting started with a fresh project, **local is the master**. 
-
-
-### Go live
-
-Craft Copy comes in when you want to deploy your application to an App at fortrabbit. Initially,  when going live, or handing off the project to a content editor or showcasing it to a client. Craft Copy will help to deploy the application easily. 
-
-
-### Maintain
-
-Craft Copy is especially useful when your website project is evolving. Say your client is updating contents on the live application while you are tweaking design or working on a new feature. Craft Copy helps you merging the latest contents into your local development environment.
-
-
-## How it works
-
-With fortrabbit you can already use Git to deploy code, including Composer. Craft Copy enhances on that by adding support for assets and database contents. There are four data types: 
-
-1. **Template code** — configuration, templates and other logic you are writing is under version control and deployed via **Git**
-2. **Dependencies** — The Craft CMS core code and all plugins (including this one) are in the vendor folder, managed by **Composer (via Git)**
-3. **Volumes** — Images and other media uploaded via the Craft Control Panel in the assets folder are excluded from Git and **rsynced** (Uni Apps only)
-4. **Database** — MySQL contents are dumped, downloaded and imported with **mysqldump**
-
-
 ## Requirements
 
-You'll need a local development environment (macOS or Linux) including:
+* A local development environment including: Craft 3+, PHP 7.2+ and Composer. 
+* The following binaries should be executable: `php`, `mysqldump`, `git` and `rsync`
+* A SSH key installed should with your fortrabbit Account (no password auth so far)
+* You need to have an App with fortrabbit
 
-* Craft 3+
-* PHP 7.1+
-* Composer
-* Executable binaries: `php`, `mysqldump`, `git` and `rsync`
-* SSH key installed with fortrabbit (no password auth so far)
-
-And of course you will need an App with fortrabbit. Craft Copy works for Universal Apps and Professional Apps. Asset synchronisation is only available for Universal Apps with local asset volumes.
+Craft Copy works for Universal Apps and Professional Apps. Asset synchronisation is only available for Universal Apps with local asset volumes.
 
 
 ## Installation
 
-Craft Copy is available in the [Craft CMS plugin store](https://plugins.craftcms.com/copy). Best install Craft Copy **locally** in the terminal with Composer like so:
+Best install Craft Copy in the terminal on your local computer with Composer like so:
 
 ```shell
 # Jump into your local Craft CMS folder
@@ -61,147 +30,167 @@ cd your/craft-project
 
 # Require Craft Copy via Composer
 composer config platform --unset
-composer require fortrabbit/craft-copy:dev-assets
+composer require fortrabbit/craft-copy
 
-# Install the plugin with Craft CMS
+# Install and enable the plugin with Craft CMS
 php craft install/plugin copy
-
-# Initialize the setup
-php craft copy/setup
 ```
 
-You will be guided through a form to connect your local App with the App on fortrabbit.
+You will be guided through a form to connect your local App with the App on fortrabbit. Craft Copy is available in the [Craft CMS plugin store](https://plugins.craftcms.com/copy).
 
 
 ## Usage
 
+Craft Copy will always be executed on your local computer in your local development environment.
 
-### Getting started
+The optional `{stage}` parameter defines which fortrabbit App the command applies to. It is useful when working with multiple fortrabbit Apps as stages. The default parameter is the app name. See multi-staging section below for more.
+
+Some commands are interactive, meaning that you will need to confirm certain potential dangerous operations. You can disable such manual interactions by adding the `--interactive=0` flag in most cases. The short alias version is `-i=0`.
+
+
+### Setup
 
 ```shell
-# Get help
+# Connect your development environment with your fortrabbit App
+php craft copy/setup
+```
+
+
+#### Config file
+
+The setup command creates a configuration file within the Craft `/config` folder. The file name pattern is `fortrabbit.{stage}.yml`, where `{stage}` is how you have defined the fortrabbit App environment in the [setup](#setup). The default for `{stage}` is the App name, commonly this can also be `production`. The file is version controlled and can be shared with the team and includes all basic settings, plus some extras, like [before/after](#beforeafter-commands) commands. When using [multi-staging](#multi-staging) a configuration file will be created for each fortrabbit App. Also see the [example file](https://github.com/fortrabbit/craft-copy/blob/master/src/fortrabbit.example.yaml).
+
+
+### Get help
+
+```shell
+# See a list of available commands
 php craft help copy
 
-# Tell the plugin which fortrabbit App to use
-php craft copy/setup
-
-# Environment checks
+# Run environment checks
 php craft copy
-php craft copy/info
 ```
 
 
 ### Database
 
 ```shell
-# Dump local DB (backup remote db) and import it on remote
-php craft copy/db/up
+# Dump local DB (backup fortrabbit db) and import it to the fortrabbit App
+php craft copy/db/up {stage}
 
-# Dump local DB and import it on remote (useful if the remote db is broken)
-php craft copy/db/up --force
+# Dump local DB and import it to the fortrabbit App (useful if the fortrabbit db is broken)
+php craft copy/db/up {stage}  --force
 
-# Dump remote DB and import it locally
-php craft copy/db/down
+# Dump fortrabbit DB and import it locally
+php craft copy/db/down {stage}
+```
 
+
+#### Database to file
+
+<!--
+TODO /TBD: 
+
+* Decide if DB to file might be dropped since it's now included with Craft CLI
+
+-->
+
+```shell
 # Export DB
-php craft copy/db/to-file {file}
+php craft copy/db/to-file filename
 
 # Import DB
-php craft copy/db/from-file {file}
+php craft copy/db/from-file filename
+# Filename is a required parameter
 ```
 
 
 ### Code
 
-```shell
-# Git push
-php craft copy/code/up
+While you can use `git push` as well to deploy code by Git to your fortrabbit App, the Craft Copy code commands offer some additional extras: It will check for uncommitted changes and initialize the Git repo if required.
 
-# Git pull 
-php craft copy/code/down
+```shell
+# Push code changes to the fortrabbit App
+php craft copy/code/up {stage}
+
+# Pull code changes from your fortrabbit App
+php craft copy/code/down {stage}
 ```
 
 
-### Volume Assets
+### Asset Volumes
+
+Assets in Craft CMS are media files that are uploaded by editors and managed by the CMS. Assets are getting stored in volumes and are not part of Git.
 
 ```shell
-# Rsync local volumes with remote
-php craft copy/volumes/up {config} {?volumeHandle}
+# Sync up a local volume to fortrabbit App
+php craft copy/volumes/up {stage} {?volumeHandle}
 
-# Rsync remote volumes with local
-php craft copy/volumes/down {config} {?volumeHandle}
+# Sync down a vlume from the fortrabbit App to local
+php craft copy/volumes/down {stage} {?volumeHandle}
 ```
 
-* To copy all volumes don't provide a {volumeHandle} 
-* No remote volumes (S3, Object Storage, ..) so far.
+* The "File System Path" for the Volume setting within the Craft CMS control panel should not be a relative path. You can use the `@webroot` alias.
+* Remote volumes (S3, Object Storage …) are not supported so far
+
+
+#### Options and arguments
+
+* {volumeHandle} is the handle name of your asset volume in Craft CMS
+* To sync all volumes, don't provide a volumeHandle (and add `-i=0` to avoid questions)
+* To test what will actually be synced you can add the `-n` option to trigger a dry-run
+
 
 
 ### Folders
 
-```
-# Rsync folders which are not in git or not a volume
-php craft copy/folder/up {config} {relativePathToFolder}
-php craft copy/folder/up production web/build/prod
+You can also synchronize folders which are not in Git or not an Asset Volume. A common use case is to sync up build artifacts such as minified JS or CSS to your fortrabbit App. This can be coupled with [before/after commands](#beforeafter-commands).
 
+```shell
+# Sync up a folder from local to your fortrabbit App
+php craft copy/folder/up {stage} {folder}
+
+# Example usage
+php craft copy/folder/up production web/build
 ```
+
+* The `{folder}` is your relative path seen from the craft executable (project root)
+
 
 ## Advanced usage
 
 Don't stop. Read on to fully understand Craft Copy!
 
 
-### Different types of copy for different types of data
-
-As noted above, Craft Copy can help to bring together the different data types required to run Craft CMS. Each data type is unique, so is the transport layer. Here are more details so you can better understand what's going on behind the scenes.
-
-
-#### Template and dependencies code via Git
-
-Craft Copy offers a light weight Git wrapper with auto-suggestions for Composer updates and other candy. This is the most optionial part of Craft Copy. The direction will be in most case up only (push code), since you will develop locally first and then push changes up to the fortrabbit App. Since Git is transport layer and version history, those changes are non-destructive. You can always roll back.
-
-The `composer.json` is also managed in Git and when you push a change to that file, Composer will run during deployment on fortrabbit. That's not Craft Copy but a fortrabbit feature. So you don't need to login by SSH and run Composer manually. Also you should not trigger any updates with the Craft CMS Control Panel on the fortrabbit App itself.
-
-
-#### Volumes
-
-Any asset files and folders, including image transformations can be synced up and down with the volumes command. Here rsync will be used. The transport flags are set to be non-destructive. No files will be deleted and you can safely run this operation in any direction without having to fear any data loss. You might need to keep your assets library clean from time to time. 
-
-
-#### Database
-
-The MySQL database is getting copied over by using `mysqldump`. So it basically will export the current status of the database as an `file.sql` and will replace the other database with that file. In other words: This can be a desctrutive operation. You need to make sure that any content changes affecting the database, like new entries or editing entries are only done in one environment, either locally or on the fortrabbit App. It can not merge changes, like with assets or code. Good news s, that Craft Copy will always create a snapshot file which you can use to roll back.
-
-
-### Project config
-
-Craft CMS is offering a `project.yml` which is a master to hold your configuraton data. We highly recommend to enable the Project config via `general.php`. That way you can completely separate the configuration of the database from the database contents. In other words, you can make structural changes to the database structure locally, by adding new fields or modifying fields and still sync those changes up, even when database contents are updated on the App. The `project.yml` is controlled via Git and therefore will be pushed along with code updates via Git. 
-
-Make sure that your local development enviornment stays the master for structural changes. A best practice is to disable admin changes on the App itself by setting `'allowAdminChanges' => false` for production in `general.php`. Also see the [Craft CMS help](https://docs.craftcms.com/v3/config/config-settings.html#allowadminchanges) on that setting.
-
-
 ### Automatic migrations
 
-Craft Copy incorporates another package called [Craft auto migrate](https://github.com/fortrabbit/craft-auto-migrate). It makes sure that database migrations will always run when deploying. That means that every time you'll push code via Git, a database migration will be triggered and changes from `project.yml` will be applied right away, without the need to click the apply changes button with the Control Panel.
+Craft Copy incorporates another package called [Craft auto migrate](https://github.com/fortrabbit/craft-auto-migrate). It makes sure that database migrations will always run when deploying to the fortrabbit App. That means that every time you'll push code via Git, a database migration will be triggered and changes from `project.yml` will be applied right away, without the need to click the apply changes button with the Control Panel. 
+
+The other way around, when pulling down changes, a database migration will also run. This is configured via a default [after command](#beforeafter-commands) in the [config file](#config-file).
+
+<!-- TOOD: install, migrate, apply  -->
 
 
 ### Multi staging
 
-At fortrabbit your set up multiple Apps to create multiple environments for your project. 
+At fortrabbit you can set up multiple Apps to create multiple environments for your project. See the [multi-staging help article](https://help.fortrabbit.com/multi-staging).
+
 
 #### Multi staging config
 
 Once your Apps are in place, you connect your local environment with each App.
 
-```
-# Run this command to setup a new deployment configuration
+```shell
+# Run this command to setup a new deployment configuration for each stage
 php craft copy/setup
 ```
 
-The setup command creates `.yml` config files the Craft `/config` folder. You can modify and share them across your team.
+The setup command creates a [config file](#config-file) for each App.
 
-### Multi staging usage
 
-```sh
+#### Multi staging usage
+
+```shell
 # Copy code and db down from 'production'
 php craft copy/code/down production
 php craft copy/db/down production
@@ -214,9 +203,21 @@ php craft copy/code/up staging
 php craft copy/db/up staging
 ```
 
-#### Run scripts before/after commands
+### Before/after commands
 
-Supported commands:
+<!-- 
+TODO: 
+* Discuss why some of the scripts are included with the standard file and what they are for.  
+* See if folder/up/down also supports before/after scripts.
+-->
+
+You can run any script before or after you run common up/down commands with Craft Copy.
+
+* Place the before/after scripts in your [Craft Copy config file](#config-file). 
+* The before/after commands will run on your local machine, not on the fortrabbit App. To run scripts while deploying, consider the Composer `post-install-cmd`.
+
+
+#### Supported commands
 
 * code/up
 * code/down
@@ -224,8 +225,51 @@ Supported commands:
 * db/down
 * volumes/up
 * volumes/down
+* folder/up
+* folder/down
 
-Here you can find some use cases: [config/fortrabbit.example-config.yaml](https://github.com/fortrabbit/craft-copy/blob/master/src/fortrabbit.example-config.yaml)
+
+#### Before/after example
+
+Automate your deployment pipeline. Every time you push up new code with `code/up` also minify javascript and css and sync it up as well:
+
+```yml
+before:
+  # Before deploying code by Git, please:
+  code/up:
+    # 1. Run your NPM production build
+    - "npm run prod"
+    # 2. Sync the results of the build up
+    - "php craft copy/folder/up production web/build/prod -i=0"
+```
+
+Here is a full config file example: [config/fortrabbit.example.yaml](https://github.com/fortrabbit/craft-copy/blob/master/src/fortrabbit.example.yaml)
+
+
+
+## How it works
+
+With fortrabbit you can already use Git to deploy code without any extras or plugins. When deploying code by Git Composer also is getting triggered. Craft Copy enhances on that by adding support for files that are excluded from Git such as assets in volumes, folders and database contents. 
+
+Craft Copy can help to bring together the different data types required to run Craft CMS. Each data type is unique, so is the transport layer. Here are more details so you can better understand what's going on behind the scenes:
+
+
+
+### Template and dependencies code via Git
+
+Craft Copy offers a light weight Git wrapper with auto-suggestions for Composer updates and other candy. This is the most optional part of Craft Copy. The direction will be in most case up only (push code), since you will develop locally first and then push changes up to the fortrabbit App. Since Git is transport layer and version history, those changes are non-destructive. You can always roll back.
+
+The `composer.json` is also managed in Git and when you push a change to that file, Composer will run during deployment on fortrabbit. That's not Craft Copy but a fortrabbit feature. So you don't need to login by SSH and run Composer manually. Also you should not trigger any updates with the Craft CMS Control Panel on the fortrabbit App itself.
+
+
+### Asset Volumes
+
+Any asset files and folders, including image transformations that can be synced up and down with the volumes command. Here rsync will be used. The transport flags are set to be non-destructive. No files will be deleted and you can safely run this operation in any direction without having to fear any data loss. You might need to keep your assets library clean from time to time. 
+
+
+### Database
+
+The MySQL database is getting copied over by using `mysqldump`. So it basically will export the current status of the database as an `file.sql` and will replace the other database with that file. In other words: This can be a destructive operation. You need to make sure that any content changes affecting the database, like new entries or editing entries are only done in one environment, either locally or on the fortrabbit App. It can not merge changes, like with assets or code. Good news s, that Craft Copy will always create a snapshot file which you can use to roll back.
 
 
 
@@ -235,32 +279,39 @@ Here you can find some use cases: [config/fortrabbit.example-config.yaml](https:
 
 The setup is usually straight forward when the [system requirements](#requirements) are fulfilled. However, depending on your local setup, you may run into errors. Many errors are MAMP related and easy to fix:
 
+
 ### Local MySQL connection error
 
-```
+```shell
 php craft install/plugin copy
   *** installing copy
   *** failed to install copy: Craft CMS can’t connect to the database with the credentials in config/db.php.
 ```
+
 **Fix:** Ensure "[Allow network access to MySQL](https://craftcms.stackexchange.com/a/26396/4538)" is ticked in MAMP.
+
 
 ### The mysqldump command does not exist
 
-Find out if you can access mysqldump:
-```
+The `mysqldump` client is a command line program to backup mysql databases. It is usually included with MySQL installations. Find out if you can access mysqldump:
+
+```shell
 which mysqldump
   mysqldump not found
 ```
 
-**Fix:** Add the MAMP bin path to your Bash profile
-```
+**Possible fix:** Add the MAMP bin path to your Bash profile:
+
+```shell
 echo 'export PATH=/Applications/MAMP/Library/bin:$PATH' >>~/.bash_profile
 ```
+
 
 ### PHP cli version is lower than 7.1
 
 Find out the php version on the command line:
-```
+
+```shell
 php -v
   PHP 7.0.8 (cli) (built: Jun 26 2016 12:30:44) ( NTS )
   Copyright (c) 1997-2016 The PHP Group
@@ -268,15 +319,18 @@ php -v
      with Zend OPcache v7.0.8, Copyright (c) 1999-2016, by Zend Technologies
 ```
 
-**Fix:** Add MAMP php bin path to your Bash profile
-```
+**Fix:** Add MAMP php bin path to your Bash profile:
+
+```shell
 echo 'export PATH=/Applications/MAMP/bin/php/php7.2.1/bin:$PATH' >>~/.bash_profile
 ```
 
+
 ### Composer version conflict
 
-When installing the plugin via composer you may see an error like this:
-```
+When installing the plugin via Composer you may see an error like this:
+
+```shell
 composer require fortrabbit/craft-copy:^1.0.0-RC5
   ./composer.json has been updated
   Loading composer repositories with package information
@@ -292,9 +346,9 @@ composer require fortrabbit/craft-copy:^1.0.0-RC5
    Problem 99
 ```
 
-**Fix:** Update all existing dependencies
+**Fix:** Update all existing dependencies:
 
-```
+```shell
 composer config platform --unset
 composer update
 php craft migrate/all
