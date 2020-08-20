@@ -81,7 +81,7 @@ class SetupAction extends Action
         }
 
         if (!$ssh) {
-            $this->errorBlock('SSH is required.');
+            $this->errorBlock('SSH key authentication is required here. Please add your SSH key to your fortrabbit Account first.');
             $this->line("Get Help: " . self::TROUBLE_SHOOTING_SSH_URL);
         }
 
