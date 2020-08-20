@@ -17,7 +17,7 @@ class SetupAction extends Action
     use ConsoleOutputHelper;
     use PathHelper;
 
-    public const TROUBLE_SHOOTING_MYSQLDUMP_URL = "https://github.com/fortrabbit/craft-copy#trouble-shooting";
+    public const TROUBLE_SHOOTING_MYSQLDUMP_URL = "https://github.com/fortrabbit/craft-copy#the-mysqldump-command-does-not-exist";
     public const TROUBLE_SHOOTING_SSH_URL = "https://help.fortrabbit.com/ssh-keys";
 
 
@@ -71,12 +71,12 @@ class SetupAction extends Action
 
 
         if (!$mysql) {
-            $this->errorBlock('Mysqldump is required.');
+            $this->errorBlock('Mysqldump is required. Please install it with your local development environment.');
             $this->line("Get Help: " . self::TROUBLE_SHOOTING_MYSQLDUMP_URL);
         }
 
         if (!$ssh) {
-            $this->errorBlock('SSH key authentication is required here. Please add your SSH key to your fortrabbit Account first.');
+            $this->errorBlock('SSH key authentication is required. Please add your SSH key to your fortrabbit Account first.');
             $this->line("Get Help: " . self::TROUBLE_SHOOTING_SSH_URL);
         }
 
