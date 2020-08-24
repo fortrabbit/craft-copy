@@ -157,6 +157,21 @@ php craft copy/folder/up production web/build
 * The `{folder}` is your relative path seen from the craft executable (project root)
 
 
+### Copy all
+
+Often you want to get all the latest content from the App or maybe even push all local changes up to the App. You can use the all command for that:
+
+```shell
+# Sync database, volumes and git from local to your fortrabbit App
+php craft copy/all/up
+
+# Sync database, volumes and git from your fortrabbit App to local
+php craft copy/all/down
+```
+
+* This is not including the folder action by default.
+
+
 ## Advanced usage
 
 Don't stop. Read on to fully understand Craft Copy!
