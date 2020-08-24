@@ -18,18 +18,23 @@ class FolderUpAction extends ConfigAwareBaseAction
      * Upload Folder
      *
      * @param string|null $config Name of the deploy config
-     * @param string|null $dir Directory, relative to the project root, defaults to web/assets
+     * @param string|null $folder Directory, relative to the project root, defaults to web/assets
      *
      * @return int
      */
-    public function run(string $config = null, string $dir = 'web/assets')
+    public function run(string $config = null, string $folder = 'web/assets')
     {
-        $dir = $this->prepareForRsync($dir);
+        $folder = $this->prepareForRsync($folder);
 
         $this->section('Copy folder up');
 
         // Info
-        $this->rsyncInfo($dir, $this->plugin->rsync->remoteUrl);
+        $this->rsyncInfo($folder, $this->plugin->rsync->remoteUrl);
+
+        if (!is_dir($folder)) {
+            $this->errorBlock("$folder does not exist");
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
 
         // Ask
         if (!$this->confirm("Are you sure?", true)) {
@@ -40,11 +45,6 @@ class FolderUpAction extends ConfigAwareBaseAction
         $this->plugin->rsync->setOption('dryRun', $this->dryRun);
         $this->plugin->rsync->setOption('remoteOrigin', false);
 
-        // Type cmd
-        if ($this->verbose) {
-            $this->cmdBlock($this->plugin->rsync->getCommand($dir));
-        }
-
         // Run 'before' commands and stop on error
         if (!$this->runBeforeDeployCommands()) {
             return ExitCode::UNSPECIFIED_ERROR;
@@ -52,7 +52,7 @@ class FolderUpAction extends ConfigAwareBaseAction
 
         // Execute
         $this->section(($this->dryRun) ? 'Rsync dry-run' : 'Rsync started');
-        $this->plugin->rsync->sync($dir);
+        $this->plugin->rsync->sync($folder);
         $this->section(PHP_EOL . 'done');
 
         return ExitCode::OK;

@@ -6,7 +6,6 @@ use fortrabbit\Copy\Exceptions\VolumeNotFound;
 use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Helpers\PathHelper;
 use fortrabbit\Copy\Services\LocalVolume;
-use fortrabbit\Copy\Services\Volumes;
 use ostark\Yii2ArtisanBridge\base\Commands;
 use yii\console\ExitCode;
 
@@ -64,6 +63,11 @@ class VolumesUpAction extends ConfigAwareBaseAction
                 $volume->handle
             );
 
+            if (!is_dir($path)) {
+                $this->errorBlock("$path does not exist");
+                continue;
+            }
+
             // Ask
             if (!$this->confirm("Are you sure?", true)) {
                 return ExitCode::UNSPECIFIED_ERROR;
@@ -72,11 +76,6 @@ class VolumesUpAction extends ConfigAwareBaseAction
             // Configure rsync
             $this->plugin->rsync->setOption('dryRun', $this->dryRun);
             $this->plugin->rsync->setOption('remoteOrigin', false);
-
-            // Type cmd
-            if ($this->verbose) {
-                $this->cmdBlock($this->plugin->rsync->getCommand($path));
-            }
 
             // Execute
             $this->section(($this->dryRun) ? 'Rsync dry-run' : 'Rsync started');

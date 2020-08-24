@@ -67,6 +67,7 @@ abstract class ConfigAwareBaseAction extends Action
         if ("?" === $configName) {
             $options = $this->plugin->config->getConfigOptions();
             $options = array_combine($options, $options);
+            print_r($options);
 
             $configName = $this->choice(
                 "Select a config",
