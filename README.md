@@ -33,7 +33,7 @@ composer config platform --unset
 composer require fortrabbit/craft-copy
 
 # Install and enable the plugin with Craft CMS
-php craft install/plugin copy
+php craft plugin/install copy
 ```
 
 You will be guided through a form to connect your local App with the App on fortrabbit. Craft Copy is available in the [Craft CMS plugin store](https://plugins.craftcms.com/copy).
