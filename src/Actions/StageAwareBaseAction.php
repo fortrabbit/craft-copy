@@ -4,7 +4,6 @@ namespace fortrabbit\Copy\Actions;
 
 use fortrabbit\Copy\Exceptions\StageConfigNotFoundException;
 use fortrabbit\Copy\Helpers\ConfigHelper;
-use fortrabbit\Copy\Helpers\DeprecationHelper;
 use fortrabbit\Copy\Plugin;
 use fortrabbit\Copy\Services\DeprecatedConfigFixer;
 use ostark\Yii2ArtisanBridge\base\Action;
