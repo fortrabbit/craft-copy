@@ -4,7 +4,9 @@ namespace fortrabbit\Copy\Actions;
 
 use fortrabbit\Copy\Exceptions\StageConfigNotFoundException;
 use fortrabbit\Copy\Helpers\ConfigHelper;
+use fortrabbit\Copy\Helpers\DeprecationHelper;
 use fortrabbit\Copy\Plugin;
+use fortrabbit\Copy\Services\DeprecatedConfigFixer;
 use ostark\Yii2ArtisanBridge\base\Action;
 use ostark\Yii2ArtisanBridge\base\Commands;
 use yii\base\ActionEvent;
@@ -45,7 +47,10 @@ abstract class StageAwareBaseAction extends Action
      */
     public function beforeRun()
     {
-        if ($this->hasDeprecatedEnvOption()) {
+        if (DeprecatedConfigFixer::hasDeprecatedConfig()) {
+            $fixer = new DeprecatedConfigFixer($this, $this->plugin->stage);
+            $fixer->showWarning();
+            $fixer->askAndRun();
             return false;
         };
 

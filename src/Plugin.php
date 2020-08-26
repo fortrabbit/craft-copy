@@ -46,7 +46,6 @@ use fortrabbit\Copy\Services\Git as GitService;
 class Plugin extends BasePlugin
 {
     public const DASHBOARD_URL = "https://dashboard.fortrabbit.com";
-    public const ENV_DEPLOY_ENVIRONMENT = "DEPLOY_ENVIRONMENT";
     public const ENV_DEFAULT_STAGE = "DEFAULT_STAGE";
     public const PLUGIN_ROOT_PATH = __DIR__;
     public const REGIONS = [

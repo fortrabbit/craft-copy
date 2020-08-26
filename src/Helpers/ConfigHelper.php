@@ -83,21 +83,4 @@ trait ConfigHelper
         return true;
     }
 
-    /**
-     * @return bool
-     */
-    protected function hasDeprecatedEnvOption()
-    {
-        if (getenv(Plugin::ENV_DEPLOY_ENVIRONMENT)) {
-            $this->errorBlock(
-                sprintf(
-                    "Invalid option: Env var '%s' is not supported anymore. Remove it from your .env file.",
-                    Plugin::ENV_DEPLOY_ENVIRONMENT
-                )
-            );
-            return true;
-        }
-
-        return false;
-    }
 }

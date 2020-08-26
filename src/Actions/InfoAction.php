@@ -4,6 +4,7 @@ namespace fortrabbit\Copy\Actions;
 
 use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Plugin;
+use fortrabbit\Copy\Services\DeprecatedConfigFixer;
 use ostark\Yii2ArtisanBridge\base\Action;
 use Symfony\Component\Console\Helper\TableSeparator;
 use yii\console\ExitCode;
@@ -41,6 +42,13 @@ class InfoAction extends Action
     {
         $plugin  = Plugin::getInstance();
         $stages = $plugin->stage->getConfigOptions();
+
+        if (DeprecatedConfigFixer::hasDeprecatedConfig()) {
+            $fixer = new DeprecatedConfigFixer($this, $plugin->stage);
+            $fixer->showWarning();
+            $fixer->askAndRun();
+            return 0;
+        };
 
         if (count($stages) === 0) {
             $this->errorBlock('The plugin is not configured yet. Make sure to run this setup command first:');
