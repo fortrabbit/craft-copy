@@ -6,6 +6,7 @@ use craft\base\LocalVolumeInterface;
 use craft\base\Volume;
 use craft\base\VolumeInterface;
 use craft\services\Volumes;
+use craft\volumes\Local;
 use fortrabbit\Copy\Exceptions\VolumeNotFound;
 
 /**
@@ -61,11 +62,11 @@ class LocalVolume
     }
 
     /**
-     * @param VolumeInterface $volume
+     * @param LocalVolumeInterface $volume
      *
      * @return string|null
      */
-    protected function getRelativePathFromVolume(VolumeInterface $volume): ?string
+    protected function getRelativePathFromVolume(LocalVolumeInterface $volume): ?string
     {
         // Parse ENV var in subdirectories
         $parts = explode(DIRECTORY_SEPARATOR, $volume->getRootPath());

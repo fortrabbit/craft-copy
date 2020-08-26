@@ -6,22 +6,22 @@ use fortrabbit\Copy\Services\Git;
 use GitWrapper\Exception\GitException;
 use yii\console\ExitCode;
 
-class CodeUpAction extends ConfigAwareBaseAction
+class CodeUpAction extends StageAwareBaseAction
 {
 
     /**
      * Git push
      *
-     * @param string|null $config Name of the deploy config
+     * @param string|null $stage Name of the stage config
      *
      * @return int
      * @throws \Exception
      */
-    public function run(string $config = null)
+    public function run(string $stage = null)
     {
         $this->head(
             "Deploy recent code changes",
-            "<comment>{$this->config}</comment> {$this->config->app}.frb.io"
+            "<comment>{$this->stage}</comment> {$this->stage->app}.frb.io"
         );
 
         $git = $this->plugin->git;
@@ -114,8 +114,8 @@ class CodeUpAction extends ConfigAwareBaseAction
     protected function getUpstream(Git $git): string
     {
         // Get configured remote & sshUrl
-        $upstream = explode('/', $this->config->gitRemote)[0];
-        $sshUrl = $this->config->sshUrl;
+        $upstream = explode('/', $this->stage->gitRemote)[0];
+        $sshUrl = $this->stage->sshUrl;
 
         // Nothing found
         if (!$remotes = $git->getRemotes()) {

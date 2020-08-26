@@ -2,26 +2,27 @@
 
 namespace fortrabbit\Copy\Services;
 
-use fortrabbit\Copy\Exceptions\DeployConfigNotFoundException;
+use fortrabbit\Copy\Exceptions\StageConfigNotFoundException;
+use fortrabbit\Copy\Models\StageConfig;
 use Symfony\Component\Yaml\Yaml;
-use fortrabbit\Copy\Models\DeployConfig as DeployConfigModel;
+use fortrabbit\Copy\Models\StageConfig as StageConfigModel;
 
 /**
- * DeployConfig Service
+ * StageConfig Service
  */
-class DeployConfig
+class StageConfigAccess
 {
     public const FILE_NAME_TEMPLATE = 'fortrabbit.{name}.yaml';
 
     /**
-     * @var string $name Default config
+     * @var string $name Default stage
      */
     protected $name = 'production';
 
     /**
-     * @var \fortrabbit\Copy\Models\DeployConfig | null $config
+     * @var \fortrabbit\Copy\Models\StageConfig | null $stage
      */
-    protected $config;
+    protected $stage;
 
     /**
      * @param string $name
@@ -31,24 +32,24 @@ class DeployConfig
         if ($this->name !== $name) {
             // reset config
             // if the config name has changed
-            $this->config = null;
+            $this->stage = null;
             $this->name   = $name;
         }
     }
 
     /**
-     * @return \fortrabbit\Copy\Models\DeployConfig
-     * @throws \fortrabbit\Copy\Exceptions\DeployConfigNotFoundException
+     * @return \fortrabbit\Copy\Models\StageConfig
+     * @throws \fortrabbit\Copy\Exceptions\StageConfigNotFoundException
      */
-    public function get(): DeployConfigModel
+    public function get(): StageConfigModel
     {
-        if ($this->config instanceof DeployConfigModel) {
-            return $this->config;
+        if ($this->stage instanceof StageConfigModel) {
+            return $this->stage;
         }
 
-        $this->config = $this->getConfigDataFromFile();
+        $this->stage = $this->getConfigDataFromFile();
 
-        return $this->config;
+        return $this->stage;
     }
 
     /**
@@ -71,17 +72,17 @@ class DeployConfig
     }
 
     /**
-     * @param \fortrabbit\Copy\Models\DeployConfig $config
+     * @param StageConfigModel $config
      *
      * @return bool
      * @throws \yii\base\Exception
      */
-    public function persist(DeployConfigModel $config): bool
+    public function persist(StageConfigModel $config): bool
     {
-        $this->config = $config;
-        $this->config->setName($this->name);
+        $this->stage = $config;
+        $this->stage->setName($this->name);
 
-        $yaml         = Yaml::dump($this->config->toArray(), Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE);
+        $yaml         = Yaml::dump($this->stage->toArray(), Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE);
         $fullPath     = $this->getFullPathToConfig();
 
         if (file_put_contents($fullPath, $yaml)) {
@@ -113,19 +114,19 @@ class DeployConfig
 
 
     /**
-     * @return \fortrabbit\Copy\Models\DeployConfig
-     * @throws \fortrabbit\Copy\Exceptions\DeployConfigNotFoundException
+     * @return \fortrabbit\Copy\Models\StageConfig
+     * @throws \fortrabbit\Copy\Exceptions\StageConfigNotFoundException
      */
-    protected function getConfigDataFromFile(): DeployConfigModel
+    protected function getConfigDataFromFile(): StageConfigModel
     {
         $fullPath = $this->getFullPathToConfig();
 
         if (!file_exists($fullPath)) {
-            throw new DeployConfigNotFoundException();
+            throw new StageConfigNotFoundException();
         }
 
         $data = Yaml::parse(file_get_contents($fullPath));
-        $model = new DeployConfigModel($data);
+        $model = new StageConfigModel($data);
         $model->setName($this->name);
 
         return $model;

@@ -9,7 +9,7 @@ use craft\helpers\StringHelper;
  * Class that represents the yml config
  * see src/fortrabbit.example.yml
  */
-class DeployConfig extends Model
+class StageConfig extends Model
 {
     public const DEPREACTED_PROPERTIES = ['sshPath', 'assetPath'];
 

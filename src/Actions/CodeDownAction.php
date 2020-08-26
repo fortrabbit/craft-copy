@@ -5,18 +5,18 @@ namespace fortrabbit\Copy\Actions;
 use GitWrapper\Exception\GitException;
 use yii\console\ExitCode;
 
-class CodeDownAction extends ConfigAwareBaseAction
+class CodeDownAction extends StageAwareBaseAction
 {
 
     /**
      * Git pull
      *
-     * @param string|null $config Name of the deploy config
+     * @param string|null $stage Name of the stage config
      * @param string $remoteBranch
      *
      * @return int
      */
-    public function run(string $config = null, $remoteBranch = 'master')
+    public function run(string $stage = null, $remoteBranch = 'master')
     {
         $git = $this->plugin->git;
         $git->getWorkingCopy()->init();
@@ -36,7 +36,7 @@ class CodeDownAction extends ConfigAwareBaseAction
         }
 
         // Use configured remote
-        $remote = $this->config->gitRemote ?: $git->getTracking(true);
+        $remote = $this->stage->gitRemote ?: $git->getTracking(true);
         [$upstream, $branch] = explode('/', $remote);
 
         try {

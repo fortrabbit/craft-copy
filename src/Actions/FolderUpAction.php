@@ -6,7 +6,7 @@ use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Helpers\PathHelper;
 use yii\console\ExitCode;
 
-class FolderUpAction extends ConfigAwareBaseAction
+class FolderUpAction extends StageAwareBaseAction
 {
     use ConsoleOutputHelper;
     use PathHelper;
@@ -17,14 +17,14 @@ class FolderUpAction extends ConfigAwareBaseAction
     /**
      * Upload Folder
      *
-     * @param string|null $config Name of the deploy config
+     * @param string|null $stage Name of the stage config
      * @param string|null $folder Directory, relative to the project root, defaults to web/assets
      *
      * @return int
      */
-    public function run(string $config = null, string $folder = 'web/assets')
+    public function run(string $stage = null, string $folder = null)
     {
-        $folder = $this->prepareForRsync($folder);
+        $folder = $this->prepareForRsync($folder ?: 'web/assets');
 
         $this->section('Copy folder up');
 

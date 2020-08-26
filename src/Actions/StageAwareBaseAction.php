@@ -2,7 +2,7 @@
 
 namespace fortrabbit\Copy\Actions;
 
-use fortrabbit\Copy\Exceptions\DeployConfigNotFoundException;
+use fortrabbit\Copy\Exceptions\StageConfigNotFoundException;
 use fortrabbit\Copy\Helpers\ConfigHelper;
 use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
@@ -12,7 +12,7 @@ use yii\base\Event;
 use yii\console\Controller;
 use yii\console\ExitCode;
 
-abstract class ConfigAwareBaseAction extends Action
+abstract class StageAwareBaseAction extends Action
 {
     use ConfigHelper;
 
@@ -22,9 +22,9 @@ abstract class ConfigAwareBaseAction extends Action
     public $env = null;
 
     /**
-     * @var null|\fortrabbit\Copy\Models\DeployConfig
+     * @var null|\fortrabbit\Copy\Models\StageConfig
      */
-    protected $config = null;
+    protected $stage = null;
 
     /**
      * @var \fortrabbit\Copy\Plugin
@@ -49,8 +49,8 @@ abstract class ConfigAwareBaseAction extends Action
             return false;
         };
 
-        // No deploy config files found?
-        if (count($this->plugin->config->getConfigOptions()) === 0) {
+        // No stage config files found?
+        if (count($this->plugin->stage->getConfigOptions()) === 0) {
             $this->errorBlock('The plugin is not configured yet. Make sure to run this setup command first:');
             $this->cmdBlock("php craft copy/setup");
 
@@ -59,29 +59,28 @@ abstract class ConfigAwareBaseAction extends Action
 
         // Get config name
         // Either the first arg of the command or from Env var
-        if (!$configName = $this->getConfigName()) {
+        if (!$stageName = $this->getStageName()) {
             return false;
         };
 
         // Let the user choose
-        if ("?" === $configName) {
-            $options = $this->plugin->config->getConfigOptions();
+        if ("?" === $stageName) {
+            $options = $this->plugin->stage->getConfigOptions();
             $options = array_combine($options, $options);
-            print_r($options);
 
-            $configName = $this->choice(
-                "Select a config",
+            $stageName = $this->choice(
+                "Select a stage",
                 $options,
-                $configName
+                $stageName
             );
         }
 
 
         try {
-            $this->plugin->config->setName($configName);
-            $this->config = Plugin::getInstance()->config->get();
-        } catch (DeployConfigNotFoundException $exception) {
-            $configFile = $this->plugin->config->getFullPathToConfig();
+            $this->plugin->stage->setName($stageName);
+            $this->stage = Plugin::getInstance()->stage->get();
+        } catch (StageConfigNotFoundException $exception) {
+            $configFile = $this->plugin->stage->getFullPathToConfig();
             $this->errorBlock(["Unable to find deploy config file '{$configFile}'"]);
 
             return false;

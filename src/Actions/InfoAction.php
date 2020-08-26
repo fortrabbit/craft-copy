@@ -40,29 +40,29 @@ class InfoAction extends Action
     public function run()
     {
         $plugin  = Plugin::getInstance();
-        $configs = $plugin->config->getConfigOptions();
+        $stages = $plugin->stage->getConfigOptions();
 
-        if (count($configs) === 0) {
+        if (count($stages) === 0) {
             $this->errorBlock('The plugin is not configured yet. Make sure to run this setup command first:');
             $this->cmdBlock("php craft copy/setup");
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        foreach ($configs as $key => $configName) {
-            $this->head("Environment check", "<info>$configName</info>", ($key === 0) ? true : false);
+        foreach ($stages as $key => $stageName) {
+            $this->head("Environment check", "<info>$stageName</info>", ($key === 0) ? true : false);
 
-            $plugin->config->setName($configName);
-            $config = $plugin->config->get();
+            $plugin->stage->setName($stageName);
+            $stage = $plugin->stage->get();
 
-            $app                 = $config->app;
-            $plugin->ssh->remote = $config->sshUrl;
+            $app                 = $stage->app;
+            $plugin->ssh->remote = $stage->sshUrl;
 
             // Get environment info from remote
             try {
                 $plugin->ssh->exec('php vendor/bin/craft-copy-env.php');
                 $this->remoteInfo = json_decode($plugin->ssh->getOutput(), true);
             } catch (\Exception $e) {
-                $this->errorBlock("Unable to get information about the remote environment using '{$config->sshUrl}'");
+                $this->errorBlock("Unable to get information about the remote environment using '{$stage->sshUrl}'");
                 return ExitCode::UNSPECIFIED_ERROR;
             }
 
@@ -123,7 +123,7 @@ class InfoAction extends Action
                 $this->block($messages, 'WARNING', 'fg=red;', ' ', true, false);
             }
 
-            $configFile = $plugin->config->getFullPathToConfig();
+            $configFile = $plugin->stage->getFullPathToConfig();
             $rawYaml    = file_get_contents($configFile);
             $this->table([$configFile], [[$rawYaml]]);
             $this->output->writeln(PHP_EOL . PHP_EOL);

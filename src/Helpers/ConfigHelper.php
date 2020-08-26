@@ -12,7 +12,7 @@ trait ConfigHelper
     /**
      * @return null|string
      */
-    protected function getConfigName(): ?string
+    protected function getStageName(): ?string
     {
         $action    = new \ReflectionClass(get_class($this));
         $runMethod = $action->getMethod('run');
@@ -21,13 +21,13 @@ trait ConfigHelper
             throw new \InvalidArgumentException("function run() has no parameters.");
         };
 
-        if ($runMethod->getParameters()[0]->getName() !== 'config') {
-            throw new \InvalidArgumentException('First parameter of run() is not $config.');
+        if ($runMethod->getParameters()[0]->getName() !== 'stage') {
+            throw new \InvalidArgumentException('First parameter of run() is not $stage.');
         };
 
 
         return \Yii::$app->requestedParams[0]
-            ?? getenv(Plugin::ENV_DEFAULT_CONFIG)
+            ?? getenv(Plugin::ENV_DEFAULT_STAGE)
                 ?: 'production';
     }
 
@@ -51,7 +51,7 @@ trait ConfigHelper
     protected function runDeployCommands(string $when)
     {
         $action   = str_replace('copy/', '', $this->controller->id . '/' . $this->id);
-        $actions  = $this->config->$when;
+        $actions  = $this->stage->$when;
         $scripts = $actions[$action] ?? [];
 
         if (count($actions) === 0 || count($scripts) === 0) {
@@ -60,7 +60,7 @@ trait ConfigHelper
 
         $this->head(
             "Run $when scripts",
-            "<comment>{$this->config}</comment> {$this->config->app}.frb.io",
+            "<comment>{$this->stage}</comment> {$this->stage->app}.frb.io",
             false
         );
 

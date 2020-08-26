@@ -21,7 +21,7 @@ use fortrabbit\Copy\Actions\VolumesDownAction;
 use fortrabbit\Copy\Actions\VolumesUpAction;
 use fortrabbit\Copy\EventHandlers\CommandOutputFormatHandler;
 use fortrabbit\Copy\EventHandlers\IgnoredBackupTablesHandler;
-use fortrabbit\Copy\Services\DeployConfig;
+use fortrabbit\Copy\Services\StageConfigAccess;
 use fortrabbit\Copy\Services\Git;
 use fortrabbit\Copy\Services\Rsync;
 use ostark\Yii2ArtisanBridge\ActionGroup;
@@ -41,13 +41,13 @@ use fortrabbit\Copy\Services\Git as GitService;
  * @property DatabaseService $database
  * @property RsyncService $rsync
  * @property GitService $git
- * @property DeployConfig $config
+ * @property StageConfigAccess $stage
  */
 class Plugin extends BasePlugin
 {
     public const DASHBOARD_URL = "https://dashboard.fortrabbit.com";
     public const ENV_DEPLOY_ENVIRONMENT = "DEPLOY_ENVIRONMENT";
-    public const ENV_DEFAULT_CONFIG = "DEFAULT_CONFIG";
+    public const ENV_DEFAULT_STAGE = "DEFAULT_STAGE";
     public const PLUGIN_ROOT_PATH = __DIR__;
     public const REGIONS = [
         'us1' => 'US (AWS US-EAST-1 / Virginia)',
@@ -116,7 +116,7 @@ class Plugin extends BasePlugin
     {
         $this->setComponents(
             [
-                'config' => DeployConfig::class,
+                'stage' => StageConfigAccess::class,
                 'database' => function () {
                     return new DatabaseService(['db' => Craft::$app->getDb()]);
                 },
@@ -124,10 +124,10 @@ class Plugin extends BasePlugin
                     return GitService::fromDirectory(\Craft::getAlias('@root') ?: CRAFT_BASE_PATH);
                 },
                 'rsync' => function () {
-                    return RsyncService::remoteFactory($this->config->get()->sshUrl);
+                    return RsyncService::remoteFactory($this->stage->get()->sshUrl);
                 },
                 'ssh' => function () {
-                    return new SshService(['remote' => $this->config->get()->sshUrl]);
+                    return new SshService(['remote' => $this->stage->get()->sshUrl]);
                 }
             ]
         );

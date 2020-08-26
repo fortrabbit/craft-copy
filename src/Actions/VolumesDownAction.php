@@ -9,7 +9,7 @@ use fortrabbit\Copy\Services\LocalVolume;
 use ostark\Yii2ArtisanBridge\base\Commands;
 use yii\console\ExitCode;
 
-class VolumesDownAction extends ConfigAwareBaseAction
+class VolumesDownAction extends StageAwareBaseAction
 {
     use ConsoleOutputHelper;
     use PathHelper;
@@ -36,13 +36,13 @@ class VolumesDownAction extends ConfigAwareBaseAction
     /**
      * Download Volumes
      *
-     * @param string|null $config Name of the deploy config. Use '?' to choose.
+     * @param string|null $stage Name of the stage config. Use '?' to choose.
      * @param array|null $volumeHandles Limit the command to specific volumes
      *
      * @return int
      * @throws VolumeNotFound
      */
-    public function run(string $config = null, array $volumeHandles = null)
+    public function run(string $stage = null, array $volumeHandles = null)
     {
         // Run 'before' commands and stop on error
         if (!$this->runBeforeDeployCommands()) {

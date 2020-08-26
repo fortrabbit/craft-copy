@@ -5,12 +5,12 @@ namespace fortrabbit\Copy\Actions;
 use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
 
-class DbDownAction extends ConfigAwareBaseAction
+class DbDownAction extends StageAwareBaseAction
 {
     /**
      * Download database
      *
-     * @param string|null $config Name of the deploy config
+     * @param string|null $stage Name of the stage config
      *
      * @return int
      *
@@ -22,7 +22,7 @@ class DbDownAction extends ConfigAwareBaseAction
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
      * @throws \yii\base\Exception
      */
-    public function run(string $config = null)
+    public function run(string $stage = null)
     {
         $plugin       = Plugin::getInstance();
         $path         = './storage/';
@@ -33,7 +33,7 @@ class DbDownAction extends ConfigAwareBaseAction
 
         $this->head(
             "Export remote DB, download and import locally.",
-            "<comment>{$this->config}</comment> {$this->config->app}.frb.io",
+            "<comment>{$this->stage}</comment> {$this->stage->app}.frb.io",
             $this->interactive ? true : false
         );
 

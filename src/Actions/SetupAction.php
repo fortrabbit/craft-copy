@@ -5,7 +5,7 @@ namespace fortrabbit\Copy\Actions;
 use Craft;
 use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Helpers\PathHelper;
-use fortrabbit\Copy\Models\DeployConfig;
+use fortrabbit\Copy\Models\StageConfig;
 use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
 use Symfony\Component\Process\Process;
@@ -33,6 +33,7 @@ class SetupAction extends Action
      * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException
      * @throws \fortrabbit\Copy\Exceptions\PluginNotInstalledException
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
+     * @throws \yii\base\Exception
      */
     public function run()
     {
@@ -53,14 +54,14 @@ class SetupAction extends Action
         }
 
 
-        $configName = $this->anticipate(
-            "What's a good name for the environment of the fortrabbit App? <fg=default>(use arrow keys or type)</>",
-            ['production', 'staging', 'stage', 'dev', 'prod'],
-            'production'
+        $stageName = $this->anticipate(
+            "What's a good name for the stage of the fortrabbit App? <fg=default>(use arrow keys or type)</>",
+            [$app, "$app-prod", "$app-dev", "prod", "production", "staging", "dev"],
+            "$app-prod"
         );
 
         // Persist config
-        $config = $this->writeDeployConfig($app, $region, Inflector::slug($configName));
+        $config = $this->writeStageConfig($app, $region, Inflector::slug($stageName));
 
         // Perform exec checks
         $this->checkAndWrite("Testing DNS - " . Plugin::REGIONS[$region], true);
@@ -108,34 +109,34 @@ class SetupAction extends Action
     /**
      * @param string $app
      * @param string $region
-     * @param string $configName
+     * @param string $stageName
      *
-     * @return \fortrabbit\Copy\Models\DeployConfig
+     * @return \fortrabbit\Copy\Models\StageConfig
      * @throws \yii\base\Exception
      */
-    protected function writeDeployConfig(string $app, string $region, string $configName)
+    protected function writeStageConfig(string $app, string $region, string $stageName)
     {
-        $config = new DeployConfig();
+        $config = new StageConfig();
         $config->app = $app;
         $config->sshUrl = "{$app}@deploy.{$region}.frbit.com";
         $config->gitRemote = "$app/master";
-        $config->setName($configName);
-        Plugin::getInstance()->config->setName($configName);
+        $config->setName($stageName);
+        Plugin::getInstance()->stage->setName($stageName);
 
         // Check if file already exist
-        if (file_exists(Plugin::getInstance()->config->getFullPathToConfig())) {
-            $file = Plugin::getInstance()->config->getConfigFileName();
+        if (file_exists(Plugin::getInstance()->stage->getFullPathToConfig())) {
+            $file = Plugin::getInstance()->stage->getConfigFileName();
             if (!$this->confirm("Do you want to overwrite your existing config? ($file)", true)) {
                 return $config;
             }
         }
 
         // Write
-        Plugin::getInstance()->config->persist($config);
-        Plugin::getInstance()->config->setName($configName);
+        Plugin::getInstance()->stage->persist($config);
+        Plugin::getInstance()->stage->setName($stageName);
 
         // Write .env
-        foreach ([Plugin::ENV_DEFAULT_CONFIG => $configName] as $name => $value) {
+        foreach ([Plugin::ENV_DEFAULT_STAGE => $stageName] as $name => $value) {
             \Craft::$app->getConfig()->setDotEnvVar($name, $value);
             putenv("$name=$value");
         }
@@ -171,10 +172,10 @@ class SetupAction extends Action
      * @throws \fortrabbit\Copy\Exceptions\PluginNotInstalledException
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
      */
-    protected function setupRemote(DeployConfig $config)
+    protected function setupRemote(StageConfig $config)
     {
         $plugin = Plugin::getInstance();
-        $app = $plugin->config->get()->app;
+        $app = $plugin->stage->get()->app;
 
         // Is copy deployed aready?
         if ($plugin->ssh->exec("ls vendor/bin/craft-copy-import-db.php | wc -l")) {

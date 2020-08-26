@@ -5,7 +5,7 @@ namespace fortrabbit\Copy\Actions;
 use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
 
-class DbUpAction extends ConfigAwareBaseAction
+class DbUpAction extends StageAwareBaseAction
 {
     /**
      * @var bool Force questions to 'yes'
@@ -15,7 +15,7 @@ class DbUpAction extends ConfigAwareBaseAction
     /**
      * Upload database
      *
-     * @param string|null $config Name of the deploy config
+     * @param string|null $stage Name of the stage config
      *
      * @return int
      *
@@ -25,7 +25,7 @@ class DbUpAction extends ConfigAwareBaseAction
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
      * @throws \yii\base\Exception
      */
-    public function run(string $config = null)
+    public function run(string $stage = null)
     {
         $plugin       = Plugin::getInstance();
         $path         = './storage/';
@@ -36,7 +36,7 @@ class DbUpAction extends ConfigAwareBaseAction
 
         $this->head(
             "Export local DB and import on remote.",
-            "<comment>{$this->config}</comment> {$this->config->app}.frb.io",
+            "<comment>{$this->stage}</comment> {$this->stage->app}.frb.io",
             $this->force ? false : true
         );
 
