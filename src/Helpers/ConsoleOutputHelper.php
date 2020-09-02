@@ -2,7 +2,8 @@
 
 namespace fortrabbit\Copy\Helpers;
 
-use fortrabbit\Copy\Plugin;
+use ostark\Yii2ArtisanBridge\OutputStyle;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\TableSeparator;
 
 /**
@@ -10,8 +11,9 @@ use Symfony\Component\Console\Helper\TableSeparator;
  *
  * @package fortrabbit\Copy\services
  *
- * @property string  $app
+ * @property string $app
  * @property boolean $dryRun
+ * @property OutputStyle $output
  */
 trait ConsoleOutputHelper
 {
@@ -26,8 +28,8 @@ trait ConsoleOutputHelper
         ];
 
         if ($volumeHandle) {
-            $rows[] =  new TableSeparator();
-            $rows[] =  ['Volume', $volumeHandle];
+            $rows[] = new TableSeparator();
+            $rows[] = ['Volume', $volumeHandle];
         }
 
         $this->table(
@@ -51,9 +53,9 @@ trait ConsoleOutputHelper
     }
 
     /**
-     * @param string      $message
+     * @param string $message
      * @param string|null $context
-     * @param bool        $clear
+     * @param bool $clear
      */
     public function head(string $message, string $context = null, $clear = true)
     {
@@ -62,5 +64,23 @@ trait ConsoleOutputHelper
         }
 
         $this->block("<options=bold;fg=white>$message</>", $context, 'fg=white;', '▶ ', false, false);
+    }
+
+    public function createProgressBar(int $steps): ProgressBar
+    {
+        // Custom format
+        $lines = [
+            '%message%',
+            '%bar% %percent:3s% %',
+            'time:  %elapsed:6s%/%estimated:-6s%'
+        ];
+
+        $bar = $this->output->createProgressBar($steps);
+
+        $bar->setFormat(implode(PHP_EOL, $lines) . PHP_EOL . PHP_EOL);
+        $bar->setBarCharacter('<info>' . $bar->getBarCharacter() . '</info>');
+        $bar->setBarWidth(70);
+
+        return $bar;
     }
 }

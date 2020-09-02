@@ -2,6 +2,9 @@
 
 namespace fortrabbit\Copy\Actions;
 
+use fortrabbit\Copy\Exceptions\CraftNotInstalledException;
+use fortrabbit\Copy\Exceptions\PluginNotInstalledException;
+use fortrabbit\Copy\Exceptions\RemoteException;
 use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
 
@@ -50,18 +53,7 @@ class DbUpAction extends StageAwareBaseAction
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        $bar = $this->output->createProgressBar($steps);
-
-        // Custom format
-        $lines = [
-            '%message%',
-            '%bar% %percent:3s% %',
-            'time:  %elapsed:6s%/%estimated:-6s%'
-        ];
-
-        $bar->setFormat(implode(PHP_EOL, $lines) . PHP_EOL . PHP_EOL);
-        $bar->setBarCharacter('<info>' . $bar->getBarCharacter() . '</info>');
-        $bar->setBarWidth(70);
+        $bar = $this->createProgressBar($steps);
 
         // Step 1: Create dump of the current database
         $bar->setMessage($messages[] = "Creating local dump");
@@ -82,15 +74,27 @@ class DbUpAction extends StageAwareBaseAction
             // Try to create storage path first
             $plugin->ssh->exec("mkdir -p $path");
 
-            if ($plugin->ssh->exec("php vendor/bin/craft-copy-import-db.php {$transferFile} --force")) {
+            try {
+                $plugin->ssh->exec("php vendor/bin/craft-copy-import-db.php {$transferFile} --force");
                 $bar->advance();
                 $bar->setMessage("Database imported");
+            } catch (RemoteException $e){
+                $this->errorBlock(["Unable to import database. Make to deploy the code first using this command first.", "php craft copy/code/up"]);
+                return ExitCode::UNSPECIFIED_ERROR;
             }
+
         } else {
             // Step 3: Backup the remote database before importing the uploaded dump
             $bar->setMessage($messages[] = "Creating DB Backup on remote ({$backupFile})");
-            if ($plugin->ssh->exec("php craft copy/db/to-file {$backupFile} --interactive=0")) {
+
+            try {
+                $plugin->ssh->exec("php craft copy/db/to-file {$backupFile} --interactive=0");
                 $bar->advance();
+            } catch (CraftNotInstalledException $e){
+                $this->errorBlock(["Unable to import database. Make to deploy the code first using this command first.", "php craft copy/code/up"]);
+                return ExitCode::UNSPECIFIED_ERROR;
+            } catch (PluginNotInstalledException $e) {
+                $this->errorBlock("Make sure to deploy the plugin first.");
             }
 
             // Step 4: Import on remote

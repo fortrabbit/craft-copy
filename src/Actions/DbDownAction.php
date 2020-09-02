@@ -2,6 +2,8 @@
 
 namespace fortrabbit\Copy\Actions;
 
+use fortrabbit\Copy\Exceptions\CraftNotInstalledException;
+use fortrabbit\Copy\Exceptions\PluginNotInstalledException;
 use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
 
@@ -24,12 +26,12 @@ class DbDownAction extends StageAwareBaseAction
      */
     public function run(string $stage = null)
     {
-        $plugin       = Plugin::getInstance();
-        $path         = './storage/';
+        $plugin = Plugin::getInstance();
+        $path = './storage/';
         $transferFile = $path . 'craft-copy-transfer.sql';
-        $backupFile   = $path . 'craft-copy-recent.sql';
-        $steps        = 4;
-        $messages     = [];
+        $backupFile = $path . 'craft-copy-recent.sql';
+        $steps = 4;
+        $messages = [];
 
         $this->head(
             "Export remote DB, download and import locally.",
@@ -46,25 +48,18 @@ class DbDownAction extends StageAwareBaseAction
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        $bar = $this->output->createProgressBar($steps);
-
-        // Custom format
-
-        $lines = [
-            '%message%',
-            '%bar% %percent:3s% %',
-            'time:  %elapsed:6s%/%estimated:-6s%'
-        ];
-        $bar->setFormat(implode(PHP_EOL, $lines) . PHP_EOL . PHP_EOL);
-        $bar->setBarCharacter('<info>' . $bar->getBarCharacter() . '</info>');
-        $bar->setBarWidth(70);
-
+        $bar = $this->createProgressBar($steps);
 
         // Step 1: Create dump of the current database
         $bar->setMessage($messages[] = "Creating dump on remote ({$transferFile})");
-        if ($plugin->ssh->exec("php craft copy/db/to-file {$transferFile} --interactive=0")) {
+
+        try {
+            $plugin->ssh->exec("php craft copy/db/to-file {$transferFile} --interactive=0");
             $bar->advance();
+        } catch (PluginNotInstalledException $e) {
+            $this->errorBlock("Make sure to deploy the plugin first.");
         }
+
 
         // Step 2: Download that dump from remote
         $bar->setMessage($messages[] = "Downloading dump from remote {$transferFile}");

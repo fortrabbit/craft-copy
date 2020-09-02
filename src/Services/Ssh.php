@@ -17,6 +17,8 @@ class Ssh extends Component
 
     public const DOWNLOAD_COMMAND = 'ssh {remote} "cat {src} | gzip" | zcat > {target}';
 
+    public const REMOTE_EXEC_COMMAND = 'ssh {remote} "{command}"';
+
     public const SSH_EXEC_TIMEOUT = 1200;
 
     /**
@@ -124,9 +126,15 @@ class Ssh extends Component
      */
     public function exec(string $cmd)
     {
-        $cmd = sprintf('ssh %s "%s"', $this->remote, $cmd);
-        $process = Process::fromShellCommandline($cmd, CRAFT_BASE_PATH);
+        $tokens = [
+            '{remote}' => $this->remote,
+            '{command}' => $cmd,
+        ];
 
+        // create full command from template
+        $cmd = str_replace(array_keys($tokens), array_values($tokens), self::REMOTE_EXEC_COMMAND);
+
+        $process = Process::fromShellCommandline($cmd, CRAFT_BASE_PATH);
         $process->setTimeout(self::SSH_EXEC_TIMEOUT);
         $process->run();
 
@@ -136,12 +144,12 @@ class Ssh extends Component
             return true;
         }
 
-        if (trim($process->getErrorOutput()) == "Could not open input file: craft") {
-            throw new CraftNotInstalledException("Craft is not installed on remote.");
+        if (trim($process->getErrorOutput()) == "Could not open input file") {
+            throw new CraftNotInstalledException(trim($process->getErrorOutput()));
         }
 
-        if (stristr($process->getErrorOutput(), "unknown command")) {
-            throw new PluginNotInstalledException("Plugin is not installed on remote.");
+        if (stristr($process->getErrorOutput(), "Unknown command")) {
+            throw new PluginNotInstalledException("The Craft Copy plugin is not installed on remote.");
         }
 
         throw new RemoteException(
@@ -163,4 +171,5 @@ class Ssh extends Component
     {
         return $this->output;
     }
+
 }
