@@ -131,10 +131,12 @@ class Ssh extends Component
             '{command}' => $cmd,
         ];
 
-        // create full command from template
+        // create full
         $cmd = str_replace(array_keys($tokens), array_values($tokens), self::REMOTE_EXEC_COMMAND);
 
+
         $process = Process::fromShellCommandline($cmd, CRAFT_BASE_PATH);
+
         $process->setTimeout(self::SSH_EXEC_TIMEOUT);
         $process->run();
 

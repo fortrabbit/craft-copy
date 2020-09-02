@@ -34,7 +34,7 @@ class DbDownAction extends StageAwareBaseAction
         $messages = [];
 
         $this->head(
-            "Export remote DB, download and import locally.",
+            "Export DB from fortrabbit, download and import locally.",
             "<comment>{$this->stage}</comment> {$this->stage->app}.frb.io",
             $this->interactive ? true : false
         );
@@ -51,7 +51,7 @@ class DbDownAction extends StageAwareBaseAction
         $bar = $this->createProgressBar($steps);
 
         // Step 1: Create dump of the current database
-        $bar->setMessage($messages[] = "Creating dump on remote ({$transferFile})");
+        $bar->setMessage($messages[] = "Creating dump on fortrabbit App ({$transferFile})");
 
         try {
             $plugin->ssh->exec("php craft copy/db/to-file {$transferFile} --interactive=0");
@@ -62,7 +62,7 @@ class DbDownAction extends StageAwareBaseAction
 
 
         // Step 2: Download that dump from remote
-        $bar->setMessage($messages[] = "Downloading dump from remote {$transferFile}");
+        $bar->setMessage($messages[] = "Downloading dump from fortrabbit App {$transferFile}");
         if ($plugin->ssh->download($transferFile, $transferFile)) {
             $bar->advance();
         }
