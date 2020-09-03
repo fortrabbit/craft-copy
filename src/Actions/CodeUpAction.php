@@ -119,7 +119,7 @@ class CodeUpAction extends StageAwareBaseAction
 
         // Nothing found
         if (!$remotes = $git->getRemotes()) {
-            if ($this->confirm("No remotes configured. Do you want to add '{$sshUrl}'?")) {
+            if ($this->confirm("No git remotes configured. Do you want to add '{$sshUrl}'?")) {
                 return $git->addRemote($sshUrl);
             }
         }
@@ -135,7 +135,7 @@ class CodeUpAction extends StageAwareBaseAction
             return array_keys($remotes)[0];
         }
 
-        // Multiple
-        return $this->choice('Select a remote', $remotes, $git->getTracking());
+        // return the configured upstream
+        return $upstream;
     }
 }

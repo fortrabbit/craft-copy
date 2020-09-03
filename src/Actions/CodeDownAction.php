@@ -12,11 +12,10 @@ class CodeDownAction extends StageAwareBaseAction
      * Git pull
      *
      * @param string|null $stage Name of the stage config
-     * @param string $remoteBranch
      *
      * @return int
      */
-    public function run(string $stage = null, $remoteBranch = 'master')
+    public function run(string $stage = null)
     {
         $git = $this->plugin->git;
         $git->getWorkingCopy()->init();
