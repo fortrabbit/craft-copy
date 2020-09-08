@@ -1,5 +1,8 @@
 #  Changelog
 
+## 1.0.0-RC12 - 2020-09-08
+- Updated various dependencies
+
 ## 1.0.0-RC11 - 2020-05-12
 - Updated various dependencies
 - Fixed a bug when Craft expects `CRAFT_ENVIRONMENT` 
