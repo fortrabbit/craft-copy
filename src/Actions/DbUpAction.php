@@ -79,7 +79,7 @@ class DbUpAction extends StageAwareBaseAction
                 $bar->advance();
                 $bar->setMessage("Database imported");
             } catch (RemoteException $e){
-                $this->errorBlock(["Unable to import database. Make to deploy the code first using this command first.", "php craft copy/code/up"]);
+                $this->errorBlock(["Unable to import database. Deploy code first using this command:", "php craft copy/code/up"]);
                 return ExitCode::UNSPECIFIED_ERROR;
             }
 
