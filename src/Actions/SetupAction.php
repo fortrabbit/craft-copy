@@ -182,11 +182,11 @@ class SetupAction extends Action
             // Yes. Existing setup?
             if (trim($plugin->ssh->getOutput()) == "1") {
                 $this->head(
-                    "Craft was detected on remote.",
+                    "Craft was detected on the fortrabbit App.",
                     "<comment>{$config}</comment> {$config->app}.frb.io"
                 );
 
-                $this->section('Do you need a copy of the remote?');
+                $this->section('Do you need a copy of the fortrabbit App?');
                 $this->line("craft copy/db/down" . PHP_EOL);
                 $this->line("craft copy/code/down" . PHP_EOL);
 
@@ -196,7 +196,7 @@ class SetupAction extends Action
             // Not installed
 
             // Try to deploy code
-            if ($this->confirm("The plugin is not installed with your App! Do you want to deploy now?", true)) {
+            if ($this->confirm("The plugin is not installed with your fortrabbit App! Do you want to deploy now?", true)) {
                 $this->cmdBlock('copy/code/up');
                 if (Craft::$app->runAction('copy/code/up', ['interactive' => $this->interactive]) !== 0) {
                     // failed
@@ -214,7 +214,7 @@ class SetupAction extends Action
             return false;
         }
 
-        $this->successBlock("Check it in the browser: https://{$app}.frb.io");
+        $this->successBlock("Check it in your browser: https://{$app}.frb.io");
 
         return true;
     }
