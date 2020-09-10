@@ -70,7 +70,7 @@ class InfoAction extends Action
                 $plugin->ssh->exec('php vendor/bin/craft-copy-env.php');
                 $this->remoteInfo = json_decode($plugin->ssh->getOutput(), true);
             } catch (\Exception $e) {
-                $this->errorBlock("Unable to get information about the remote environment using '{$stage->sshUrl}'");
+                $this->errorBlock("Unable to get information about the fortrabbit App using '{$stage->sshUrl}'");
                 return ExitCode::UNSPECIFIED_ERROR;
             }
 
@@ -118,7 +118,7 @@ class InfoAction extends Action
 
             if (count($errors)) {
                 $varsUrl  = sprintf("%s/apps/%s/vars", Plugin::DASHBOARD_URL, $app);
-                $messages = ["These local ENV vars are not in sync with the remote:"];
+                $messages = ["These local ENV vars are not in sync with the fortrabbit App:"];
 
                 foreach ($errors as $key) {
                     $messages[] = "<fg=white>$key=" . getenv($key) . "</>";
