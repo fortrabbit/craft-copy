@@ -86,23 +86,6 @@ php craft copy/db/down {stage}
 ```
 
 
-#### Database to file
-
-<!--
-TODO /TBD: 
-
-* Decide if DB to file might be dropped since it's now included with Craft CLI
-
--->
-
-```shell
-# Export DB
-php craft copy/db/to-file filename
-
-# Import DB
-php craft copy/db/from-file filename
-# Filename is a required parameter
-```
 
 
 ### Code
@@ -260,6 +243,22 @@ before:
 
 Here is a full config file example: [config/fortrabbit.example.yaml](https://github.com/fortrabbit/craft-copy/blob/master/src/fortrabbit.example.yaml)
 
+
+### Database to file
+
+There is also a command to create a local copy of your database to a file. You can create an `.sql` file and also import back such file into the database. Here is the command:
+
+
+```shell
+# Export DB
+php craft copy/db/to-file filename
+
+# Import DB
+php craft copy/db/from-file filename
+# Filename is a required parameter
+```
+
+Note that there are also similar Craft CLI commands for this: `php craft backup/db` and `php craft restore/db`.
 
 
 ## How it works
