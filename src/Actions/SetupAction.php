@@ -27,7 +27,7 @@ class SetupAction extends Action
     public $verbose = false;
 
     /**
-     * Setup your App
+     * Connect local dev with fortrabbit App
      *
      * @return int
      * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException

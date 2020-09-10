@@ -15,7 +15,7 @@ class FolderUpAction extends StageAwareBaseAction
     public $verbose = false;
 
     /**
-     * Upload Folder
+     * Upload a folder
      *
      * @param string|null $stage Name of the stage config
      * @param string|null $folder Directory, relative to the project root, defaults to web/assets

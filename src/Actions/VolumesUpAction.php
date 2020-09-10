@@ -34,7 +34,7 @@ class VolumesUpAction extends StageAwareBaseAction
     }
 
     /**
-     * Upload Volumes
+     * Upload assets in Volumes
      *
      * @param string|null $stage Name of the stage config. Use '?' to choose.
      * @param array|null $volumeHandles Limit the command to specific volumes

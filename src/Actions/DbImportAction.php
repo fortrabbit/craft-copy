@@ -12,7 +12,7 @@ use yii\console\ExitCode;
 class DbImportAction extends Action
 {
     /**
-     * Import database
+     * Import database from file
      *
      * @param string $file Import a sql dump
      *

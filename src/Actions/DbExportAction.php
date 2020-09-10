@@ -13,7 +13,7 @@ class DbExportAction extends Action
 {
 
     /**
-     * Export database
+     * Export database from file
      *
      * @param string|null $file Filename of the sql dump
      *

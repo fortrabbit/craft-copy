@@ -15,7 +15,7 @@ class FolderDownAction extends StageAwareBaseAction
     public $verbose = false;
 
     /**
-     * Download Folder
+     * Download a folder
      *
      * @param string|null $stage Name of the stage config
      * @param string|null $folder Directory, relative to the project root, defaults to web/assets
