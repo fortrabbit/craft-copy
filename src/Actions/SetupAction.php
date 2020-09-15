@@ -196,7 +196,7 @@ class SetupAction extends Action
             // Not installed
 
             // Try to deploy code
-            if ($this->confirm("The plugin is not installed with your fortrabbit App! Do you want to deploy now?", true)) {
+            if ($this->confirm("Craft Copy is not installed with your fortrabbit App, maybe Craft is not even installed.  Do you want to deploy code and database now?", true)) {
                 $this->cmdBlock('copy/code/up');
                 if (Craft::$app->runAction('copy/code/up', ['interactive' => $this->interactive]) !== 0) {
                     // failed
