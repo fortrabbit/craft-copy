@@ -105,8 +105,6 @@ class DbUpAction extends StageAwareBaseAction
             }
         }
 
-
-
         $bar->finish();
 
         $this->section('Performed steps:');
