@@ -6,10 +6,14 @@ git_remote: your_app/master
 # Scripts
 before:
   code/up:
-    - "npm run prod"
-    - "php craft copy/folder/up production web/build/prod --interactive=0"
+    - "# insert your npm build commands here, e.g "
+    - "# npm run prod"
+    - "# and sync your build folder to the fortabbit App"
+    - "# php craft copy/folder/up {stage} web/build/prod --interactive=0"
 
 after:
   code/down:
     - "php craft migrate/all"
+    - "php craft project-config/apply"
+
 

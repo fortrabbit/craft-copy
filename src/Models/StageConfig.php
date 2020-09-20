@@ -34,7 +34,10 @@ class StageConfig extends Model
      */
     public $before = [
         'code/up' => [
-            'echo  "Script example: " $(git rev-parse HEAD)'
+            "# insert your npm build commands here, e.g ",
+            "# npm run prod",
+            "# and sync your build folder to the fortabbit App",
+            "# php craft copy/folder/up {stage} web/build/prod --interactive=0"
         ]
     ];
 
@@ -43,7 +46,8 @@ class StageConfig extends Model
      */
     public $after = [
         'code/down' => [
-            'php craft migrate/all'
+            'php craft migrate/all',
+            'php craft project-config/apply'
         ]
     ];
 

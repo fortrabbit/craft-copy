@@ -10,7 +10,7 @@ trait ConfigHelper
     use ConsoleOutputHelper;
 
     /**
-     * @return null|string
+     * Extracts the name of the stage from the run command signature
      */
     protected function getStageName(): ?string
     {
@@ -31,24 +31,27 @@ trait ConfigHelper
                 ?: 'production';
     }
 
-
-    protected function runBeforeDeployCommands()
+    /**
+     * Calls 'before' scripts
+     */
+    protected function runBeforeDeployCommands() : bool
     {
         return $this->runDeployCommands('before');
     }
 
-    protected function runAfterDeployCommands()
+    /**
+     * Calls 'after' scripts
+     */
+    protected function runAfterDeployCommands() : bool
     {
         return $this->runDeployCommands('after');
     }
 
-
     /**
-     * @param string $when
-     *
-     * @return bool
+     * Executes scripts defined in the config before or after Craft Copy commands
+     * e.g. code/up
      */
-    protected function runDeployCommands(string $when)
+    protected function runDeployCommands(string $when) : bool
     {
         $action   = str_replace('copy/', '', $this->controller->id . '/' . $this->id);
         $actions  = $this->stage->$when;
@@ -82,5 +85,4 @@ trait ConfigHelper
 
         return true;
     }
-
 }

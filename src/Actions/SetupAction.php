@@ -53,7 +53,6 @@ class SetupAction extends Action
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-
         $stageName = $this->anticipate(
             "What's a good name for the stage of the fortrabbit App? <fg=default>(use arrow keys or type)</>",
             [$app, "$app-prod", "$app-dev", "prod", "production", "staging", "dev"],
