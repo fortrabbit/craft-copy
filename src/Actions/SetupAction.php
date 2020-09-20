@@ -76,7 +76,9 @@ class SetupAction extends Action
         }
 
         if (!$ssh) {
-            $this->errorBlock('SSH key authentication is required. Please add your SSH key to your fortrabbit Account first.');
+            $this->errorBlock(
+                'SSH key authentication is required. Please add your SSH key to your fortrabbit Account first.'
+            );
             $this->line("Get Help: " . self::TROUBLE_SHOOTING_SSH_URL);
         }
 
@@ -92,11 +94,9 @@ class SetupAction extends Action
 
 
     /**
-     * @param string $app
-     *
-     * @return null|string
+     * Get from DNS record of the App
      */
-    protected function guessRegion(string $app)
+    protected function guessRegion(string $app): ?string
     {
         if ($records = dns_get_record("$app.frb.io", DNS_CNAME)) {
             return explode('.', $records[0]['target'])[1];
@@ -106,14 +106,9 @@ class SetupAction extends Action
     }
 
     /**
-     * @param string $app
-     * @param string $region
-     * @param string $stageName
-     *
-     * @return \fortrabbit\Copy\Models\StageConfig
-     * @throws \yii\base\Exception
+     * Write config file
      */
-    protected function writeStageConfig(string $app, string $region, string $stageName)
+    protected function writeStageConfig(string $app, string $region, string $stageName): StageConfig
     {
         $config = new StageConfig();
         $config->app = $app;
@@ -194,27 +189,13 @@ class SetupAction extends Action
 
             // Not installed
 
-            // Try to deploy code
-            if ($this->confirm("Craft Copy is not installed with your fortrabbit App, maybe Craft is not even installed.  Do you want to deploy code and database now?", true)) {
-                $this->cmdBlock('copy/code/up');
-                if (Craft::$app->runAction('copy/code/up', ['interactive' => $this->interactive]) !== 0) {
-                    // failed
-                    return false;
-                }
-            } else {
-                // failed
-                return false;
-            }
+            $this->section('Run this command to deploy code, database and volumes in one go.');
+            $this->line("craft copy/all/up" . PHP_EOL);
+
+            return true;
         }
 
-        // Push DB
-        $this->cmdBlock('php craft copy/db/up');
-        if (Craft::$app->runAction('copy/db/up', ['interactive' => true, 'force' => true]) !== 0) {
-            return false;
-        }
-
-        $this->successBlock("Check it in your browser: https://{$app}.frb.io");
-
-        return true;
+        $this->errorBlock("Unable to run SSH command.");
+        return false;
     }
 }
