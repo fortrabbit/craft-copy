@@ -47,8 +47,7 @@ trait ConsoleOutputHelper
      */
     public function cmdBlock(string $cmd)
     {
-        $here = str_replace(getenv("HOME"), '~', getcwd());
-        $this->block($cmd, null, 'fg=white;bg=default', '<comment> ' . $here . ' ►  </comment>', false, false);
+        $this->block($cmd, null, 'fg=white;bg=default', '<comment>  $  </comment>', false, false);
         return true;
     }
 
@@ -59,11 +58,19 @@ trait ConsoleOutputHelper
      */
     public function head(string $message, string $context = null, $clear = true)
     {
+        $messages = ["<options=bold;fg=white>$message</>"];
+
+        // clear the screen
         if ($clear) {
             $this->output->write(sprintf("\033\143"));
         }
 
-        $this->block("<options=bold;fg=white>$message</>", $context, 'fg=white;', '▶ ', false, false);
+        // Add context before the actual message
+        if (is_string($context)) {
+            $messages = array_merge([$context], $messages);
+        }
+
+        $this->block($messages, null, 'fg=white;', "<comment>▏</comment>", false, false);
     }
 
     public function createProgressBar(int $steps): ProgressBar

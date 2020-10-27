@@ -17,11 +17,16 @@ class CodeDownAction extends StageAwareBaseAction
      */
     public function run(string $stage = null)
     {
+        $this->head(
+            "Pull recent code changes for fortrabbit App.",
+            $this->getContextHeadline($this->stage)
+        );
+
         $git = $this->plugin->git;
         $git->getWorkingCopy()->init();
 
         $localBranches = $git->getLocalBranches();
-        $branch        = $git->getLocalHead();
+        $branch = $git->getLocalHead();
 
         if (count($localBranches) > 1) {
             $question = 'Select a local branch (checkout):';

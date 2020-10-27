@@ -30,7 +30,7 @@ cd your/craft-project
 
 # Require Craft Copy via Composer
 composer config platform --unset
-composer require fortrabbit/craft-copy
+composer require fortrabbit/craft-copy -W
 
 # Install and enable the plugin with Craft CMS
 php craft plugin/install copy

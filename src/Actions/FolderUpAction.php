@@ -24,9 +24,12 @@ class FolderUpAction extends StageAwareBaseAction
      */
     public function run(string $stage = null, string $folder = null)
     {
-        $folder = $this->prepareForRsync($folder ?: 'web/assets');
+        $this->head(
+            "Copy folder up.",
+            $this->getContextHeadline($this->stage)
+        );
 
-        $this->section('Copy folder up');
+        $folder = $this->prepareForRsync($folder ?: 'web/assets');
 
         // Info
         $this->rsyncInfo($folder, $this->plugin->rsync->remoteUrl);

@@ -35,7 +35,7 @@ class DbDownAction extends StageAwareBaseAction
 
         $this->head(
             "Export DB from fortrabbit, download and import locally.",
-            "<comment>{$this->stage}</comment> {$this->stage->app}.frb.io",
+            $this->getContextHeadline($this->stage),
             $this->interactive ? true : false
         );
 

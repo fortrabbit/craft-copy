@@ -34,10 +34,7 @@ class StageConfig extends Model
      */
     public $before = [
         'code/up' => [
-            "# insert your npm build commands here, e.g ",
-            "# npm run prod",
-            "# and sync your build folder to the fortabbit App",
-            "# php craft copy/folder/up {stage} web/build/prod --interactive=0"
+            // noting defined by default
         ]
     ];
 

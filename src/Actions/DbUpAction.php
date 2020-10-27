@@ -39,7 +39,7 @@ class DbUpAction extends StageAwareBaseAction
 
         $this->head(
             "We are about to export the local database and import it to the fortrabbit App.",
-            "<comment>{$this->stage}</comment> {$this->stage->app}.frb.io",
+            $this->getContextHeadline($this->stage),
             $this->force ? false : true
         );
 

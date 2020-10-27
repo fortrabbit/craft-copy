@@ -44,14 +44,17 @@ class VolumesUpAction extends StageAwareBaseAction
      */
     public function run(string $stage = null, array $volumeHandles = null)
     {
+        $this->head(
+            "Copy volumes up.",
+            $this->getContextHeadline($this->stage)
+        );
+
         // Run 'before' commands and stop on error
         if (!$this->runBeforeDeployCommands()) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
         $volumes = $this->localVolume->filterByHandle($volumeHandles);
-
-        $this->section("Copy volumes up");
 
         foreach ($volumes as $volume) {
             $path = $this->prepareForRsync($volume->path);

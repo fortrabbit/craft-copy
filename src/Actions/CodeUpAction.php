@@ -20,8 +20,8 @@ class CodeUpAction extends StageAwareBaseAction
     public function run(string $stage = null)
     {
         $this->head(
-            "Deploy recent code changes",
-            "<comment>{$this->stage}</comment> {$this->stage->app}.frb.io"
+            "Deploy recent code changes.",
+            $this->getContextHeadline($this->stage)
         );
 
         $git = $this->plugin->git;

@@ -3,7 +3,8 @@
 namespace fortrabbit\Copy\Actions;
 
 use fortrabbit\Copy\Exceptions\StageConfigNotFoundException;
-use fortrabbit\Copy\Helpers\ConfigHelper;
+use fortrabbit\Copy\Helpers\DeployHooksHelper;
+use fortrabbit\Copy\Models\StageConfig;
 use fortrabbit\Copy\Plugin;
 use fortrabbit\Copy\Services\DeprecatedConfigFixer;
 use ostark\Yii2ArtisanBridge\base\Action;
@@ -15,7 +16,7 @@ use yii\console\ExitCode;
 
 abstract class StageAwareBaseAction extends Action
 {
-    use ConfigHelper;
+    use DeployHooksHelper;
 
     /**
      * @var string Name of the Environment (to apply multi staging configs)
@@ -62,7 +63,7 @@ abstract class StageAwareBaseAction extends Action
         }
 
         // Get config name
-        // Either the first arg of the command or from Env var
+        // Either the first argument of the command or from Env var
         if (!$stageName = $this->getStageName()) {
             return false;
         };
@@ -78,7 +79,6 @@ abstract class StageAwareBaseAction extends Action
                 $stageName
             );
         }
-
 
         try {
             $this->plugin->stage->setName($stageName);
@@ -106,5 +106,35 @@ abstract class StageAwareBaseAction extends Action
         );
 
         return true;
+    }
+
+    /**
+     * Formatted headline
+     */
+    protected function getContextHeadline(StageConfig $stage): string
+    {
+        return "App: {$stage->app}.frb.io <comment>({$stage})</comment>";
+    }
+
+    /**
+     * Extracts the name of the stage from the run command signature
+     */
+    protected function getStageName(): ?string
+    {
+        $action    = new \ReflectionClass(get_class($this));
+        $runMethod = $action->getMethod('run');
+
+        if (count($runMethod->getParameters()) === 0) {
+            throw new \InvalidArgumentException("function run() has no parameters.");
+        };
+
+        if ($runMethod->getParameters()[0]->getName() !== 'stage') {
+            throw new \InvalidArgumentException('First parameter of run() is not $stage.');
+        };
+
+
+        return \Yii::$app->requestedParams[0]
+            ?? getenv(Plugin::ENV_DEFAULT_STAGE)
+                ?: 'production';
     }
 }

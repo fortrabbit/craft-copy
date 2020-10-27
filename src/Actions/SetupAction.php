@@ -169,28 +169,36 @@ class SetupAction extends Action
     protected function setupRemote(StageConfig $config)
     {
         $plugin = Plugin::getInstance();
-        $app = $plugin->stage->get()->app;
 
-        // Is copy deployed aready?
+        // Is copy deployed already?
         if ($plugin->ssh->exec("ls vendor/bin/craft-copy-import-db.php | wc -l")) {
             // Yes. Existing setup?
             if (trim($plugin->ssh->getOutput()) == "1") {
-                $this->head(
-                    "Craft was detected on the fortrabbit App.",
-                    "<comment>{$config}</comment> {$config->app}.frb.io"
+                $this->successBlock(
+                    [
+                        "Craft was detected on the fortrabbit App.",
+                        "Run the following commands to get a copy of the fortrabbit App:"
+                    ]
                 );
 
-                $this->section('Do you need a copy of the fortrabbit App?');
-                $this->line("craft copy/db/down" . PHP_EOL);
-                $this->line("craft copy/code/down" . PHP_EOL);
+                $this->cmdBlock("php craft copy/db/down");
+                $this->cmdBlock("php craft copy/code/down");
+                $this->cmdBlock("php craft copy/volumes/down");
+                $this->line(PHP_EOL);
 
                 return true;
             }
 
             // Not installed
+            $this->successBlock(
+                [
+                    "Local setup completed.",
+                    "Run this command to deploy code, database and volumes in one go:"
+                ]
+            );
 
-            $this->section('Run this command to deploy code, database and volumes in one go.');
-            $this->line("craft copy/all/up" . PHP_EOL);
+            $this->cmdBlock("php craft copy/all/up");
+            $this->line(PHP_EOL);
 
             return true;
         }
