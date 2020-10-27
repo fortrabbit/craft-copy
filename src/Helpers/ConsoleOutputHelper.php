@@ -19,6 +19,12 @@ trait ConsoleOutputHelper
 {
     public function rsyncInfo(string $dir, string $remoteUrl = null, string $volumeHandle = null)
     {
+        if ($volumeHandle) {
+            $head = ['Volume', $volumeHandle];
+        } else {
+            $head =  ['Key', 'Value'];
+        }
+
         $rows = [
             ['Directory', $dir],
             new TableSeparator(),
@@ -27,13 +33,8 @@ trait ConsoleOutputHelper
             ['Dry run', $this->dryRun ? 'true' : 'false']
         ];
 
-        if ($volumeHandle) {
-            $rows[] = new TableSeparator();
-            $rows[] = ['Volume', $volumeHandle];
-        }
-
         $this->table(
-            ['Key', 'Value'],
+            $head,
             $rows
         );
     }

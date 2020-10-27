@@ -55,6 +55,7 @@ class VolumesDownAction extends StageAwareBaseAction
         }
 
         $volumes = $this->localVolume->filterByHandle($volumeHandles);
+        $lastVolume = end($volumes);
 
         foreach ($volumes as $volume) {
             $path = $this->prepareForRsync($volume->path);
@@ -78,7 +79,10 @@ class VolumesDownAction extends StageAwareBaseAction
             // Execute
             $this->section(($this->dryRun) ? 'Rsync dry-run' : 'Rsync started');
             $this->plugin->rsync->sync($path);
-            $this->section(PHP_EOL . 'done');
+            $this->line(PHP_EOL);
+            $this->line(($volume == $lastVolume) ? "All done." : "{$volume->name} done, next volume:");
+            $this->line(PHP_EOL);
+
         }
 
         return ExitCode::OK;
