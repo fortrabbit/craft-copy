@@ -166,8 +166,6 @@ Craft Copy incorporates another package called [Craft auto migrate](https://gith
 
 The other way around, when pulling down changes, a database migration will also run. This is configured via a default [after command](#beforeafter-commands) in the [config file](#config-file).
 
-<!-- TOOD: install, migrate, apply  -->
-
 
 ### Multi staging
 
@@ -202,12 +200,6 @@ php craft copy/db/up staging
 ```
 
 ### Before/after commands
-
-<!-- 
-TODO: 
-* Discuss why some of the scripts are included with the standard file and what they are for.  
-* See if folder/up/down also supports before/after scripts.
--->
 
 You can run any script before or after you run common up/down commands with Craft Copy.
 
@@ -345,17 +337,17 @@ echo 'export PATH=/Applications/MAMP/bin/php/php7.2.1/bin:$PATH' >>~/.bash_profi
 When installing the plugin via Composer you may see an error like this:
 
 ```shell
-composer require fortrabbit/craft-copy:^1.0.0-RC5
+composer require fortrabbit/craft-copy:^1.0.0
   ./composer.json has been updated
   Loading composer repositories with package information
   Updating dependencies (including require-dev)
   Your requirements could not be resolved to an installable set of packages.
   
   Problem 1
-  - Installation request for fortrabbit/craft-copy ^1.0.0-RC5 -> satisfiable by fortrabbit/craft-copy[1.0.0-RC5].
+  - Installation request for fortrabbit/craft-copy ^1.0.0 -> satisfiable by fortrabbit/craft-copy[1.0.0].
   - Conclusion: remove symfony/console v3.3.6
   - Conclusion: don't install symfony/console v3.3.6
-  - fortrabbit/craft-copy 1.0.0-RC5 requires symfony/yaml ^4.1
+  - fortrabbit/craft-copy 1.0.0 requires symfony/yaml ^4.1
   [...]
    Problem 99
 ```
