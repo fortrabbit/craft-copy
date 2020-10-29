@@ -1,5 +1,16 @@
+# Created by fortrabbit/craft-copy
+
 [mysqldump]
+
+# Useful for dumping large tables
 quick
+
+# Quote identifiers within backticks
 quote-names
+
+# Increase the size of the buffer for client/server communication.
+# The default is 24MB
 max_allowed_packet=64M
+
+# Prevent SET @@GLOBAL.GTID_PURGED in dump
 set-gtid-purged=OFF

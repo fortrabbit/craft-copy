@@ -1,20 +1,9 @@
 <?php
 
-/**
- * Copy plugin for Craft CMS 3.x
- *
- * @link      https://www.fortrabbit.com/
- * @copyright Copyright (c) 2018 Oliver Stark
- */
-
 namespace fortrabbit\Copy\Services;
 
 /**
  * Rsync Service
- *
- * @author    Oliver Stark
- * @package   Copy
- * @since     1.0.0
  */
 class Rsync
 {

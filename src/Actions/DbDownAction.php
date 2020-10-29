@@ -2,20 +2,17 @@
 
 namespace fortrabbit\Copy\Actions;
 
+use fortrabbit\Copy\Exceptions\CraftNotInstalledException;
+use fortrabbit\Copy\Exceptions\PluginNotInstalledException;
 use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
 
-/**
- * Class DbDownAction
- *
- * @package fortrabbit\Copy\Commands
- */
-class DbDownAction extends ConfigAwareBaseAction
+class DbDownAction extends StageAwareBaseAction
 {
     /**
      * Download database
      *
-     * @param string|null $config Name of the deploy config
+     * @param string|null $stage Name of the stage config
      *
      * @return int
      *
@@ -27,18 +24,18 @@ class DbDownAction extends ConfigAwareBaseAction
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
      * @throws \yii\base\Exception
      */
-    public function run(string $config = null)
+    public function run(string $stage = null)
     {
-        $plugin       = Plugin::getInstance();
-        $path         = './storage/';
+        $plugin = Plugin::getInstance();
+        $path = './storage/';
         $transferFile = $path . 'craft-copy-transfer.sql';
-        $backupFile   = $path . 'craft-copy-recent.sql';
-        $steps        = 4;
-        $messages     = [];
+        $backupFile = $path . 'craft-copy-recent.sql';
+        $steps = 4;
+        $messages = [];
 
         $this->head(
-            "Export remote DB, download and import locally.",
-            "<comment>{$this->config}</comment> {$this->config->app}.frb.io",
+            "Export DB from fortrabbit, download and import locally.",
+            $this->getContextHeadline($this->stage),
             $this->interactive ? true : false
         );
 
@@ -51,28 +48,21 @@ class DbDownAction extends ConfigAwareBaseAction
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        $bar = $this->output->createProgressBar($steps);
-
-        // Custom format
-
-        $lines = [
-            '%message%',
-            '%bar% %percent:3s% %',
-            'time:  %elapsed:6s%/%estimated:-6s%'
-        ];
-        $bar->setFormat(implode(PHP_EOL, $lines) . PHP_EOL . PHP_EOL);
-        $bar->setBarCharacter('<info>' . $bar->getBarCharacter() . '</info>');
-        $bar->setBarWidth(70);
-
+        $bar = $this->createProgressBar($steps);
 
         // Step 1: Create dump of the current database
-        $bar->setMessage($messages[] = "Creating dump on remote ({$transferFile})");
-        if ($plugin->ssh->exec("php craft copy/db/to-file {$transferFile} --interactive=0")) {
+        $bar->setMessage($messages[] = "Creating dump on fortrabbit App ({$transferFile})");
+
+        try {
+            $plugin->ssh->exec("php craft copy/db/to-file {$transferFile} --interactive=0");
             $bar->advance();
+        } catch (PluginNotInstalledException $e) {
+            $this->errorBlock("Make sure to deploy the plugin first.");
         }
 
+
         // Step 2: Download that dump from remote
-        $bar->setMessage($messages[] = "Downloading dump from remote {$transferFile}");
+        $bar->setMessage($messages[] = "Downloading dump from fortrabbit App {$transferFile}");
         if ($plugin->ssh->download($transferFile, $transferFile)) {
             $bar->advance();
         }
@@ -80,15 +70,15 @@ class DbDownAction extends ConfigAwareBaseAction
         // Step 3: Backup the local database before importing the downloaded dump
         $bar->setMessage($messages[] = "Creating backup of local DB ({$backupFile})");
 
-        if ($plugin->dump->export($backupFile)) {
+        if ($plugin->database->export($backupFile)) {
             $bar->advance();
         }
 
         // Step 4: Import
         $bar->setMessage($messages[] = "Importing dump");
-        if ($plugin->dump->import($transferFile)) {
+        if ($plugin->database->import($transferFile)) {
             $bar->advance();
-            $bar->setMessage("Dump imported");
+            $bar->setMessage("Database imported");
         }
 
         $bar->finish();

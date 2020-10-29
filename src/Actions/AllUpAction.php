@@ -6,7 +6,7 @@ use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Helpers\PathHelper;
 use yii\console\ExitCode;
 
-class AllUpAction extends ConfigAwareBaseAction
+class AllUpAction extends StageAwareBaseAction
 {
     use ConsoleOutputHelper;
     use PathHelper;
@@ -19,14 +19,14 @@ class AllUpAction extends ConfigAwareBaseAction
     /**
      * Copy everything up
      *
-     * @param string|null $config Name of the deploy config
+     * @param string|null $stage Name of the stage config
      *
      * @return int
      */
-    public function run(string $config = null): int
+    public function run(string $stage = null): int
     {
         // Ask
-        if (!$this->confirm("Do you want to copy all <underline>assets</underline>, the <underline>code</underline> and the <underline>db</underline> up?", true)) {
+        if (!$this->confirm("Do you want to copy all volumes, the code and the database up?", true)) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -35,7 +35,7 @@ class AllUpAction extends ConfigAwareBaseAction
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        if (\Craft::$app->runAction('copy/assets/up', ['interactive' => true]) !== 0) {
+        if (\Craft::$app->runAction('copy/volumes/up', ['interactive' => true]) !== 0) {
             $this->errorBlock('Failed to copy the assets');
             return ExitCode::UNSPECIFIED_ERROR;
         }
@@ -48,4 +48,3 @@ class AllUpAction extends ConfigAwareBaseAction
         return ExitCode::OK;
     }
 }
-

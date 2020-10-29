@@ -7,8 +7,8 @@ use craft\base\Plugin as BasePlugin;
 use craft\db\Connection;
 use fortrabbit\Copy\Actions\AllDownAction;
 use fortrabbit\Copy\Actions\AllUpAction;
-use fortrabbit\Copy\Actions\AssetsDownAction;
-use fortrabbit\Copy\Actions\AssetsUpAction;
+use fortrabbit\Copy\Actions\FolderDownAction;
+use fortrabbit\Copy\Actions\FolderUpAction;
 use fortrabbit\Copy\Actions\CodeDownAction;
 use fortrabbit\Copy\Actions\CodeUpAction;
 use fortrabbit\Copy\Actions\DbDownAction;
@@ -17,39 +17,36 @@ use fortrabbit\Copy\Actions\DbImportAction;
 use fortrabbit\Copy\Actions\DbUpAction;
 use fortrabbit\Copy\Actions\InfoAction;
 use fortrabbit\Copy\Actions\SetupAction;
+use fortrabbit\Copy\Actions\VolumesDownAction;
+use fortrabbit\Copy\Actions\VolumesUpAction;
 use fortrabbit\Copy\EventHandlers\CommandOutputFormatHandler;
 use fortrabbit\Copy\EventHandlers\IgnoredBackupTablesHandler;
-use fortrabbit\Copy\Services\DeployConfig;
+use fortrabbit\Copy\Services\StageConfigAccess;
 use fortrabbit\Copy\Services\Git;
 use fortrabbit\Copy\Services\Rsync;
 use ostark\Yii2ArtisanBridge\ActionGroup;
 use ostark\Yii2ArtisanBridge\base\Commands;
 use ostark\Yii2ArtisanBridge\Bridge;
 use yii\base\Event;
-use yii\base\Model;
 use yii\console\Application as ConsoleApplication;
 use fortrabbit\Copy\Services\Ssh as SshService;
-use fortrabbit\Copy\Services\Dump as DumpService;
+use fortrabbit\Copy\Services\Database as DatabaseService;
 use fortrabbit\Copy\Services\Rsync as RsyncService;
 use fortrabbit\Copy\Services\Git as GitService;
 
 /**
- * Class Plugin
+ * Craft Copy main plugin class
  *
- * @package fortrabbit\Copy
- *
- * @property  SshService $ssh
- * @property  DumpService $dump
- * @property  RsyncService $rsync
- * @property  GitService $git
- * @property  DeployConfig $config
- *
+ * @property SshService $ssh
+ * @property DatabaseService $database
+ * @property RsyncService $rsync
+ * @property GitService $git
+ * @property StageConfigAccess $stage
  */
 class Plugin extends BasePlugin
 {
     public const DASHBOARD_URL = "https://dashboard.fortrabbit.com";
-    public const ENV_DEPLOY_ENVIRONMENT = "DEPLOY_ENVIRONMENT";
-    public const ENV_DEFAULT_CONFIG = "DEFAULT_CONFIG";
+    public const ENV_DEFAULT_STAGE = "DEFAULT_STAGE";
     public const PLUGIN_ROOT_PATH = __DIR__;
     public const REGIONS = [
         'us1' => 'US (AWS US-EAST-1 / Virginia)',
@@ -68,14 +65,25 @@ class Plugin extends BasePlugin
             return;
         }
 
-        // Console commands
+        $this->registerConsoleCommands();
+
+        $this->registerComponents();
+
+        $this->registerEventHandlers();
+    }
+
+
+    private function registerConsoleCommands(): void
+    {
         $group = (new ActionGroup('copy', 'Copy Craft between environments.'))
             ->setActions(
                 [
                     'all/up' => AllUpAction::class,
                     'all/down' => AllDownAction::class,
-                    'assets/up' => AssetsUpAction::class,
-                    'assets/down' => AssetsDownAction::class,
+                    'folder/up' => FolderUpAction::class,
+                    'folder/down' => FolderDownAction::class,
+                    'volumes/up' => VolumesUpAction::class,
+                    'volumes/down' => VolumesDownAction::class,
                     'code/up' => CodeUpAction::class,
                     'code/down' => CodeDownAction::class,
                     'db/up' => DbUpAction::class,
@@ -100,28 +108,42 @@ class Plugin extends BasePlugin
 
         // Register console commands
         Bridge::registerGroup($group);
+    }
 
-        // Register Event Handlers
-        Event::on(Commands::class, Commands::EVENT_BEFORE_ACTION, new CommandOutputFormatHandler());
-        Event::on(Connection::class, Connection::EVENT_BEFORE_CREATE_BACKUP, new IgnoredBackupTablesHandler());
 
-        // Register (singleton) services
+    private function registerComponents(): void
+    {
         $this->setComponents(
             [
-                'config' => DeployConfig::class,
-                'dump' => function () {
-                    return new DumpService(['db' => Craft::$app->getDb()]);
+                'stage' => StageConfigAccess::class,
+                'database' => function () {
+                    return new DatabaseService(['db' => Craft::$app->getDb()]);
                 },
                 'git' => function () {
                     return GitService::fromDirectory(\Craft::getAlias('@root') ?: CRAFT_BASE_PATH);
                 },
                 'rsync' => function () {
-                    return RsyncService::remoteFactory($this->config->get()->sshUrl);
+                    return RsyncService::remoteFactory($this->stage->get()->sshUrl);
                 },
                 'ssh' => function () {
-                    return new SshService(['remote' => $this->config->get()->sshUrl]);
-                },
+                    return new SshService(['remote' => $this->stage->get()->sshUrl]);
+                }
             ]
+        );
+    }
+
+
+    private function registerEventHandlers(): void
+    {
+        Event::on(
+            Commands::class,
+            Commands::EVENT_BEFORE_ACTION,
+            new CommandOutputFormatHandler()
+        );
+        Event::on(
+            Connection::class,
+            Connection::EVENT_BEFORE_CREATE_BACKUP,
+            new IgnoredBackupTablesHandler()
         );
     }
 }

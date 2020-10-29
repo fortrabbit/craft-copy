@@ -5,24 +5,19 @@ namespace fortrabbit\Copy\Actions;
 use Craft;
 use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Helpers\PathHelper;
-use fortrabbit\Copy\Models\DeployConfig;
+use fortrabbit\Copy\Models\StageConfig;
 use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
 use Symfony\Component\Process\Process;
 use yii\console\ExitCode;
 use yii\helpers\Inflector;
 
-/**
- * Class SetupAction
- *
- * @package fortrabbit\Copy\Commands
- */
 class SetupAction extends Action
 {
     use ConsoleOutputHelper;
     use PathHelper;
 
-    public const TROUBLE_SHOOTING_MYSQLDUMP_URL = "https://github.com/fortrabbit/craft-copy#trouble-shooting";
+    public const TROUBLE_SHOOTING_MYSQLDUMP_URL = "https://github.com/fortrabbit/craft-copy#the-mysqldump-command-does-not-exist";
     public const TROUBLE_SHOOTING_SSH_URL = "https://help.fortrabbit.com/ssh-keys";
 
 
@@ -32,12 +27,13 @@ class SetupAction extends Action
     public $verbose = false;
 
     /**
-     * Setup your App
+     * Connect local dev with fortrabbit App
      *
      * @return int
      * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException
      * @throws \fortrabbit\Copy\Exceptions\PluginNotInstalledException
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
+     * @throws \yii\base\Exception
      */
     public function run()
     {
@@ -57,15 +53,14 @@ class SetupAction extends Action
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-
-        $configName = $this->anticipate(
-            "What's a good name for the environment of the fortrabbit App? <fg=default>(use arrow keys or type)</>",
-            ['production', 'staging', 'stage', 'dev', 'prod'],
-            'production'
+        $stageName = $this->anticipate(
+            "What's a good name for the stage of the fortrabbit App? <fg=default>(use arrow keys or type)</>",
+            [$app, "$app-prod", "$app-dev", "prod", "production", "staging", "dev"],
+            "$app-prod"
         );
 
         // Persist config
-        $config = $this->writeDeployConfig($app, $region, Inflector::slug($configName));
+        $config = $this->writeStageConfig($app, $region, Inflector::slug($stageName));
 
         // Perform exec checks
         $this->checkAndWrite("Testing DNS - " . Plugin::REGIONS[$region], true);
@@ -76,12 +71,14 @@ class SetupAction extends Action
 
 
         if (!$mysql) {
-            $this->errorBlock('Mysqldump is required.');
+            $this->errorBlock('Mysqldump is required. Please install it with your local development environment.');
             $this->line("Get Help: " . self::TROUBLE_SHOOTING_MYSQLDUMP_URL);
         }
 
         if (!$ssh) {
-            $this->errorBlock('SSH is required.');
+            $this->errorBlock(
+                'SSH key authentication is required. Please add your SSH key to your fortrabbit Account first.'
+            );
             $this->line("Get Help: " . self::TROUBLE_SHOOTING_SSH_URL);
         }
 
@@ -97,11 +94,9 @@ class SetupAction extends Action
 
 
     /**
-     * @param string $app
-     *
-     * @return null|string
+     * Get from DNS record of the App
      */
-    protected function guessRegion(string $app)
+    protected function guessRegion(string $app): ?string
     {
         if ($records = dns_get_record("$app.frb.io", DNS_CNAME)) {
             return explode('.', $records[0]['target'])[1];
@@ -111,37 +106,31 @@ class SetupAction extends Action
     }
 
     /**
-     * @param string $app
-     * @param string $region
-     * @param string $configName
-     *
-     * @return \fortrabbit\Copy\Models\DeployConfig
-     * @throws \yii\base\Exception
+     * Write config file
      */
-    protected function writeDeployConfig(string $app, string $region, string $configName)
+    protected function writeStageConfig(string $app, string $region, string $stageName): StageConfig
     {
-        $config = new DeployConfig();
+        $config = new StageConfig();
         $config->app = $app;
         $config->sshUrl = "{$app}@deploy.{$region}.frbit.com";
         $config->gitRemote = "$app/master";
-        $config->assetPath = $this->getDefaultRelativeAssetPath();
-        $config->setName($configName);
-        Plugin::getInstance()->config->setName($configName);
+        $config->setName($stageName);
+        Plugin::getInstance()->stage->setName($stageName);
 
         // Check if file already exist
-        if (file_exists(Plugin::getInstance()->config->getFullPathToConfig())) {
-            $file = Plugin::getInstance()->config->getConfigFileName();
+        if (file_exists(Plugin::getInstance()->stage->getFullPathToConfig())) {
+            $file = Plugin::getInstance()->stage->getConfigFileName();
             if (!$this->confirm("Do you want to overwrite your existing config? ($file)", true)) {
                 return $config;
             }
         }
 
         // Write
-        Plugin::getInstance()->config->persist($config);
-        Plugin::getInstance()->config->setName($configName);
+        Plugin::getInstance()->stage->persist($config);
+        Plugin::getInstance()->stage->setName($stageName);
 
         // Write .env
-        foreach ([Plugin::ENV_DEFAULT_CONFIG => $configName] as $name => $value) {
+        foreach ([Plugin::ENV_DEFAULT_STAGE => $stageName] as $name => $value) {
             \Craft::$app->getConfig()->setDotEnvVar($name, $value);
             putenv("$name=$value");
         }
@@ -177,50 +166,44 @@ class SetupAction extends Action
      * @throws \fortrabbit\Copy\Exceptions\PluginNotInstalledException
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
      */
-    protected function setupRemote(DeployConfig $config)
+    protected function setupRemote(StageConfig $config)
     {
         $plugin = Plugin::getInstance();
-        $app = $plugin->config->get()->app;
 
-        // Is copy deployed aready?
+        // Is copy deployed already?
         if ($plugin->ssh->exec("ls vendor/bin/craft-copy-import-db.php | wc -l")) {
             // Yes. Existing setup?
             if (trim($plugin->ssh->getOutput()) == "1") {
-                $this->head(
-                    "Craft was detected on remote.",
-                    "<comment>{$config}</comment> {$config->app}.frb.io"
+                $this->successBlock(
+                    [
+                        "Craft was detected on the fortrabbit App.",
+                        "Run the following commands to get a copy of the fortrabbit App:"
+                    ]
                 );
 
-                $this->section('Do you need a copy of the remote?');
-                $this->line("craft copy/db/down" . PHP_EOL);
-                $this->line("craft copy/code/down" . PHP_EOL);
+                $this->cmdBlock("php craft copy/db/down");
+                $this->cmdBlock("php craft copy/code/down");
+                $this->cmdBlock("php craft copy/volumes/down");
+                $this->line(PHP_EOL);
 
                 return true;
             }
 
             // Not installed
+            $this->successBlock(
+                [
+                    "Local setup completed.",
+                    "Run this command to deploy code, database and volumes in one go:"
+                ]
+            );
 
-            // Try to deploy code
-            if ($this->confirm("The plugin is not installed with your App! Do you want to deploy now?", true)) {
-                $this->cmdBlock('copy/code/up');
-                if (Craft::$app->runAction('copy/code/up', ['interactive' => $this->interactive]) !== 0) {
-                    // failed
-                    return false;
-                }
-            } else {
-                // failed
-                return false;
-            }
+            $this->cmdBlock("php craft copy/all/up");
+            $this->line(PHP_EOL);
+
+            return true;
         }
 
-        // Push DB
-        $this->cmdBlock('php craft copy/db/up');
-        if (Craft::$app->runAction('copy/db/up', ['interactive' => true, 'force' => true]) !== 0) {
-            return false;
-        }
-
-        $this->successBlock("Check it in the browser: https://{$app}.frb.io");
-
-        return true;
+        $this->errorBlock("Unable to run SSH command.");
+        return false;
     }
 }

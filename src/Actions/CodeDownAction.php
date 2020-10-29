@@ -5,29 +5,28 @@ namespace fortrabbit\Copy\Actions;
 use GitWrapper\Exception\GitException;
 use yii\console\ExitCode;
 
-/**
- * Class CodeDownAction
- *
- * @package fortrabbit\Copy\Actions
- */
-class CodeDownAction extends ConfigAwareBaseAction
+class CodeDownAction extends StageAwareBaseAction
 {
 
     /**
      * Git pull
      *
-     * @param string|null $config Name of the deploy config
-     * @param string $remoteBranch
+     * @param string|null $stage Name of the stage config
      *
      * @return int
      */
-    public function run(string $config = null, $remoteBranch = 'master')
+    public function run(string $stage = null)
     {
+        $this->head(
+            "Pull recent code changes for fortrabbit App.",
+            $this->getContextHeadline($this->stage)
+        );
+
         $git = $this->plugin->git;
         $git->getWorkingCopy()->init();
 
         $localBranches = $git->getLocalBranches();
-        $branch        = $git->getLocalHead();
+        $branch = $git->getLocalHead();
 
         if (count($localBranches) > 1) {
             $question = 'Select a local branch (checkout):';
@@ -41,7 +40,7 @@ class CodeDownAction extends ConfigAwareBaseAction
         }
 
         // Use configured remote
-        $remote = $this->config->gitRemote ?: $git->getTracking(true);
+        $remote = $this->stage->gitRemote ?: $git->getTracking(true);
         [$upstream, $branch] = explode('/', $remote);
 
         try {

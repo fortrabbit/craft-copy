@@ -2,16 +2,13 @@
 
 namespace fortrabbit\Copy\Actions;
 
+use fortrabbit\Copy\Exceptions\CraftNotInstalledException;
+use fortrabbit\Copy\Exceptions\PluginNotInstalledException;
+use fortrabbit\Copy\Exceptions\RemoteException;
 use fortrabbit\Copy\Plugin;
-use PHP_CodeSniffer\Exceptions\RuntimeException;
 use yii\console\ExitCode;
 
-/**
- * Class DbUpAction
- *
- * @package fortrabbit\Copy\Commands
- */
-class DbUpAction extends ConfigAwareBaseAction
+class DbUpAction extends StageAwareBaseAction
 {
     /**
      * @var bool Force questions to 'yes'
@@ -21,7 +18,7 @@ class DbUpAction extends ConfigAwareBaseAction
     /**
      * Upload database
      *
-     * @param string|null $config Name of the deploy config
+     * @param string|null $stage Name of the stage config
      *
      * @return int
      *
@@ -31,7 +28,7 @@ class DbUpAction extends ConfigAwareBaseAction
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
      * @throws \yii\base\Exception
      */
-    public function run(string $config = null)
+    public function run(string $stage = null)
     {
         $plugin       = Plugin::getInstance();
         $path         = './storage/';
@@ -41,8 +38,8 @@ class DbUpAction extends ConfigAwareBaseAction
         $messages     = [];
 
         $this->head(
-            "Export local DB and import on remote.",
-            "<comment>{$this->config}</comment> {$this->config->app}.frb.io",
+            "We are about to export the local database and import it to the fortrabbit App.",
+            $this->getContextHeadline($this->stage),
             $this->force ? false : true
         );
 
@@ -56,58 +53,57 @@ class DbUpAction extends ConfigAwareBaseAction
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        $bar = $this->output->createProgressBar($steps);
-
-        // Custom format
-        $lines = [
-            '%message%',
-            '%bar% %percent:3s% %',
-            'time:  %elapsed:6s%/%estimated:-6s%'
-        ];
-
-        $bar->setFormat(implode(PHP_EOL, $lines) . PHP_EOL . PHP_EOL);
-        $bar->setBarCharacter('<info>' . $bar->getBarCharacter() . '</info>');
-        $bar->setBarWidth(70);
+        $bar = $this->createProgressBar($steps);
 
         // Step 1: Create dump of the current database
-        $bar->setMessage($messages[] = "Creating local dump");
-        if ($plugin->dump->export($transferFile)) {
+        $bar->setMessage($messages[] = "Creating a local database dump");
+        if ($plugin->database->export($transferFile)) {
             $bar->advance();
         }
 
         // Step 2: Upload that dump to remote
-        $bar->setMessage($messages[] = "Uploading dump to remote {$transferFile}");
+        $bar->setMessage($messages[] = "Uploading local dump to fortrabbit App - {$transferFile}");
         if ($plugin->ssh->upload($transferFile, $transferFile)) {
             $bar->advance();
         }
 
         if ($this->force) {
             // Import on remote (does not require craft or copy on remote)
-            $bar->setMessage($messages[] = "Importing dump on remote (raw)");
+            $bar->setMessage($messages[] = "Importing dump on fortrabbit App");
 
             // Try to create storage path first
             $plugin->ssh->exec("mkdir -p $path");
 
-            if ($plugin->ssh->exec("php vendor/bin/craft-copy-import-db.php {$transferFile} --force")) {
+            try {
+                $plugin->ssh->exec("php vendor/bin/craft-copy-import-db.php {$transferFile} --force");
                 $bar->advance();
-                $bar->setMessage("Dump imported");
+                $bar->setMessage("Database imported");
+            } catch (RemoteException $e){
+                $this->errorBlock(["Unable to import database. Deploy code first using this command:", "php craft copy/code/up"]);
+                return ExitCode::UNSPECIFIED_ERROR;
             }
+
         } else {
             // Step 3: Backup the remote database before importing the uploaded dump
-            $bar->setMessage($messages[] = "Creating DB Backup on remote ({$backupFile})");
-            if ($plugin->ssh->exec("php craft copy/db/to-file {$backupFile} --interactive=0")) {
+            $bar->setMessage($messages[] = "Creating a database dump on fortrabbit App ({$backupFile})");
+
+            try {
+                $plugin->ssh->exec("php craft copy/db/to-file {$backupFile} --interactive=0");
                 $bar->advance();
+            } catch (CraftNotInstalledException $e){
+                $this->errorBlock(["Unable to import database. Deploy code first using this command:", "php craft copy/code/up"]);
+                return ExitCode::UNSPECIFIED_ERROR;
+            } catch (PluginNotInstalledException $e) {
+                $this->errorBlock(["The plugin seems not to be installed on fortrabbit. Deploy code first using this command:", "php craft copy/code/up"]);
             }
 
             // Step 4: Import on remote
-            $bar->setMessage($messages[] = "Importing dump on remote");
+            $bar->setMessage($messages[] = "Importing dump on fortrabbit App");
             if ($plugin->ssh->exec("php craft copy/db/from-file {$transferFile} --interactive=0")) {
                 $bar->advance();
-                $bar->setMessage("Dump imported");
+                $bar->setMessage("Database imported");
             }
         }
-
-
 
         $bar->finish();
 

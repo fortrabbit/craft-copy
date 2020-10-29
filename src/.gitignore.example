@@ -1,3 +1,5 @@
+# Created by fortrabbit/craft-copy
+
 # CRAFT ENVIRONMENT
 .env.php
 .env.sh
@@ -10,10 +12,6 @@
 /storage/backups/
 /storage/runtime/
 /storage/logs/
-
-# ASSETS
-/web/assets/
-/web/cpresources/
 
 # BUILD FILES
 /bower_components/

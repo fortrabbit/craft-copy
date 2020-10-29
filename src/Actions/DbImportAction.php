@@ -9,15 +9,10 @@ use ostark\Yii2ArtisanBridge\base\Action;
 use yii\base\Exception;
 use yii\console\ExitCode;
 
-/**
- * Class DbImportAction
- *
- * @package fortrabbit\Copy\Commands
- */
 class DbImportAction extends Action
 {
     /**
-     * Import database
+     * Import database from file
      *
      * @param string $file Import a sql dump
      *
@@ -37,8 +32,8 @@ class DbImportAction extends Action
         $this->info("Importing DB Dump from '{$file}'");
 
         try {
-            $file = Plugin::getInstance()->dump->import($file);
-            $this->successBlock("Dump imported");
+            $file = Plugin::getInstance()->database->import($file);
+            $this->successBlock("Database imported");
 
             if (!$this->confirm("Do you really want to remove the {$file} file?", true)) {
                 return ExitCode::OK;

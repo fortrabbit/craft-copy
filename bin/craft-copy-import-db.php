@@ -36,6 +36,15 @@ if (count($argv) < 2 || stristr($argv[1], '.sql') == false) {
     exit(1);
 }
 
+// Assure the ./storage folder exist
+$storage = $root . '/storage';
+if (!is_dir($storage)) {
+    if (!mkdir($storage)) {
+        echo "Unable to create $storage";
+        exit(1);
+    }
+}
+
 $file = $argv[1];
 
 if (!file_exists($file)) {
@@ -56,17 +65,17 @@ if (!$app->getConfig()->getDb()->password) {
     exit(1);
 }
 
-$db     = $app->getConfig()->getDb();
-$cmd    = 'mysql -u {DB_USER} -p{DB_PASSWORD} -h {DB_SERVER} {DB_DATABASE} < {file} && echo 1';
+$db = $app->getConfig()->getDb();
+$cmd = 'mysql -u {DB_USER} -p{DB_PASSWORD} -h {DB_SERVER} {DB_DATABASE} < {file} && echo 1';
 $tokens = [
-    '{file}'        => $file,
-    '{DB_USER}'     => $db->user,
+    '{file}' => $file,
+    '{DB_USER}' => $db->user,
     '{DB_PASSWORD}' => $db->password,
-    '{DB_SERVER}'   => $db->server ?: getenv('DB_SERVER'),
+    '{DB_SERVER}' => $db->server ?: getenv('DB_SERVER'),
     '{DB_DATABASE}' => $db->database ?: getenv('DB_DATABASE'),
 ];
 
-$cmd     = str_replace(array_keys($tokens), array_values($tokens), $cmd);
+$cmd = str_replace(array_keys($tokens), array_values($tokens), $cmd);
 $process = new \Symfony\Component\Process\Process($cmd);
 $process->run();
 

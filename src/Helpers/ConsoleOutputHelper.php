@@ -2,7 +2,8 @@
 
 namespace fortrabbit\Copy\Helpers;
 
-use fortrabbit\Copy\Plugin;
+use ostark\Yii2ArtisanBridge\OutputStyle;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\TableSeparator;
 
 /**
@@ -10,26 +11,31 @@ use Symfony\Component\Console\Helper\TableSeparator;
  *
  * @package fortrabbit\Copy\services
  *
- * @property string  $app
+ * @property string $app
  * @property boolean $dryRun
+ * @property OutputStyle $output
  */
 trait ConsoleOutputHelper
 {
-    /**
-     * @param string      $dir
-     * @param string|null $remoteUrl
-     */
-    public function rsyncInfo(string $dir, string $remoteUrl = null)
+    public function rsyncInfo(string $dir, string $remoteUrl = null, string $volumeHandle = null)
     {
+        if ($volumeHandle) {
+            $head = ['Volume', $volumeHandle];
+        } else {
+            $head =  ['Key', 'Value'];
+        }
+
+        $rows = [
+            ['Directory', $dir],
+            new TableSeparator(),
+            ['SSH remote', $remoteUrl],
+            new TableSeparator(),
+            ['Dry run', $this->dryRun ? 'true' : 'false']
+        ];
+
         $this->table(
-            ['Key', 'Value'],
-            [
-                ['Asset directory', $dir],
-                new TableSeparator(),
-                ['SSH remote', $remoteUrl],
-                new TableSeparator(),
-                ['Dry run', $this->dryRun ? 'true' : 'false']
-            ]
+            $head,
+            $rows
         );
     }
 
@@ -42,22 +48,47 @@ trait ConsoleOutputHelper
      */
     public function cmdBlock(string $cmd)
     {
-        $here = str_replace(getenv("HOME"), '~', getcwd());
-        $this->block($cmd, null, 'fg=white;bg=default', '<comment> ' . $here . ' ►  </comment>', false, false);
+        $this->block($cmd, null, 'fg=white;bg=default', '<comment>  $  </comment>', false, false);
         return true;
     }
 
     /**
-     * @param string      $message
+     * @param string $message
      * @param string|null $context
-     * @param bool        $clear
+     * @param bool $clear
      */
     public function head(string $message, string $context = null, $clear = true)
     {
+        $messages = ["<options=bold;fg=white>$message</>"];
+
+        // clear the screen
         if ($clear) {
             $this->output->write(sprintf("\033\143"));
         }
 
-        $this->block("<options=bold;fg=white>$message</>", $context, 'fg=white;', '▶ ', false, false);
+        // Add context before the actual message
+        if (is_string($context)) {
+            $messages = array_merge([$context], $messages);
+        }
+
+        $this->block($messages, null, 'fg=white;', "<comment>▏</comment>", false, false);
+    }
+
+    public function createProgressBar(int $steps): ProgressBar
+    {
+        // Custom format
+        $lines = [
+            '%message%',
+            '%bar% %percent:3s% %',
+            'time:  %elapsed:6s%/%estimated:-6s%'
+        ];
+
+        $bar = $this->output->createProgressBar($steps);
+
+        $bar->setFormat(implode(PHP_EOL, $lines) . PHP_EOL . PHP_EOL);
+        $bar->setBarCharacter('<info>' . $bar->getBarCharacter() . '</info>');
+        $bar->setBarWidth(70);
+
+        return $bar;
     }
 }

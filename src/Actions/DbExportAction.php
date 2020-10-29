@@ -9,16 +9,11 @@ use yii\base\Exception;
 use yii\console\ExitCode;
 use ostark\Yii2ArtisanBridge\base\Action;
 
-/**
- * Class DbExportAction
- *
- * @package fortrabbit\Copy\Commands
- */
 class DbExportAction extends Action
 {
 
     /**
-     * Export database
+     * Export database from file
      *
      * @param string|null $file Filename of the sql dump
      *
@@ -31,7 +26,7 @@ class DbExportAction extends Action
         $this->info("Creating DB Dump in '{$file}'");
 
         try {
-            $plugin->dump->export($file);
+            $plugin->database->export($file);
             $this->info("OK");
             return ExitCode::OK;
         } catch (ShellCommandException $exception) {

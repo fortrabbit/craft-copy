@@ -7,12 +7,11 @@ use craft\helpers\StringHelper;
 
 /**
  * Class that represents the yml config
- * see src/fortrabbit.example-config.yml
- *
+ * see src/fortrabbit.example.yml
  */
-class DeployConfig extends Model
+class StageConfig extends Model
 {
-    public const DEPREACTED_PROPERTIES = ['sshPath'];
+    public const DEPREACTED_PROPERTIES = ['sshPath', 'assetPath'];
 
     /**
      * @var string Name of App
@@ -29,17 +28,13 @@ class DeployConfig extends Model
      */
     public $gitRemote;
 
-    /**
-     * @var string Relative path to assets
-     */
-    public $assetPath = 'web/assets';
 
     /**
      * @var array Scripts that run before commands locally
      */
     public $before = [
         'code/up' => [
-            'echo  "Script example: " $(git rev-parse HEAD)'
+            // noting defined by default
         ]
     ];
 
@@ -48,7 +43,8 @@ class DeployConfig extends Model
      */
     public $after = [
         'code/down' => [
-            'php craft migrate/all'
+            'php craft migrate/all',
+            'php craft project-config/apply'
         ]
     ];
 
@@ -57,12 +53,7 @@ class DeployConfig extends Model
      */
     protected $name = '';
 
-    /**
-     * DeployConfig constructor.
-     *
-     * @param array $config
-     */
-    public function __construct($config = [])
+    public function __construct(array $config = [])
     {
         foreach ($config as $key => $value) {
             unset($config[$key]);
@@ -78,15 +69,12 @@ class DeployConfig extends Model
     /**
      * Converts the model into an array
      * with SnakeCase keys
-     *
-     * @param array $fields
-     * @param array $expand
-     * @param bool  $recursive
-     *
-     * @return array
      */
-    public function toArray(array $fields = [], array $expand = [], $recursive = true)
-    {
+    public function toArray(
+        array $fields = [],
+        array $expand = [],
+        $recursive = true
+    ): array {
         $array = parent::toArray($fields, $expand, $recursive);
 
         foreach ($array as $key => $value) {
@@ -97,18 +85,12 @@ class DeployConfig extends Model
         return $array;
     }
 
-    /**
-     * @param string $name
-     */
     public function setName(string $name)
     {
         $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name;
     }

@@ -9,8 +9,6 @@ use GitWrapper\GitWrapper;
 
 /**
  * Git Service
- *
- * @package fortrabbit\Copy\services
  */
 final class Git
 {
@@ -117,7 +115,8 @@ final class Git
         if (!in_array($for, ['push', 'pull'])) {
             throw new \LogicException(
                 sprintf(
-                    'Argument 1 passed to fortrabbit\Copy\services\Git::getRemotes() must be "pull" or "push", %s given.',
+                    'Argument 1 passed to %s must be "pull" or "push", %s given.',
+                    'fortrabbit\Copy\Services\Git::getRemotes()',
                     $for
                 )
             );
@@ -216,6 +215,7 @@ final class Git
             throw new \Exception("Unable to read .gitignore.example.");
         }
 
+        // No .gitignore? use our full example
         if (!file_exists($gitignoreFile)) {
             return copy($gitignoreExampleFile, $gitignoreFile);
         }
@@ -224,14 +224,15 @@ final class Git
             throw new \Exception("Unable to read .gitignore.");
         }
 
-        if (strpos($gitignored, "web/assets") === false) {
-            $gitignored .= PHP_EOL . '# ASSETS (added by fortrabbit/craft-copy)';
-            $gitignored .= PHP_EOL . '/web/assets/*' . PHP_EOL;
-            $gitignored .= PHP_EOL . '/web/cpresources/*' . PHP_EOL;
+        // Append existing .gitignore
+        if (strpos($gitignored, ".sql") === false) {
+            $gitignored .= PHP_EOL;
+            $gitignored .= PHP_EOL . '# Prevent to .sql files (added by fortrabbit/craft-copy)';
+            $gitignored .= PHP_EOL . '*.sql' . PHP_EOL;
 
             return (file_put_contents($gitignoreFile, $gitignored)) ? true : false;
         }
 
-        return false;
+        return true;
     }
 }

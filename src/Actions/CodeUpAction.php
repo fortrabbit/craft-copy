@@ -2,39 +2,55 @@
 
 namespace fortrabbit\Copy\Actions;
 
+use craft\helpers\FileHelper;
 use fortrabbit\Copy\Services\Git;
+use fortrabbit\Copy\Services\LocalVolume;
 use GitWrapper\Exception\GitException;
+use ostark\Yii2ArtisanBridge\base\Commands;
 use yii\console\ExitCode;
 
-/**
- * Class CodeUpAction
- *
- * @package fortrabbit\Copy\Actions
- */
-class CodeUpAction extends ConfigAwareBaseAction
+class CodeUpAction extends StageAwareBaseAction
 {
+
+    /**
+     * @var LocalVolume
+     */
+    protected $localVolume;
+
+    public function __construct(
+        string $id,
+        Commands $controller,
+        LocalVolume $localVolume,
+        array $config = []
+    ) {
+        $this->localVolume = $localVolume;
+        parent::__construct($id, $controller, $config);
+    }
+
 
     /**
      * Git push
      *
-     * @param string|null $config Name of the deploy config
+     * @param string|null $stage Name of the stage config
      *
      * @return int
      * @throws \Exception
      */
-    public function run(string $config = null)
+    public function run(string $stage = null)
     {
         $this->head(
-            "Deploy recent code changes",
-            "<comment>{$this->config}</comment> {$this->config->app}.frb.io"
+            "Deploy recent code changes.",
+            $this->getContextHeadline($this->stage)
         );
 
         $git = $this->plugin->git;
         $git->getWorkingCopy()->init();
+
+        // Project .gitignore
         $git->assureDotGitignore();
 
         $localBranches = $git->getLocalBranches();
-        $branch        = $git->getLocalHead();
+        $branch = $git->getLocalHead();
 
         if (count($localBranches) > 1) {
             $question = 'Select a local branch (checkout):';
@@ -49,7 +65,8 @@ class CodeUpAction extends ConfigAwareBaseAction
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        //$git->getWorkingCopy()->fetch($upstream);
+        // Volume .gitignore
+        $this->assureVolumesAreIgnored();
 
         try {
             if ($log = $git->getWorkingCopy()->log("--format=(%h) %cr: %s ", "$upstream/master..HEAD")) {
@@ -58,13 +75,11 @@ class CodeUpAction extends ConfigAwareBaseAction
         } catch (\Exception $e) {
         }
 
-
         if (!$git->getWorkingCopy()->hasChanges()) {
             if (!$this->confirm("About to push latest commits, proceed?", true)) {
                 return ExitCode::OK;
             }
         }
-
 
         if ($status = $git->getWorkingCopy()->getStatus()) {
             // Changed files
@@ -119,12 +134,12 @@ class CodeUpAction extends ConfigAwareBaseAction
     protected function getUpstream(Git $git): string
     {
         // Get configured remote & sshUrl
-        $upstream = explode('/', $this->config->gitRemote)[0];
-        $sshUrl = $this->config->sshUrl;
+        $upstream = explode('/', $this->stage->gitRemote)[0];
+        $sshUrl = $this->stage->sshUrl;
 
         // Nothing found
         if (!$remotes = $git->getRemotes()) {
-            if ($this->confirm("No remotes configured. Do you want to add '{$sshUrl}'?")) {
+            if ($this->confirm("No git remotes configured. Do you want to add '{$sshUrl}'?")) {
                 return $git->addRemote($sshUrl);
             }
         }
@@ -140,7 +155,26 @@ class CodeUpAction extends ConfigAwareBaseAction
             return array_keys($remotes)[0];
         }
 
-        // Multiple
-        return $this->choice('Select a remote', $remotes, $git->getTracking());
+        // return the configured upstream
+        return $upstream;
     }
+
+    /**
+     * Creates a .gitignore file in the directory of each local volume
+     */
+    protected function assureVolumesAreIgnored()
+    {
+        try {
+            $volumes = $this->localVolume->filterByHandle();
+            foreach ($volumes as $volume) {
+                $path = \Craft::parseEnv('@root') . DIRECTORY_SEPARATOR . $volume->path;
+                FileHelper::writeGitignoreFile($path);
+            }
+        } catch (\Exception $exception) {
+            $this->line(PHP_EOL);
+            $this->line($exception->getMessage());
+            $this->line(PHP_EOL);
+        }
+    }
+
 }
