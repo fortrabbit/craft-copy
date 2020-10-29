@@ -2,12 +2,31 @@
 
 namespace fortrabbit\Copy\Actions;
 
+use craft\helpers\FileHelper;
 use fortrabbit\Copy\Services\Git;
+use fortrabbit\Copy\Services\LocalVolume;
 use GitWrapper\Exception\GitException;
+use ostark\Yii2ArtisanBridge\base\Commands;
 use yii\console\ExitCode;
 
 class CodeUpAction extends StageAwareBaseAction
 {
+
+    /**
+     * @var LocalVolume
+     */
+    protected $localVolume;
+
+    public function __construct(
+        string $id,
+        Commands $controller,
+        LocalVolume $localVolume,
+        array $config = []
+    ) {
+        $this->localVolume = $localVolume;
+        parent::__construct($id, $controller, $config);
+    }
+
 
     /**
      * Git push
@@ -29,7 +48,7 @@ class CodeUpAction extends StageAwareBaseAction
         $git->assureDotGitignore();
 
         $localBranches = $git->getLocalBranches();
-        $branch        = $git->getLocalHead();
+        $branch = $git->getLocalHead();
 
         if (count($localBranches) > 1) {
             $question = 'Select a local branch (checkout):';
@@ -44,7 +63,7 @@ class CodeUpAction extends StageAwareBaseAction
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        //$git->getWorkingCopy()->fetch($upstream);
+        $this->assureVolumesAreIgnored();
 
         try {
             if ($log = $git->getWorkingCopy()->log("--format=(%h) %cr: %s ", "$upstream/master..HEAD")) {
@@ -138,4 +157,24 @@ class CodeUpAction extends StageAwareBaseAction
         // return the configured upstream
         return $upstream;
     }
+
+    /**
+     * Creates a .gitignore file in the directory of each local volume
+     */
+    protected function assureVolumesAreIgnored()
+    {
+        try {
+            $volumes = $this->localVolume->filterByHandle();
+            foreach ($volumes as $volume) {
+                $path = \Craft::parseEnv('@root') . DIRECTORY_SEPARATOR . $volume->path;
+                FileHelper::writeGitignoreFile($path);
+            }
+        } catch (\Exception $exception) {
+            $this->line(PHP_EOL);
+            $this->line($exception->getMessage());
+            $this->line(PHP_EOL);
+        }
+    }
+
+
 }
