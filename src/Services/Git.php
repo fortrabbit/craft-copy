@@ -215,8 +215,22 @@ final class Git
             throw new \Exception("Unable to read .gitignore.example.");
         }
 
+        // No .gitignore? use our full example
         if (!file_exists($gitignoreFile)) {
             return copy($gitignoreExampleFile, $gitignoreFile);
+        }
+
+        if (!$gitignored = file_get_contents($gitignoreFile)) {
+            throw new \Exception("Unable to read .gitignore.");
+        }
+
+        // Append existing .gitignore
+        if (strpos($gitignored, ".sql") === false) {
+            $gitignored .= PHP_EOL;
+            $gitignored .= PHP_EOL . '# Prevent to .sql files (added by fortrabbit/craft-copy)';
+            $gitignored .= PHP_EOL . '*.sql' . PHP_EOL;
+
+            return (file_put_contents($gitignoreFile, $gitignored)) ? true : false;
         }
 
         return true;
