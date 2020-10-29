@@ -219,18 +219,6 @@ final class Git
             return copy($gitignoreExampleFile, $gitignoreFile);
         }
 
-        if (!$gitignored = file_get_contents($gitignoreFile)) {
-            throw new \Exception("Unable to read .gitignore.");
-        }
-
-        if (strpos($gitignored, "web/assets") === false) {
-            $gitignored .= PHP_EOL . '# ASSETS (added by fortrabbit/craft-copy)';
-            $gitignored .= PHP_EOL . '/web/assets/*' . PHP_EOL;
-            $gitignored .= PHP_EOL . '/web/cpresources/*' . PHP_EOL;
-
-            return (file_put_contents($gitignoreFile, $gitignored)) ? true : false;
-        }
-
-        return false;
+        return true;
     }
 }

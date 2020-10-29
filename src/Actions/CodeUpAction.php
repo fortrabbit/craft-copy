@@ -45,6 +45,8 @@ class CodeUpAction extends StageAwareBaseAction
 
         $git = $this->plugin->git;
         $git->getWorkingCopy()->init();
+
+        // Project .gitignore
         $git->assureDotGitignore();
 
         $localBranches = $git->getLocalBranches();
@@ -63,6 +65,7 @@ class CodeUpAction extends StageAwareBaseAction
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
+        // Volume .gitignore
         $this->assureVolumesAreIgnored();
 
         try {
@@ -72,13 +75,11 @@ class CodeUpAction extends StageAwareBaseAction
         } catch (\Exception $e) {
         }
 
-
         if (!$git->getWorkingCopy()->hasChanges()) {
             if (!$this->confirm("About to push latest commits, proceed?", true)) {
                 return ExitCode::OK;
             }
         }
-
 
         if ($status = $git->getWorkingCopy()->getStatus()) {
             // Changed files
@@ -175,6 +176,5 @@ class CodeUpAction extends StageAwareBaseAction
             $this->line(PHP_EOL);
         }
     }
-
 
 }
