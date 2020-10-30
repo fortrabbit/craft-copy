@@ -275,10 +275,12 @@ Any asset files and folders, including image transformations that can be synced 
 
 ### Database
 
-The MySQL database is getting copied over by using `mysqldump`. So it basically will export the current status of the database as an `file.sql` and will replace the other database with that file. In other words: This can be a destructive operation. You need to make sure that any content changes affecting the database, like new entries or editing entries are only done in one environment, either locally or on the fortrabbit App. It can not merge changes, like with assets or code. Good news s, that Craft Copy will always create a snapshot file which you can use to roll back.
+The MySQL database is getting copied over by using `mysqldump`. So it basically will export the current status of the database as an `file.sql` and will replace the other database with that file. In other words: This can be a destructive operation. You need to make sure that any content changes affecting the database, like new entries or editing entries are only done in one environment, either locally or on the fortrabbit App. It can not merge changes, like with assets or code. Good news is, that Craft Copy will always create a snapshot file which you can use to roll back.
 
 
+#### my.conf file
 
+Craft Copy creates a `my.conf` file. It sets some defaults to ensure maximal compability when working with different MySQL versions. See the [annotated file here](https://github.com/fortrabbit/craft-copy/blob/master/src/.my.cnf.example) and read about SUPER priviliges [here](https://help.fortrabbit.test/mysql-troubleshooting#toc-access-denied-missing-super-privileges).
 
 
 ## Troubleshooting
