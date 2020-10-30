@@ -20,6 +20,19 @@ class DeprecatedConfigFixer
         $this->stage = $stage;
     }
 
+    public static function hasDeprecatedConfig(): bool
+    {
+        if (getenv(self::ENV_DEFAULT_CONFIG)) {
+            return true;
+        }
+
+        if (count(glob(\Craft::$app->getPath()->getConfigPath() . '/fortrabbit.*'))) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function showWarning()
     {
         $this->action->errorBlock(
@@ -32,19 +45,6 @@ class DeprecatedConfigFixer
         $this->action->errorBlock(
             "The location of the generated config files changed from /config to /config/craft-copy."
         );
-    }
-
-    public static function hasDeprecatedConfig(): bool
-    {
-        if (getenv(self::ENV_DEFAULT_CONFIG)) {
-            return true;
-        }
-
-        if (count(glob(\Craft::$app->getPath()->getConfigPath() . '/fortrabbit.*'))) {
-           return true;
-        }
-
-        return false;
     }
 
     public function askAndRun()
@@ -89,6 +89,4 @@ class DeprecatedConfigFixer
             rename($source, $target);
         }
     }
-
-
 }

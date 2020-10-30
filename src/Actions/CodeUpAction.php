@@ -176,5 +176,4 @@ class CodeUpAction extends StageAwareBaseAction
             $this->line(PHP_EOL);
         }
     }
-
 }

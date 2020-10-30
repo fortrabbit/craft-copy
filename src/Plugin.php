@@ -75,36 +75,36 @@ class Plugin extends BasePlugin
 
     private function registerConsoleCommands(): void
     {
+        $actions = [
+            'all/up' => AllUpAction::class,
+            'all/down' => AllDownAction::class,
+            'folder/up' => FolderUpAction::class,
+            'folder/down' => FolderDownAction::class,
+            'volumes/up' => VolumesUpAction::class,
+            'volumes/down' => VolumesDownAction::class,
+            'code/up' => CodeUpAction::class,
+            'code/down' => CodeDownAction::class,
+            'db/up' => DbUpAction::class,
+            'db/down' => DbDownAction::class,
+            'db/to-file' => DbExportAction::class,
+            'db/from-file' => DbImportAction::class,
+            'setup' => SetupAction::class,
+            'info' => InfoAction::class
+        ];
+
+        $options = [
+            'v' => 'verbose',
+            'd' => 'directory',
+            'n' => 'dryRun',
+            'a' => 'app',
+            'e' => 'env',
+            'f' => 'force'
+        ];
+
         $group = (new ActionGroup('copy', 'Copy Craft between environments.'))
-            ->setActions(
-                [
-                    'all/up' => AllUpAction::class,
-                    'all/down' => AllDownAction::class,
-                    'folder/up' => FolderUpAction::class,
-                    'folder/down' => FolderDownAction::class,
-                    'volumes/up' => VolumesUpAction::class,
-                    'volumes/down' => VolumesDownAction::class,
-                    'code/up' => CodeUpAction::class,
-                    'code/down' => CodeDownAction::class,
-                    'db/up' => DbUpAction::class,
-                    'db/down' => DbDownAction::class,
-                    'db/to-file' => DbExportAction::class,
-                    'db/from-file' => DbImportAction::class,
-                    'setup' => SetupAction::class,
-                    'info' => InfoAction::class
-                ]
-            )
+            ->setActions($actions)
             ->setDefaultAction('info')
-            ->setOptions(
-                [
-                    'v' => 'verbose',
-                    'd' => 'directory',
-                    'n' => 'dryRun',
-                    'a' => 'app',
-                    'e' => 'env',
-                    'f' => 'force'
-                ]
-            );
+            ->setOptions($options);
 
         // Register console commands
         Bridge::registerGroup($group);

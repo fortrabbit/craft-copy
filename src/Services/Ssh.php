@@ -173,5 +173,4 @@ class Ssh extends Component
     {
         return $this->output;
     }
-
 }

@@ -87,7 +87,6 @@ class VolumesUpAction extends StageAwareBaseAction
             $this->line(PHP_EOL);
             $this->line(($volume == $lastVolume) ? "All done." : "{$volume->name} done, next volume:");
             $this->line(PHP_EOL);
-
         }
 
         return ExitCode::OK;
