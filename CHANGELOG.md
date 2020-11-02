@@ -1,6 +1,6 @@
 #  Changelog
 
-## 1.0.0 - 2020-10-29
+## 1.0.0 - 2020-11-02
 - Added `copy/volumes/up` command
 - Added `copy/volumes/down` command
 - Added `copy/folder/up` command
