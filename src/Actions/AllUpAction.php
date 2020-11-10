@@ -25,8 +25,9 @@ class AllUpAction extends StageAwareBaseAction
      */
     public function run(string $stage = null): int
     {
-        // Ask
-        if (!$this->confirm("Do you want to copy all volumes, the code and the database up?", true)) {
+
+        if (\Craft::$app->runAction('copy/code/up', ['interactive' => true]) !== 0) {
+            $this->errorBlock('Failed to copy the code');
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -40,10 +41,6 @@ class AllUpAction extends StageAwareBaseAction
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        if (\Craft::$app->runAction('copy/code/up', ['interactive' => true]) !== 0) {
-            $this->errorBlock('Failed to copy the code');
-            return ExitCode::UNSPECIFIED_ERROR;
-        }
 
         return ExitCode::OK;
     }
