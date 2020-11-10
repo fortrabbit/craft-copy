@@ -26,21 +26,20 @@ class AllUpAction extends StageAwareBaseAction
     public function run(string $stage = null): int
     {
 
-        if (\Craft::$app->runAction('copy/code/up', ['interactive' => true]) !== 0) {
+        if (\Craft::$app->runAction('copy/code/up', [$stage, 'interactive' => true]) !== 0) {
             $this->errorBlock('Failed to copy the code');
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        if (\Craft::$app->runAction('copy/db/up', ['interactive' => true, 'force' => true]) !== 0) {
+        if (\Craft::$app->runAction('copy/db/up', [$stage, 'interactive' => true, 'force' => true]) !== 0) {
             $this->errorBlock('Failed to copy the database');
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        if (\Craft::$app->runAction('copy/volumes/up', ['interactive' => true]) !== 0) {
+        if (\Craft::$app->runAction('copy/volumes/up', [$stage, 'interactive' => true]) !== 0) {
             $this->errorBlock('Failed to copy the assets');
             return ExitCode::UNSPECIFIED_ERROR;
         }
-
 
         return ExitCode::OK;
     }
