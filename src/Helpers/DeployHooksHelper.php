@@ -42,7 +42,7 @@ trait DeployHooksHelper
 
         foreach ($scripts as $script) {
             $this->cmdBlock($script);
-            $process = new Process($script);
+            $process = Process::fromShellCommandline($script);
             $process->run();
             if (!$process->isSuccessful()) {
                 $this->errorBlock($process->getErrorOutput());
