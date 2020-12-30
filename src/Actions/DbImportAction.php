@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace fortrabbit\Copy\Actions;
 
 use craft\errors\ShellCommandException;
@@ -20,12 +22,12 @@ class DbImportAction extends Action
      */
     public function run(string $file)
     {
-        if (!file_exists($file)) {
+        if (! file_exists($file)) {
             $this->errorBlock("File '{$file}' does not exist.");
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        if (!$this->confirm("Do you really want to overwrite your DB with the dump?", true)) {
+        if (! $this->confirm('Do you really want to overwrite your DB with the dump?', true)) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -33,14 +35,14 @@ class DbImportAction extends Action
 
         try {
             $file = Plugin::getInstance()->database->import($file);
-            $this->successBlock("Database imported");
+            $this->successBlock('Database imported');
 
-            if (!$this->confirm("Do you really want to remove the {$file} file?", true)) {
+            if (! $this->confirm("Do you really want to remove the {$file} file?", true)) {
                 return ExitCode::OK;
             }
 
             if (FileHelper::unlink($file)) {
-                $this->successBlock("Dump removed");
+                $this->successBlock('Dump removed');
             }
 
             return ExitCode::OK;

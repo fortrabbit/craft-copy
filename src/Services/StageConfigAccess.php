@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace fortrabbit\Copy\Services;
 
+use Craft;
 use craft\helpers\FileHelper;
 use fortrabbit\Copy\Exceptions\StageConfigNotFoundException;
 use fortrabbit\Copy\Models\StageConfig;
-use Symfony\Component\Yaml\Yaml;
 use fortrabbit\Copy\Models\StageConfig as StageConfigModel;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * StageConfig Service
@@ -14,22 +17,20 @@ use fortrabbit\Copy\Models\StageConfig as StageConfigModel;
 class StageConfigAccess
 {
     public const FILE_NAME_TEMPLATE = 'fortrabbit.{name}.yaml';
+
     public const CONFIG_SUBFOLDER = 'craft-copy';
 
     /**
-     * @var string $name Default stage
+     * @var string Default stage
      */
     protected $name = 'production';
 
     /**
-     * @var \fortrabbit\Copy\Models\StageConfig | null $stage
+     * @var \fortrabbit\Copy\Models\StageConfig | null
      */
     protected $stage;
 
-    /**
-     * @param string $name
-     */
-    public function setName(string $name)
+    public function setName(string $name): void
     {
         if ($this->name !== $name) {
             // reset config
@@ -40,7 +41,6 @@ class StageConfigAccess
     }
 
     /**
-     * @return \fortrabbit\Copy\Models\StageConfig
      * @throws \fortrabbit\Copy\Exceptions\StageConfigNotFoundException
      */
     public function get(): StageConfigModel
@@ -55,26 +55,6 @@ class StageConfigAccess
     }
 
     /**
-     * @return \fortrabbit\Copy\Models\StageConfig
-     * @throws \fortrabbit\Copy\Exceptions\StageConfigNotFoundException
-     */
-    protected function getConfigDataFromFile(): StageConfigModel
-    {
-        $fullPath = $this->getFullPathToConfig();
-
-        if (!file_exists($fullPath)) {
-            throw new StageConfigNotFoundException();
-        }
-
-        $data = Yaml::parse(file_get_contents($fullPath));
-        $model = new StageConfigModel($data);
-        $model->setName($this->name);
-
-        return $model;
-    }
-
-    /**
-     * @return string
      * @throws \yii\base\Exception
      */
     public function getFullPathToConfig(): string
@@ -85,7 +65,6 @@ class StageConfigAccess
     }
 
     /**
-     * @return string
      * @throws \yii\base\Exception
      */
     public function getConfigFileName(): string
@@ -95,13 +74,17 @@ class StageConfigAccess
 
     public function getConfigPath(): string
     {
-        return implode(DIRECTORY_SEPARATOR, [\Craft::$app->getPath()->getConfigPath(), self::CONFIG_SUBFOLDER]);
+        return implode(
+            DIRECTORY_SEPARATOR,
+            [Craft::$app->getPath()->getConfigPath(),
+                self::CONFIG_SUBFOLDER,
+            ]
+        );
     }
 
     /**
      * Iterates over all config files and extracts the middle names
      *
-     * @return array
      * @throws \yii\base\Exception
      */
     public function getConfigOptions(): array
@@ -123,9 +106,6 @@ class StageConfigAccess
     }
 
     /**
-     * @param StageConfigModel $config
-     *
-     * @return bool
      * @throws \yii\base\Exception
      */
     public function persist(StageConfigModel $config): bool
@@ -144,5 +124,23 @@ class StageConfigAccess
         }
 
         return false;
+    }
+
+    /**
+     * @throws \fortrabbit\Copy\Exceptions\StageConfigNotFoundException
+     */
+    protected function getConfigDataFromFile(): StageConfigModel
+    {
+        $fullPath = $this->getFullPathToConfig();
+
+        if (! file_exists($fullPath)) {
+            throw new StageConfigNotFoundException();
+        }
+
+        $data = Yaml::parse(file_get_contents($fullPath));
+        $model = new StageConfigModel($data);
+        $model->setName($this->name);
+
+        return $model;
     }
 }

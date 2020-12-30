@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace fortrabbit\Copy\Helpers;
 
 use Symfony\Component\Process\Process;
@@ -31,7 +33,7 @@ trait DeployHooksHelper
     protected function runDeployCommands(string $when): bool
     {
         $action = str_replace('copy/', '', $this->controller->id . '/' . $this->id);
-        $actions = $this->stage->$when;
+        $actions = $this->stage->{$when};
         $scripts = $actions[$action] ?? [];
 
         if (count($actions) === 0 || count($scripts) === 0) {
@@ -44,7 +46,7 @@ trait DeployHooksHelper
             $this->cmdBlock($script);
             $process = Process::fromShellCommandline($script);
             $process->run();
-            if (!$process->isSuccessful()) {
+            if (! $process->isSuccessful()) {
                 $this->errorBlock($process->getErrorOutput());
                 return false;
             }

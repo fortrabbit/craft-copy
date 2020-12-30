@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace fortrabbit\Copy\Actions;
 
 use fortrabbit\Copy\Exceptions\StageConfigNotFoundException;
@@ -7,8 +9,11 @@ use fortrabbit\Copy\Helpers\DeployHooksHelper;
 use fortrabbit\Copy\Models\StageConfig;
 use fortrabbit\Copy\Plugin;
 use fortrabbit\Copy\Services\DeprecatedConfigFixer;
+use InvalidArgumentException;
 use ostark\Yii2ArtisanBridge\base\Action;
 use ostark\Yii2ArtisanBridge\base\Commands;
+use ReflectionClass;
+use Yii;
 use yii\base\ActionEvent;
 use yii\base\Event;
 use yii\console\Controller;
@@ -24,7 +29,7 @@ abstract class StageAwareBaseAction extends Action
     public $env = null;
 
     /**
-     * @var null|\fortrabbit\Copy\Models\StageConfig
+     * @var \fortrabbit\Copy\Models\StageConfig|null
      */
     protected $stage = null;
 
@@ -32,7 +37,6 @@ abstract class StageAwareBaseAction extends Action
      * @var \fortrabbit\Copy\Plugin
      */
     protected $plugin;
-
 
     public function __construct(string $id, Commands $controller, array $config = [])
     {
@@ -52,29 +56,31 @@ abstract class StageAwareBaseAction extends Action
             $fixer->showWarning();
             $fixer->askAndRun();
             return false;
-        };
+        }
 
         // No stage config files found?
         if (count($this->plugin->stage->getConfigOptions()) === 0) {
-            $this->errorBlock('The plugin is not configured yet. Make sure to run this setup command first:');
-            $this->cmdBlock("php craft copy/setup");
+            $this->errorBlock(
+                'The plugin is not configured yet. Make sure to run this setup command first:'
+            );
+            $this->cmdBlock('php craft copy/setup');
 
             return false;
         }
 
         // Get config name
         // Either the first argument of the command or from Env var
-        if (!$stageName = $this->getStageName()) {
+        if (! $stageName = $this->getStageName()) {
             return false;
-        };
+        }
 
         // Let the user choose
-        if ("?" === $stageName) {
+        if ($stageName === '?') {
             $options = $this->plugin->stage->getConfigOptions();
             $options = array_combine($options, $options);
 
             $stageName = $this->choice(
-                "Select a stage",
+                'Select a stage',
                 $options,
                 $stageName
             );
@@ -98,8 +104,8 @@ abstract class StageAwareBaseAction extends Action
         Event::on(
             Controller::class,
             Controller::EVENT_AFTER_ACTION,
-            function (ActionEvent $event) {
-                if ($event->result == ExitCode::OK) {
+            function (ActionEvent $event): void {
+                if ($event->result === ExitCode::OK) {
                     $this->runAfterDeployCommands();
                 }
             }
@@ -121,19 +127,18 @@ abstract class StageAwareBaseAction extends Action
      */
     protected function getStageName(): ?string
     {
-        $action    = new \ReflectionClass(get_class($this));
+        $action = new ReflectionClass(static::class);
         $runMethod = $action->getMethod('run');
 
         if (count($runMethod->getParameters()) === 0) {
-            throw new \InvalidArgumentException("function run() has no parameters.");
-        };
+            throw new InvalidArgumentException('function run() has no parameters.');
+        }
 
         if ($runMethod->getParameters()[0]->getName() !== 'stage') {
-            throw new \InvalidArgumentException('First parameter of run() is not $stage.');
-        };
+            throw new InvalidArgumentException('First parameter of run() is not $stage.');
+        }
 
-
-        return \Yii::$app->requestedParams[0]
+        return Yii::$app->requestedParams[0]
             ?? getenv(Plugin::ENV_DEFAULT_STAGE)
                 ?: 'production';
     }

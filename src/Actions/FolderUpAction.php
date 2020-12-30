@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace fortrabbit\Copy\Actions;
 
 use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
@@ -12,6 +14,7 @@ class FolderUpAction extends StageAwareBaseAction
     use PathHelper;
 
     public $dryRun = false;
+
     public $verbose = false;
 
     /**
@@ -22,10 +25,10 @@ class FolderUpAction extends StageAwareBaseAction
      *
      * @return int
      */
-    public function run(string $stage = null, string $folder = null)
+    public function run(?string $stage = null, ?string $folder = null)
     {
         $this->head(
-            "Copy folder up.",
+            'Copy folder up.',
             $this->getContextHeadline($this->stage)
         );
 
@@ -34,13 +37,13 @@ class FolderUpAction extends StageAwareBaseAction
         // Info
         $this->rsyncInfo($folder, $this->plugin->rsync->remoteUrl);
 
-        if (!is_dir($folder)) {
+        if (! is_dir($folder)) {
             $this->errorBlock("$folder does not exist");
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
         // Ask
-        if (!$this->confirm("Are you sure?", true)) {
+        if (! $this->confirm('Are you sure?', true)) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -49,12 +52,12 @@ class FolderUpAction extends StageAwareBaseAction
         $this->plugin->rsync->setOption('remoteOrigin', false);
 
         // Run 'before' commands and stop on error
-        if (!$this->runBeforeDeployCommands()) {
+        if (! $this->runBeforeDeployCommands()) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
         // Execute
-        $this->section(($this->dryRun) ? 'Rsync dry-run' : 'Rsync started');
+        $this->section($this->dryRun ? 'Rsync dry-run' : 'Rsync started');
         $this->plugin->rsync->sync($folder);
         $this->section(PHP_EOL . 'done');
 

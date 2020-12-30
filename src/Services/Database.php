@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace fortrabbit\Copy\Services;
 
 use craft\base\Component;
@@ -16,17 +18,33 @@ class Database extends Component
     public $db;
 
     /**
-     * @param string|null $file
-     *
-     * @return null|string
+     * @return string|null
      * @throws \craft\errors\ShellCommandException
      * @throws \yii\base\Exception
      */
-    public function export(string $file = null)
+    public function export(?string $file = null)
     {
         $file = $this->prepareFile($file);
 
         $this->db->backupTo($file);
+
+        return $file;
+    }
+
+    /**
+     * @param string $file
+     *
+     * @return string|null /path/to/file.sql
+     *
+     * @throws \craft\errors\FileException
+     * @throws \craft\errors\ShellCommandException
+     * @throws \yii\base\Exception
+     */
+    public function import(?string $file = null)
+    {
+        $file = $this->prepareFile($file);
+
+        $this->db->restore($file);
 
         return $file;
     }
@@ -41,27 +59,9 @@ class Database extends Component
         $file = FileHelper::normalizePath($file);
         $dir = dirname($file);
 
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             FileHelper::createDirectory($dir);
         }
-
-        return $file;
-    }
-
-    /**
-     * @param string $file
-     *
-     * @return string|null $file /path/to/file.sql
-     *
-     * @throws \craft\errors\FileException
-     * @throws \craft\errors\ShellCommandException
-     * @throws \yii\base\Exception
-     */
-    public function import(string $file = null)
-    {
-        $file = $this->prepareFile($file);
-
-        $this->db->restore($file);
 
         return $file;
     }

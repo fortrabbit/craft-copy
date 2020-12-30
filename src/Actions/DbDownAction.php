@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace fortrabbit\Copy\Actions;
 
-use fortrabbit\Copy\Exceptions\CraftNotInstalledException;
 use fortrabbit\Copy\Exceptions\PluginNotInstalledException;
 use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
@@ -16,7 +17,6 @@ class DbDownAction extends StageAwareBaseAction
      *
      * @return int
      *
-     *
      * @throws \craft\errors\FileException
      * @throws \craft\errors\ShellCommandException
      * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException
@@ -24,7 +24,7 @@ class DbDownAction extends StageAwareBaseAction
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
      * @throws \yii\base\Exception
      */
-    public function run(string $stage = null)
+    public function run(?string $stage = null)
     {
         $plugin = Plugin::getInstance();
         $path = './storage/';
@@ -34,17 +34,17 @@ class DbDownAction extends StageAwareBaseAction
         $messages = [];
 
         $this->head(
-            "Export DB from fortrabbit, download and import locally.",
+            'Export DB from fortrabbit, download and import locally.',
             $this->getContextHeadline($this->stage),
             $this->interactive ? true : false
         );
 
-        if (!$this->confirm("Are you sure?", true)) {
+        if (! $this->confirm('Are you sure?', true)) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
         // Run 'before' commands and stop on error
-        if (!$this->runBeforeDeployCommands()) {
+        if (! $this->runBeforeDeployCommands()) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -57,9 +57,8 @@ class DbDownAction extends StageAwareBaseAction
             $plugin->ssh->exec("php craft copy/db/to-file {$transferFile} --interactive=0");
             $bar->advance();
         } catch (PluginNotInstalledException $e) {
-            $this->errorBlock("Make sure to deploy the plugin first.");
+            $this->errorBlock('Make sure to deploy the plugin first.');
         }
-
 
         // Step 2: Download that dump from remote
         $bar->setMessage($messages[] = "Downloading dump from fortrabbit App {$transferFile}");
@@ -75,10 +74,10 @@ class DbDownAction extends StageAwareBaseAction
         }
 
         // Step 4: Import
-        $bar->setMessage($messages[] = "Importing dump");
+        $bar->setMessage($messages[] = 'Importing dump');
         if ($plugin->database->import($transferFile)) {
             $bar->advance();
-            $bar->setMessage("Database imported");
+            $bar->setMessage('Database imported');
         }
 
         $bar->finish();

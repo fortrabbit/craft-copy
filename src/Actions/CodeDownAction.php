@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace fortrabbit\Copy\Actions;
 
 use GitWrapper\Exception\GitException;
@@ -7,7 +9,6 @@ use yii\console\ExitCode;
 
 class CodeDownAction extends StageAwareBaseAction
 {
-
     /**
      * Git pull
      *
@@ -15,10 +16,10 @@ class CodeDownAction extends StageAwareBaseAction
      *
      * @return int
      */
-    public function run(string $stage = null)
+    public function run(?string $stage = null)
     {
         $this->head(
-            "Pull recent code changes for fortrabbit App.",
+            'Pull recent code changes for fortrabbit App.',
             $this->getContextHeadline($this->stage)
         );
 
@@ -35,7 +36,7 @@ class CodeDownAction extends StageAwareBaseAction
         }
 
         // Run 'before' commands and stop on error
-        if (!$this->runBeforeDeployCommands()) {
+        if (! $this->runBeforeDeployCommands()) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 

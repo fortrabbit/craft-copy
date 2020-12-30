@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace fortrabbit\Copy\Services;
 
 use craft\base\Component;
@@ -53,19 +55,9 @@ class Ssh extends Component
             return true;
         }
 
-        throw new RemoteException($process->getCommandLine() . PHP_EOL . $process->getErrorOutput());
-    }
-
-    protected function getUploadCommand(string $src, string $target)
-    {
-        $cmd = self::UPLOAD_COMMAND;
-        $tokens = [
-            '{src}' => $src,
-            '{target}' => $target,
-            '{remote}' => $this->remote,
-        ];
-
-        return str_replace(array_keys($tokens), array_values($tokens), $cmd);
+        throw new RemoteException(
+            $process->getCommandLine() . PHP_EOL . $process->getErrorOutput()
+        );
     }
 
     /**
@@ -87,19 +79,9 @@ class Ssh extends Component
             return true;
         }
 
-        throw new RemoteException($process->getCommandLine() . PHP_EOL . $process->getErrorOutput());
-    }
-
-    protected function getDownloadCommand(string $src, string $target)
-    {
-        $cmd = self::DOWNLOAD_COMMAND;
-        $tokens = [
-            '{src}' => $src,
-            '{target}' => $target,
-            '{remote}' => $this->remote,
-        ];
-
-        return str_replace(array_keys($tokens), array_values($tokens), $cmd);
+        throw new RemoteException(
+            $process->getCommandLine() . PHP_EOL . $process->getErrorOutput()
+        );
     }
 
     /**
@@ -109,15 +91,13 @@ class Ssh extends Component
      * @throws \fortrabbit\Copy\Exceptions\PluginNotInstalledException
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
      */
-    public function checkPlugin()
+    public function checkPlugin(): void
     {
-        $this->exec("php craft help copy");
+        $this->exec('php craft help copy');
     }
 
     /**
      * Execute a command via ssh on remote
-     *
-     * @param string $cmd
      *
      * @return bool
      * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException
@@ -134,7 +114,6 @@ class Ssh extends Component
         // create full
         $cmd = str_replace(array_keys($tokens), array_values($tokens), self::REMOTE_EXEC_COMMAND);
 
-
         $process = Process::fromShellCommandline($cmd, CRAFT_BASE_PATH);
 
         $process->setTimeout(self::SSH_EXEC_TIMEOUT);
@@ -146,20 +125,22 @@ class Ssh extends Component
             return true;
         }
 
-        if (trim($process->getErrorOutput()) == "Could not open input file") {
+        if (trim($process->getErrorOutput()) === 'Could not open input file') {
             throw new CraftNotInstalledException(trim($process->getErrorOutput()));
         }
 
-        if (stristr($process->getErrorOutput(), "Unknown command")) {
-            throw new PluginNotInstalledException("The Craft Copy plugin is not installed on remote.");
+        if (stristr($process->getErrorOutput(), 'Unknown command')) {
+            throw new PluginNotInstalledException(
+                'The Craft Copy plugin is not installed on remote.'
+            );
         }
 
         throw new RemoteException(
             implode(PHP_EOL, [
-                "SSH Remote error: " . $process->getExitCode(),
-                "Command: " . $process->getCommandLine(),
-                "Output:",
-                $process->getErrorOutput()
+                'SSH Remote error: ' . $process->getExitCode(),
+                'Command: ' . $process->getCommandLine(),
+                'Output:',
+                $process->getErrorOutput(),
             ])
         );
     }
@@ -172,5 +153,29 @@ class Ssh extends Component
     public function getOutput()
     {
         return $this->output;
+    }
+
+    protected function getUploadCommand(string $src, string $target)
+    {
+        $cmd = self::UPLOAD_COMMAND;
+        $tokens = [
+            '{src}' => $src,
+            '{target}' => $target,
+            '{remote}' => $this->remote,
+        ];
+
+        return str_replace(array_keys($tokens), array_values($tokens), $cmd);
+    }
+
+    protected function getDownloadCommand(string $src, string $target)
+    {
+        $cmd = self::DOWNLOAD_COMMAND;
+        $tokens = [
+            '{src}' => $src,
+            '{target}' => $target,
+            '{remote}' => $this->remote,
+        ];
+
+        return str_replace(array_keys($tokens), array_values($tokens), $cmd);
     }
 }

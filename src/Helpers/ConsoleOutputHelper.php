@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace fortrabbit\Copy\Helpers;
 
 use ostark\Yii2ArtisanBridge\OutputStyle;
@@ -17,12 +19,15 @@ use Symfony\Component\Console\Helper\TableSeparator;
  */
 trait ConsoleOutputHelper
 {
-    public function rsyncInfo(string $dir, string $remoteUrl = null, string $volumeHandle = null)
-    {
+    public function rsyncInfo(
+        string $dir,
+        ?string $remoteUrl = null,
+        ?string $volumeHandle = null
+    ): void {
         if ($volumeHandle) {
             $head = ['Volume', $volumeHandle];
         } else {
-            $head =  ['Key', 'Value'];
+            $head = ['Key', 'Value'];
         }
 
         $rows = [
@@ -30,7 +35,7 @@ trait ConsoleOutputHelper
             new TableSeparator(),
             ['SSH remote', $remoteUrl],
             new TableSeparator(),
-            ['Dry run', $this->dryRun ? 'true' : 'false']
+            ['Dry run', $this->dryRun ? 'true' : 'false'],
         ];
 
         $this->table(
@@ -42,8 +47,6 @@ trait ConsoleOutputHelper
     /**
      * Command line block
      *
-     * @param string $cmd
-     *
      * @return bool
      */
     public function cmdBlock(string $cmd)
@@ -53,11 +56,9 @@ trait ConsoleOutputHelper
     }
 
     /**
-     * @param string $message
-     * @param string|null $context
      * @param bool $clear
      */
-    public function head(string $message, string $context = null, $clear = true)
+    public function head(string $message, ?string $context = null, $clear = true): void
     {
         $messages = ["<options=bold;fg=white>$message</>"];
 
@@ -71,7 +72,7 @@ trait ConsoleOutputHelper
             $messages = array_merge([$context], $messages);
         }
 
-        $this->block($messages, null, 'fg=white;', "<comment>▏</comment>", false, false);
+        $this->block($messages, null, 'fg=white;', '<comment>▏</comment>', false, false);
     }
 
     public function createProgressBar(int $steps): ProgressBar
@@ -80,7 +81,7 @@ trait ConsoleOutputHelper
         $lines = [
             '%message%',
             '%bar% %percent:3s% %',
-            'time:  %elapsed:6s%/%estimated:-6s%'
+            'time:  %elapsed:6s%/%estimated:-6s%',
         ];
 
         $bar = $this->output->createProgressBar($steps);
