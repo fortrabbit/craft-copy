@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace fortrabbit\Copy\Models;
 
 use craft\base\Model;
@@ -28,14 +30,13 @@ class StageConfig extends Model
      */
     public $gitRemote;
 
-
     /**
      * @var array Scripts that run before commands locally
      */
     public $before = [
         'code/up' => [
             // noting defined by default
-        ]
+        ],
     ];
 
     /**
@@ -44,8 +45,8 @@ class StageConfig extends Model
     public $after = [
         'code/down' => [
             'php craft migrate/all',
-            'php craft project-config/apply'
-        ]
+            'php craft project-config/apply',
+        ],
     ];
 
     /**
@@ -58,12 +59,18 @@ class StageConfig extends Model
         foreach ($config as $key => $value) {
             unset($config[$key]);
             $prop = StringHelper::toCamelCase($key);
-            if (in_array($prop, self::DEPREACTED_PROPERTIES)) {
+            if (in_array($prop, self::DEPREACTED_PROPERTIES, true)) {
                 continue;
             }
             $config[$prop] = $value;
         }
+
         parent::__construct($config);
+    }
+
+    public function __toString(): string
+    {
+        return $this->name;
     }
 
     /**
@@ -85,13 +92,8 @@ class StageConfig extends Model
         return $array;
     }
 
-    public function setName(string $name)
+    public function setName(string $name): void
     {
         $this->name = $name;
-    }
-
-    public function __toString(): string
-    {
-        return $this->name;
     }
 }

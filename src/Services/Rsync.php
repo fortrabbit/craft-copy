@@ -1,6 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace fortrabbit\Copy\Services;
+
+use AFM\Rsync\Rsync as RsyncLib;
+use InvalidArgumentException;
 
 /**
  * Rsync Service
@@ -11,32 +16,28 @@ class Rsync
 
     protected $rsync;
 
-    /**
-     * Rsync constructor.
-     *
-     * @param \AFM\Rsync\Rsync $rsync
-     * @param string           $remoteUrl
-     */
-    protected function __construct(\AFM\Rsync\Rsync $rsync, string $remoteUrl = null)
+    protected function __construct(RsyncLib $rsync, ?string $remoteUrl = null)
     {
-        $this->rsync     = $rsync;
+        $this->rsync = $rsync;
         $this->remoteUrl = $remoteUrl;
     }
 
     public static function remoteFactory($remoteUrl)
     {
         if (strpos($remoteUrl, '@') === false) {
-            throw new \InvalidArgumentException("SSH remote URL must contain a user@host, '$remoteUrl' given.");
+            throw new InvalidArgumentException(
+                "SSH remote URL must contain a user@host, '$remoteUrl' given."
+            );
         }
 
         // split
         [$username, $host] = explode('@', $remoteUrl, 2);
 
-        $rsync = new \AFM\Rsync\Rsync();
+        $rsync = new RsyncLib();
         $rsync->setVerbose(true);
         $rsync->setSshOptions([
-            'host'     => $host,
-            'username' => $username
+            'host' => $host,
+            'username' => $username,
         ]);
 
         return new self($rsync, $remoteUrl);
@@ -44,29 +45,18 @@ class Rsync
 
     /**
      * Rsync config
-     *
-     * @param string $key
-     * @param mixed  $value
      */
-    public function setOption(string $key, $value)
+    public function setOption(string $key, $value): void
     {
         $setter = 'set' . ucfirst($key);
-        $this->rsync->$setter($value);
+        $this->rsync->{$setter}($value);
     }
 
-    /**
-     * @param string $dir
-     */
-    public function sync($dir)
+    public function sync(string $dir): void
     {
         $this->rsync->sync($dir, $dir);
     }
 
-    /**
-     * @param string $dir
-     *
-     * @return string
-     */
     public function getCommand(string $dir): string
     {
         return $this->rsync->getCommand($dir, $dir)->getCommand();

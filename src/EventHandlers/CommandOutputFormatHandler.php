@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace fortrabbit\Copy\EventHandlers;
 
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -10,12 +12,9 @@ use yii\base\ActionEvent;
  */
 class CommandOutputFormatHandler
 {
-
     public function __invoke(ActionEvent $event): void
     {
-        /**
-         * @var \ostark\Yii2ArtisanBridge\base\Action $action
-         */
+        /** @var \ostark\Yii2ArtisanBridge\base\Action $action */
         $action = $event->action;
 
         $style = new OutputFormatterStyle('blue');

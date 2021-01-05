@@ -1,17 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace fortrabbit\Copy\Services;
 
-use craft\elements\actions\RenameFile;
+use Craft;
 use craft\helpers\FileHelper;
 use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
 
 class DeprecatedConfigFixer
 {
-    public const ENV_DEFAULT_CONFIG = "DEFAULT_CONFIG";
+    public const ENV_DEFAULT_CONFIG = 'DEFAULT_CONFIG';
 
     private $action;
+
     private $stage;
 
     public function __construct(Action $action, StageConfigAccess $stage)
@@ -26,14 +29,14 @@ class DeprecatedConfigFixer
             return true;
         }
 
-        if (count(glob(\Craft::$app->getPath()->getConfigPath() . '/fortrabbit.*'))) {
+        if (count(glob(Craft::$app->getPath()->getConfigPath() . '/fortrabbit.*'))) {
             return true;
         }
 
         return false;
     }
 
-    public function showWarning()
+    public function showWarning(): void
     {
         $this->action->errorBlock(
             sprintf(
@@ -43,22 +46,22 @@ class DeprecatedConfigFixer
         );
 
         $this->action->errorBlock(
-            "The location of the generated config files changed from /config to /config/craft-copy."
+            'The location of the generated config files changed from /config to /config/craft-copy.'
         );
     }
 
-    public function askAndRun()
+    public function askAndRun(): void
     {
-        if ($this->action->confirm("Should we fix this for you?", true)) {
+        if ($this->action->confirm('Should we fix this for you?', true)) {
             $this->rewriteDotEnv();
             $this->moveConfigFiles();
-            $this->action->successBlock("Please run the previous command again.");
+            $this->action->successBlock('Please run the previous command again.');
         }
     }
 
-    private function rewriteDotEnv()
+    private function rewriteDotEnv(): void
     {
-        $dotEnvFile = \Craft::getAlias('@root/.env');
+        $dotEnvFile = Craft::getAlias('@root/.env');
         $dotEnvContent = file_get_contents($dotEnvFile);
         $dotEnvContent = str_replace(
             self::ENV_DEFAULT_CONFIG,
@@ -69,10 +72,13 @@ class DeprecatedConfigFixer
         file_put_contents($dotEnvFile, $dotEnvContent);
     }
 
-
-    private function moveConfigFiles()
+    private function moveConfigFiles(): void
     {
-        $oldPath = str_replace(StageConfigAccess::CONFIG_SUBFOLDER, '', $this->stage->getConfigPath());
+        $oldPath = str_replace(
+            StageConfigAccess::CONFIG_SUBFOLDER,
+            '',
+            $this->stage->getConfigPath()
+        );
         $globPattern = str_replace('{name}', '*', StageConfigAccess::FILE_NAME_TEMPLATE);
 
         // get config files

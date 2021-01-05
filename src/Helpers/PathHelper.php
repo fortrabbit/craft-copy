@@ -1,9 +1,8 @@
 <?php
 
-namespace fortrabbit\Copy\Helpers;
+declare(strict_types=1);
 
-use craft\helpers\Path;
-use yii\helpers\StringHelper;
+namespace fortrabbit\Copy\Helpers;
 
 trait PathHelper
 {

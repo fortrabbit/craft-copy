@@ -1,17 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace fortrabbit\Copy\Actions;
 
 use Craft;
 use craft\errors\ShellCommandException;
 use fortrabbit\Copy\Plugin;
+use ostark\Yii2ArtisanBridge\base\Action;
 use yii\base\Exception;
 use yii\console\ExitCode;
-use ostark\Yii2ArtisanBridge\base\Action;
 
 class DbExportAction extends Action
 {
-
     /**
      * Export database from file
      *
@@ -19,7 +20,7 @@ class DbExportAction extends Action
      *
      * @return int
      */
-    public function run(string $file = null)
+    public function run(?string $file = null)
     {
         $plugin = Plugin::getInstance();
         $this->assureMyCfnForMysqldump();
@@ -27,7 +28,7 @@ class DbExportAction extends Action
 
         try {
             $plugin->database->export($file);
-            $this->info("OK");
+            $this->info('OK');
             return ExitCode::OK;
         } catch (ShellCommandException $exception) {
             $this->errorBlock(['Mysql Import error', $exception->getMessage()]);
@@ -38,15 +39,12 @@ class DbExportAction extends Action
         }
     }
 
-    /**
-     * @return bool
-     */
     protected function assureMyCfnForMysqldump(): bool
     {
-        $mycnfDest = Craft::getAlias("@root") . "/.my.cnf";
-        $mycnfSrc  = Plugin::PLUGIN_ROOT_PATH . "/.my.cnf.example";
+        $mycnfDest = Craft::getAlias('@root') . '/.my.cnf';
+        $mycnfSrc = Plugin::PLUGIN_ROOT_PATH . '/.my.cnf.example';
 
-        if (!file_exists($mycnfDest)) {
+        if (! file_exists($mycnfDest)) {
             return copy($mycnfSrc, $mycnfDest);
         }
 

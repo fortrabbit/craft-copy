@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use PhpCsFixer\Fixer\StringNotation\ExplicitStringVariableFixer;
 use SlevomatCodingStandard\Sniffs\Namespaces\ReferenceUsedNamesOnlySniff;
+use SlevomatCodingStandard\Sniffs\Variables\UnusedVariableSniff;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symplify\CodingStandard\Fixer\LineLength\LineLengthFixer;
 use Symplify\CodingStandard\Fixer\Naming\StandardizeHereNowDocKeywordFixer;
@@ -38,6 +39,9 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $services->set(ReferenceUsedNamesOnlySniff::class)
         ->property('allowFullyQualifiedGlobalFunctions', true)
         ->property('allowPartialUses', true);
+
+    $services->set(UnusedVariableSniff::class)
+        ->property('ignoreUnusedValuesWhenOnlyKeysAreUsedInForeach', true);
 
     $parameters->set(Option::SKIP, [
         ExplicitStringVariableFixer::class => null,

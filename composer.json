@@ -51,8 +51,8 @@
     },
     "scripts": {
         "stan": "phpstan analyse src --level=5 -c phpstan.neon",
-        "sniff": "phpcs ./src --standard=PSR12",
-        "fix": "php-cs-fixer fix"
+        "ecs": "php vendor/bin/ecs check",
+        "ecs-fix": "php vendor/bin/ecs check --fix"
     },
     "bin": [
         "bin/craft-copy-import-db.php",

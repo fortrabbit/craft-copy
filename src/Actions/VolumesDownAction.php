@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace fortrabbit\Copy\Actions;
 
 use fortrabbit\Copy\Exceptions\VolumeNotFound;
@@ -30,6 +32,7 @@ class VolumesDownAction extends StageAwareBaseAction
         array $config = []
     ) {
         $this->localVolume = $localVolume;
+
         parent::__construct($id, $controller, $config);
     }
 
@@ -42,15 +45,15 @@ class VolumesDownAction extends StageAwareBaseAction
      * @return int
      * @throws VolumeNotFound
      */
-    public function run(string $stage = null, array $volumeHandles = null)
+    public function run(?string $stage = null, ?array $volumeHandles = null)
     {
         $this->head(
-            "Copy volumes down.",
+            'Copy volumes down.',
             $this->getContextHeadline($this->stage)
         );
 
         // Run 'before' commands and stop on error
-        if (!$this->runBeforeDeployCommands()) {
+        if (! $this->runBeforeDeployCommands()) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -68,7 +71,7 @@ class VolumesDownAction extends StageAwareBaseAction
             );
 
             // Ask
-            if (!$this->confirm("Are you sure?", true)) {
+            if (! $this->confirm('Are you sure?', true)) {
                 return ExitCode::UNSPECIFIED_ERROR;
             }
 
@@ -77,10 +80,12 @@ class VolumesDownAction extends StageAwareBaseAction
             $this->plugin->rsync->setOption('remoteOrigin', true);
 
             // Execute
-            $this->section(($this->dryRun) ? 'Rsync dry-run' : 'Rsync started');
+            $this->section($this->dryRun ? 'Rsync dry-run' : 'Rsync started');
             $this->plugin->rsync->sync($path);
             $this->line(PHP_EOL);
-            $this->line(($volume == $lastVolume) ? "All done." : "{$volume->name} done, next volume:");
+            $this->line(
+                $volume === $lastVolume ? 'All done.' : "{$volume->name} done, next volume:"
+            );
             $this->line(PHP_EOL);
         }
 
