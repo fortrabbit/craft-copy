@@ -45,7 +45,7 @@ class Ssh extends Component
      */
     public function upload($src, $target)
     {
-        $process = new Process($this->getUploadCommand($src, $target));
+        $process = Process::fromShellCommandline($this->getUploadCommand($src, $target));
         $process->setTimeout(self::SSH_EXEC_TIMEOUT);
         $process->run();
 
@@ -79,7 +79,7 @@ class Ssh extends Component
      */
     public function download($src, $target)
     {
-        $process = new Process($this->getDownloadCommand($src, $target));
+        $process = Process::fromShellCommandline($this->getDownloadCommand($src, $target));
         $process->setTimeout(self::SSH_EXEC_TIMEOUT);
         $process->run();
 
