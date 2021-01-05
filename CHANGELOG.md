@@ -1,5 +1,13 @@
 #  Changelog
 
+## 1.0.2 - 2021-01-05
+- Fixed type issue with symfony/process 5.x (use `Process::fromShellCommandline()`)
+- Fixed code styles using https://github.com/symplify/easy-coding-standard
+- Fixed ENV vars check using non-strict comparison
+
+## 1.0.1 - 2020-11-10
+- Fixed a bug in the craft copy/all/up command.
+
 ## 1.0.0 - 2020-11-02
 - Added `copy/volumes/up` command
 - Added `copy/volumes/down` command
