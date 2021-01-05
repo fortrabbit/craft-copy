@@ -40,7 +40,7 @@ class SetupAction extends Action
     public function run()
     {
         $this->input->setInteractive(true);
-        $app = $this->ask("What's the name of your fortrabbit App?");
+        $app = $this->ask("What's the name of your fortrabbit App?", "");
         $this->input->setInteractive($this->interactive);
 
         if (strlen($app) < 3 || strlen($app) > 16) {

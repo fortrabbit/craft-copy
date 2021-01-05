@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace fortrabbit\Copy\Actions;
 
+use Closure;
 use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Plugin;
 use fortrabbit\Copy\Services\DeprecatedConfigFixer;
@@ -70,7 +71,7 @@ class InfoAction extends Action
                 }),
                 new TableSeparator(),
 
-                $this->envRow('SECURITY_KEY', true, true),
+                $this->envRow('SECURITY_KEY', null, true),
                 new TableSeparator(),
 
                 $this->envRow('DB_TABLE_PREFIX'),
@@ -87,7 +88,7 @@ class InfoAction extends Action
                         if (strstr($key, $volumeConfigPrefix)) {
                             $rows[] = $this->envRow(
                                 $key,
-                                true,
+                                null,
                                 in_array($key, ['OBJECT_STORAGE_SECRET', 'S3_SECRET'], true)
                             );
                         }
@@ -136,33 +137,33 @@ class InfoAction extends Action
     /**
      * @param string|bool $localValue
      * @param string|bool $remoteValue
-     * @param bool|callable $assertEquals
      *
      * @return bool
      */
-    protected static function assertEquals($localValue, $remoteValue, $assertEquals = true)
-    {
-        if (is_callable($assertEquals)) {
-            return $assertEquals($localValue, $remoteValue) ? true : false;
-        } elseif ($assertEquals === false) {
-            return $localValue !== $remoteValue ? true : false;
+    protected static function assertEquals(
+        $localValue,
+        $remoteValue,
+        ?Closure $comparisonCallback = null
+    ) {
+        if ($comparisonCallback === null) {
+            return $localValue === $remoteValue ? true : false;
         }
 
-        return $localValue === $remoteValue ? true : false;
+        return $comparisonCallback($localValue, $remoteValue) ? true : false;
     }
 
     /**
      * @param string $key
-     * @param bool|callable $assertEquals
+     * @param \Closure|null $callback
      * @param bool $obfuscate
      *
      * @return array
      */
-    protected function envRow($key, $assertEquals = true, $obfuscate = false)
+    protected function envRow($key, $callback = null, $obfuscate = false)
     {
         $localValue = getenv($key);
         $remoteValue = $this->remoteInfo[$key] ?? '';
-        $success = self::assertEquals($localValue, $remoteValue, $assertEquals);
+        $success = self::assertEquals($localValue, $remoteValue, $callback);
 
         $icon = $success ? '👌' : '💥';
         $color = $success ? 'white' : 'red';
