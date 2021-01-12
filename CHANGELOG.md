@@ -1,5 +1,8 @@
 #  Changelog
 
+## 1.0.3 - 2021-01-11
+- Fixed type issue with symfony/process 5.x (use `Process::fromShellCommandline()`)
+
 ## 1.0.2 - 2021-01-05
 - Fixed type issue with symfony/process 5.x (use `Process::fromShellCommandline()`)
 - Fixed code styles using https://github.com/symplify/easy-coding-standard

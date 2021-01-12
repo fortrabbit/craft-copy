@@ -58,7 +58,7 @@ $tokens = [
 ];
 
 $cmd = str_replace(array_keys($tokens), array_values($tokens), $cmd);
-$process = new \Symfony\Component\Process\Process($cmd);
+$process = \Symfony\Component\Process\Process::fromShellCommandline($cmd);
 $process->run();
 
 if ($process->isSuccessful()) {
