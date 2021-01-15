@@ -253,6 +253,17 @@ php craft copy/db/from-file filename
 Note that there are also similar Craft CLI commands for this: `php craft backup/db` and `php craft restore/db`.
 
 
+### Using Craft Copy in Docker environments
+
+You may want to run Craft Copy with in a Docker container. You will need the following installed inside the container: 
+
+ - mysqldump
+ - mysql (client)
+ - ssh (client)
+ - Access to the SSH keys you saved with your fortrabbit Account - for example like [so](https://medium.com/trabe/use-your-local-ssh-keys-inside-a-docker-container-ea1d117515dc)
+
+
+
 ## How it works
 
 With fortrabbit you can already use Git to deploy code without any extras or plugins. When deploying code by Git Composer also is getting triggered. Craft Copy enhances on that by adding support for files that are excluded from Git such as assets in volumes, folders and database contents. 
