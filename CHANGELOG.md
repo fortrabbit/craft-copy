@@ -1,5 +1,9 @@
 #  Changelog
 
+## 1.0.4 - 2021-04-08
+- Don't throw exception if no local volumes exist
+- Remove DB_TABLE_PREFIX check 
+
 ## 1.0.3 - 2021-01-11
 - Fixed type issue with symfony/process 5.x (use `Process::fromShellCommandline()`)
 
