@@ -74,7 +74,6 @@ class InfoAction extends Action
                 $this->envRow('SECURITY_KEY', null, true),
                 new TableSeparator(),
 
-                $this->envRow('DB_TABLE_PREFIX'),
                 $this->envRow('DB_SERVER', function ($local, $remote) {
                     return stristr($remote, '.frbit.com');
                 }),
@@ -103,7 +102,7 @@ class InfoAction extends Action
             );
 
             // Error message with more instructions
-            $errors = array_filter(['SECURITY_KEY', 'DB_TABLE_PREFIX'], function ($key) {
+            $errors = array_filter(['SECURITY_KEY'], function ($key) {
                 return ! self::assertEquals(
                     $this->remoteInfo[$key],
                     getenv($key)

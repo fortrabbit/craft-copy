@@ -57,8 +57,13 @@ class VolumesDownAction extends StageAwareBaseAction
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        $volumes = $this->localVolume->filterByHandle($volumeHandles);
-        $lastVolume = end($volumes);
+        try {
+            $volumes = $this->localVolume->filterByHandle($volumeHandles);
+            $lastVolume = end($volumes);
+        } catch (VolumeNotFound $exception) {
+            $this->line('No local volumes found.' . PHP_EOL);
+            return ExitCode::OK;
+        }
 
         foreach ($volumes as $volume) {
             $path = $this->prepareForRsync($volume->path);
