@@ -1,5 +1,9 @@
 #  Changelog
 
+## 1.0.5 - 2021-05-12
+- Update craft-auto-migrate to use `project-config/apply`
+- Code style cleanup 
+
 ## 1.0.4 - 2021-04-08
 - Don't throw exception if no local volumes exist
 - Remove DB_TABLE_PREFIX check 
