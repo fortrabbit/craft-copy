@@ -65,7 +65,6 @@ class VolumesUpAction extends StageAwareBaseAction
             return ExitCode::OK;
         }
 
-
         foreach ($volumes as $volume) {
             $path = $this->prepareForRsync($volume->path);
 
