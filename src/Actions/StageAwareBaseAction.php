@@ -58,6 +58,12 @@ abstract class StageAwareBaseAction extends Action
             return false;
         }
 
+        if ($this->isFortrabbitEnv()) {
+            $this->errorBlock(
+                "It looks like you are running this command in a fortrabbit app container. That won't work. Instead, you need to run craft copy commands from your local development environment."
+            );
+        }
+
         // No stage config files found?
         if (count($this->plugin->stage->getConfigOptions()) === 0) {
             $this->errorBlock(
@@ -141,5 +147,10 @@ abstract class StageAwareBaseAction extends Action
         return Yii::$app->requestedParams[0]
             ?? getenv(Plugin::ENV_DEFAULT_STAGE)
                 ?: 'production';
+    }
+
+    protected function isFortrabbitEnv(): bool
+    {
+        return getenv('APP_SECRETS') && getenv('APP_SECRETS') == '/etc/secrets.json';
     }
 }
