@@ -6,6 +6,8 @@ namespace fortrabbit\Copy\Helpers;
 
 use Symfony\Component\Process\Process;
 
+use craft\helpers\App;
+
 trait DeployHooksHelper
 {
     use ConsoleOutputHelper;
@@ -42,9 +44,12 @@ trait DeployHooksHelper
 
         $this->head("Run $when scripts", null, false);
 
+        $timeout = App::env('CRAFT_COPY_SCRIPT_TIMEOUT') ?: 300;
+
         foreach ($scripts as $script) {
             $this->cmdBlock($script);
             $process = Process::fromShellCommandline($script);
+            $process-setTimeout($timeout);
             $process->run();
             if (! $process->isSuccessful()) {
                 $this->errorBlock($process->getErrorOutput());

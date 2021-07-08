@@ -205,7 +205,7 @@ You can run any script before or after you run common up/down commands with Craf
 
 * Place the before/after scripts in your [Craft Copy config file](#config-file). 
 * The before/after commands will run on your local machine, not on the fortrabbit App. To run scripts while deploying, consider the Composer `post-install-cmd`.
-
+* The default timeout for before/after scripts is 300 seconds, which should be long enough for most use cases. If you need to allow a script to run for longer you can set a `CRAFT_COPY_SCRIPT_TIMEOUT` environment variable to an integer number of time in seconds to increase it.
 
 #### Supported commands
 
