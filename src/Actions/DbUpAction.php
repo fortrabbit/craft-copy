@@ -33,9 +33,13 @@ class DbUpAction extends StageAwareBaseAction
     public function run(?string $stage = null)
     {
         $plugin = Plugin::getInstance();
-        $path = './storage/';
-        $transferFile = $path . 'craft-copy-transfer.sql';
-        $backupFile = $path . 'craft-copy-recent.sql';
+
+        $filename = 'craft-copy-transfer.sql';
+
+        $transferFile = $this->getLocalStoragePath($filename);
+        $transferTarget = $this->getRemoteStoragePath($filename);
+        $backupFile = $this->getRemoteStoragePath('craft-copy-recent.sql');
+
         $steps = $this->force ? 3 : 4;
         $messages = [];
 
@@ -65,7 +69,7 @@ class DbUpAction extends StageAwareBaseAction
 
         // Step 2: Upload that dump to remote
         $bar->setMessage($messages[] = "Uploading local dump to fortrabbit App - {$transferFile}");
-        if ($plugin->ssh->upload($transferFile, $transferFile)) {
+        if ($plugin->ssh->upload($transferFile, $transferTarget)) {
             $bar->advance();
         }
 
@@ -73,12 +77,9 @@ class DbUpAction extends StageAwareBaseAction
             // Import on remote (does not require craft or copy on remote)
             $bar->setMessage($messages[] = 'Importing dump on fortrabbit App');
 
-            // Try to create storage path first
-            $plugin->ssh->exec("mkdir -p $path");
-
             try {
                 $plugin->ssh->exec(
-                    "php vendor/bin/craft-copy-import-db.php {$transferFile} --force"
+                    "php vendor/bin/craft-copy-import-db.php {$transferTarget} --force"
                 );
                 $bar->advance();
                 $bar->setMessage('Database imported');
@@ -119,7 +120,7 @@ class DbUpAction extends StageAwareBaseAction
 
             // Step 4: Import on remote
             $bar->setMessage($messages[] = 'Importing dump on fortrabbit App');
-            if ($plugin->ssh->exec("php craft copy/db/from-file {$transferFile} --interactive=0")) {
+            if ($plugin->ssh->exec("php craft copy/db/from-file {$transferTarget} --interactive=0")) {
                 $bar->advance();
                 $bar->setMessage('Database imported');
             }

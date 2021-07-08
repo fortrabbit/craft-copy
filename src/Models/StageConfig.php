@@ -31,6 +31,16 @@ class StageConfig extends Model
     public $gitRemote;
 
     /**
+     * @var string Absolute path to Craft base directory on the remote
+     */
+    public $basePath;
+
+    /**
+     * @var string Absolute path to Craft storage directory on the remote
+     */
+    public $storagePath;
+
+    /**
      * @var array Scripts that run before commands locally
      */
     public $before = [

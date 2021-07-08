@@ -27,9 +27,13 @@ class DbDownAction extends StageAwareBaseAction
     public function run(?string $stage = null)
     {
         $plugin = Plugin::getInstance();
-        $path = './storage/';
-        $transferFile = $path . 'craft-copy-transfer.sql';
-        $backupFile = $path . 'craft-copy-recent.sql';
+
+        $filename = 'craft-copy-transfer.sql';
+
+        $transferFile = $this->getRemoteStoragePath($filename);
+        $transferTarget = $this->getLocalStoragePath($filename);
+        $backupFile = $this->getLocalStoragePath('craft-copy-recent.sql');
+
         $steps = 4;
         $messages = [];
 
@@ -62,7 +66,7 @@ class DbDownAction extends StageAwareBaseAction
 
         // Step 2: Download that dump from remote
         $bar->setMessage($messages[] = "Downloading dump from fortrabbit App {$transferFile}");
-        if ($plugin->ssh->download($transferFile, $transferFile)) {
+        if ($plugin->ssh->download($transferFile, $transferTarget)) {
             $bar->advance();
         }
 
@@ -75,7 +79,7 @@ class DbDownAction extends StageAwareBaseAction
 
         // Step 4: Import
         $bar->setMessage($messages[] = 'Importing dump');
-        if ($plugin->database->import($transferFile)) {
+        if ($plugin->database->import($transferTarget)) {
             $bar->advance();
             $bar->setMessage('Database imported');
         }
