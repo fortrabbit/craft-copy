@@ -9,6 +9,8 @@ This little command line tool helps to speed up common tasks around Craft CMS de
 
 ![demo](https://github.com/fortrabbit/craft-copy/blob/master/resources/craft-copy-code-up.gif "Code sync")
 
+[Here](https://www.youtube.com/watch?v=h8g5t-X6ya4) is a video introdcution (1.5 minutes).
+
 
 ## Requirements
 
