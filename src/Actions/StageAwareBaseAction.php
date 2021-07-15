@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace fortrabbit\Copy\Actions;
 
+use Craft;
 use fortrabbit\Copy\Exceptions\StageConfigNotFoundException;
 use fortrabbit\Copy\Helpers\DeployHooksHelper;
 use fortrabbit\Copy\Models\StageConfig;
@@ -141,5 +142,15 @@ abstract class StageAwareBaseAction extends Action
         return Yii::$app->requestedParams[0]
             ?? getenv(Plugin::ENV_DEFAULT_STAGE)
                 ?: 'production';
+    }
+
+    protected function getLocalStoragePath(?string $subPath = null): string
+    {
+        return Craft::getAlias('@storage') . ($subPath ? "/$subPath" : '');
+    }
+
+    protected function getRemoteStoragePath(?string $subPath = null): string
+    {
+        return $this->stage->storagePath . ($subPath ? "/$subPath" : '');
     }
 }

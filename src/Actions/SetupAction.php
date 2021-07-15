@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace fortrabbit\Copy\Actions;
 
 use Craft;
+use fortrabbit\Copy\Exceptions\UnreadablePathsException;
 use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Helpers\PathHelper;
 use fortrabbit\Copy\Models\StageConfig;
@@ -168,6 +169,7 @@ class SetupAction extends Action
      * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException
      * @throws \fortrabbit\Copy\Exceptions\PluginNotInstalledException
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
+     * @throws \fortrabbit\Copy\Exceptions\UnreadablePathsException
      */
     protected function setupRemote(StageConfig $config)
     {
@@ -177,6 +179,18 @@ class SetupAction extends Action
         if ($plugin->ssh->exec('ls vendor/bin/craft-copy-import-db.php | wc -l')) {
             // Yes. Existing setup?
             if (trim($plugin->ssh->getOutput()) === '1') {
+
+                // Store remote paths in the config
+                $remotePaths = $this->getRemotePaths($config);
+
+                foreach ($remotePaths as $prop => $value) {
+                    $config->$prop = $value;
+                }
+
+                $plugin->stage->persist($config);
+
+                $this->output->write('Cached remote Craft paths');
+
                 $this->successBlock(
                     [
                         'Craft was detected on the fortrabbit App.',
@@ -208,5 +222,23 @@ class SetupAction extends Action
 
         $this->errorBlock('Unable to run SSH command.');
         return false;
+    }
+
+    /**
+     * Get paths from the remote stage
+     * @return array decoded remote paths
+     * @throws \fortrabbit\Copy\Exceptions\UnreadablePathsException
+     */
+    protected function getRemotePaths(): array
+    {
+        $plugin = Plugin::getInstance();
+
+        $plugin->ssh->exec('php craft copy/paths');
+        $remotePaths = json_decode($plugin->ssh->getOutput(), true);
+
+        if (!$remotePaths) {
+            throw new UnreadablePathsException();
+        }
+        return $remotePaths;
     }
 }

@@ -31,15 +31,6 @@ if (count($argv) < 2 || stristr($argv[1], '.sql') == false) {
     exit(1);
 }
 
-// Assure the ./storage folder exist
-$storage = $root . '/storage';
-if (!is_dir($storage)) {
-    if (!mkdir($storage)) {
-        echo "Unable to create $storage";
-        exit(1);
-    }
-}
-
 $file = $argv[1];
 
 if (!file_exists($file)) {
