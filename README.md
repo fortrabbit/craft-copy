@@ -295,6 +295,49 @@ The MySQL database is getting copied over by using `mysqldump`. So it basically 
 
 Craft Copy creates a `my.conf` file. It sets some defaults to ensure maximal compability when working with different MySQL versions. See the [annotated file here](https://github.com/fortrabbit/craft-copy/blob/master/src/.my.cnf.example) and read about SUPER priviliges [here](https://help.fortrabbit.test/mysql-troubleshooting#toc-access-denied-missing-super-privileges).
 
+### Craft Nitro support
+
+Craft Copy supports Nitro development environments on Mac and Linux hosts, but an additional setup step is needed, along with a small change to your workflow when running Craft Copy commands. This is because Nitro containers lack the dependencies Craft Copy requires in order to transfer files/data between stages, and don't mount your SSH keys from your host machine (required to connect to your fortrabbit app).
+
+#### Enabling Nitro support
+
+**1. Install the Craft Copy plugin in your Nitro app as normal:**
+
+```bash
+nitro composer config platform --unset
+nitro composer require fortrabbit/craft-copy -W
+nitro craft plugin/install copy
+```
+
+**2. Generate the wrapper script**
+
+```bash
+nitro craft copy/nitro/setup
+```
+
+This will create a new shell script in your project root called `nitro-craft`. This works in essentially the same way as `nitro craft`, but runs in a Docker container that both adds the required dependencies and forwards your host's ssh-agent so that it is available to make git/rsync etc work.
+
+You should check this file into version control. You will need to regenerate the script (by running `nitro craft copy/nitro/setup` again) if you change the PHP version you are using in Nitro for this site. This is because Nitro uses different containers for different versions of PHP, and Craft Copy needs to use the same container name for everything to work.
+
+#### Running Craft Copy commands under Nitro
+
+Just use `./nitro-craft` instead of `nitro craft`. Example:
+
+
+```
+# Without Nitro
+nitro craft copy/info
+# With Nitro
+./nitro-craft copy/info
+```
+
+**Note** All `nitro craft` commands should work when run through `./nitro-craft`, not just Craft Copy commands.
+
+#### Platform support
+
+Craft Copy works with Craft Nitro 2.x under Mac and Linux.
+
+Windows support is untested at the moment (sorry!). It _should probably_ work under WSL but ssh-agent forwarding may be buggy. PR's welcome!
 
 ## Troubleshooting
 
