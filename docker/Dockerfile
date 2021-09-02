@@ -4,7 +4,7 @@ FROM craftcms/cli:$CRAFT_IMAGE_TAG
 USER root
 # Install required dependencies
 RUN <<EOF
-apk add gzip openssh rsync bash socat su-exec git
+apk add gzip openssh rsync bash socat su-exec git mysql-client
 mkdir -p /home/www-data/.ssh
 chown www-data:www-data /home/www-data/.ssh/
 touch /home/www-data/.ssh/config
