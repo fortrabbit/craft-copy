@@ -151,6 +151,6 @@ abstract class StageAwareBaseAction extends Action
 
     protected function isFortrabbitEnv(): bool
     {
-        return getenv('APP_SECRETS') && getenv('APP_SECRETS') == '/etc/secrets.json';
+        return getenv('APP_SECRETS') == '/etc/secrets.json';
     }
 }
