@@ -19,6 +19,7 @@ use fortrabbit\Copy\Actions\FolderDownAction;
 use fortrabbit\Copy\Actions\FolderUpAction;
 use fortrabbit\Copy\Actions\InfoAction;
 use fortrabbit\Copy\Actions\NitroSetupAction;
+use fortrabbit\Copy\Actions\PathAction;
 use fortrabbit\Copy\Actions\SetupAction;
 use fortrabbit\Copy\Actions\VolumesDownAction;
 use fortrabbit\Copy\Actions\VolumesUpAction;
@@ -94,6 +95,7 @@ class Plugin extends BasePlugin
             'setup' => SetupAction::class,
             'info' => InfoAction::class,
             'nitro/setup' => NitroSetupAction::class,
+            'paths' => PathAction::class,
         ];
 
         $options = [
