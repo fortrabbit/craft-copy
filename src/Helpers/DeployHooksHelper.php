@@ -49,7 +49,7 @@ trait DeployHooksHelper
         foreach ($scripts as $script) {
             $this->cmdBlock($script);
             $process = Process::fromShellCommandline($script);
-            $process-setTimeout($timeout);
+            $process->setTimeout($timeout);
             $process->run();
             if (! $process->isSuccessful()) {
                 $this->errorBlock($process->getErrorOutput());
