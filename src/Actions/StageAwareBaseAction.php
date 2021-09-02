@@ -60,8 +60,9 @@ abstract class StageAwareBaseAction extends Action
 
         if ($this->isFortrabbitEnv()) {
             $this->errorBlock(
-                "It looks like you are running this command in a fortrabbit app container. That won't work. Instead, you need to run craft copy commands from your local development environment."
+                "It looks like you are running this command in a fortrabbit app container. That won't work. Instead, you need to run Craft Copy commands from your local development environment."
             );
+            return false;
         }
 
         // No stage config files found?
