@@ -69,6 +69,7 @@ class DbUpAction extends StageAwareBaseAction
 
         // Step 2: Upload that dump to remote
         $bar->setMessage($messages[] = "Uploading local dump to fortrabbit App - {$transferFile}");
+
         if ($plugin->ssh->upload($transferFile, $transferTarget)) {
             $bar->advance();
         }
@@ -116,6 +117,14 @@ class DbUpAction extends StageAwareBaseAction
                         'php craft copy/code/up',
                     ]
                 );
+                return ExitCode::UNSPECIFIED_ERROR;
+            } catch (RemoteException $e) {
+                $this->errorBlock(
+                    [
+                        'An error occurred while creating the backup on the fortrabbit App',
+                    ]
+                );
+                return ExitCode::UNSPECIFIED_ERROR;
             }
 
             // Step 4: Import on remote
