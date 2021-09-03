@@ -151,6 +151,8 @@ abstract class StageAwareBaseAction extends Action
 
     protected function getRemoteStoragePath(?string $subPath = null): string
     {
-        return $this->stage->storagePath . ($subPath ? "/$subPath" : '');
+        $basePath = $this->stage->storagePath ?? "/srv/app/{$this->stage->app}/htdocs/storage";
+
+        return $basePath . ($subPath ? "/$subPath" : '');
     }
 }
