@@ -1,16 +1,15 @@
-# syntax=docker/dockerfile:1.3-labs
 ARG CRAFT_IMAGE_TAG=8.0
 FROM craftcms/cli:$CRAFT_IMAGE_TAG
+LABEL org.opencontainers.image.source=https://github.com/fortrabbit/craft-copy
+
 USER root
-# Install required dependencies
-RUN <<EOF
-apk add gzip openssh rsync bash socat su-exec git mysql-client
-mkdir -p /home/www-data/.ssh
-chown www-data:www-data /home/www-data/.ssh/
-touch /home/www-data/.ssh/config
-echo "Host *.frbit.com" >> /home/www-data/.ssh/config
+
+RUN apk add gzip openssh rsync bash socat su-exec git mysql-client &&\
+mkdir -p /home/www-data/.ssh &&\
+chown www-data:www-data /home/www-data/.ssh/ &&\
+touch /home/www-data/.ssh/config &&\
+echo "Host *.frbit.com" >> /home/www-data/.ssh/config &&\
 echo "    StrictHostKeyChecking no" >> /home/www-data/.ssh/config
-EOF
 
 COPY ./entrypoint.sh /
 RUN chmod +x /entrypoint.sh
