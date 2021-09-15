@@ -1,6 +1,11 @@
 name: Docker Build
 on:
     push:
+        tags:
+            - 'v[0-9]+.[0-9]+.[0-9]+'
+        branches:
+            - master
+
 env:
     DOCKER_REGISTRY_IMAGE: ghcr.io/fortrabbit/craft-copy
 
