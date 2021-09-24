@@ -92,19 +92,11 @@ class DbUpAction extends StageAwareBaseAction
                 $plugin->ssh->exec(
                     "php vendor/bin/craft-copy-import-db.php {$transferFile} --force"
                 );
-                if (stristr($plugin->ssh->getOutput(), 'error')) {
-                    $this->errorBlock($plugin->ssh->getOutput());
-                }
 
                 $bar->advance();
                 $bar->setMessage('Database imported');
             } catch (RemoteException $e) {
-                $this->errorBlock(
-                    [
-                        'Unable to import database. Deploy code first using this command:',
-                        'php craft copy/code/up',
-                    ]
-                );
+                $this->errorBlock([$e->getMessage()]);
                 return ExitCode::UNSPECIFIED_ERROR;
             }
         } else {

@@ -62,7 +62,7 @@ $process = \Symfony\Component\Process\Process::fromShellCommandline($cmd);
 $process->run();
 
 if ($stderr = $process->getErrorOutput()) {
-    echo "ERROR:" . PHP_EOL;
+    echo 'ERROR (sql):' . PHP_EOL;
     echo substr($stderr, 0, 200);
     exit(1);
 }
@@ -72,5 +72,5 @@ if ($process->isSuccessful()) {
     exit(0);
 }
 
-echo 'Unknown error';
-exit(0);
+echo 'ERROR (unknown)';
+exit(1);
