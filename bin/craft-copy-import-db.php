@@ -48,7 +48,7 @@ if (!file_exists($file)) {
 }
 
 
-$cmd = 'mysql -u {DB_USER} -p{DB_PASSWORD} -h {DB_SERVER} {DB_DATABASE} < {file} && echo 1';
+$cmd = 'mysql --force -u {DB_USER} -p{DB_PASSWORD} -h {DB_SERVER} {DB_DATABASE} < {file} && echo 1';
 $tokens = [
     '{file}' => $file,
     '{DB_USER}' => getenv('DB_USER'),
@@ -61,11 +61,16 @@ $cmd = str_replace(array_keys($tokens), array_values($tokens), $cmd);
 $process = \Symfony\Component\Process\Process::fromShellCommandline($cmd);
 $process->run();
 
+if ($stderr = $process->getErrorOutput()) {
+    echo "ERROR:" . PHP_EOL;
+    echo substr($stderr, 0, 200);
+    exit(1);
+}
+
 if ($process->isSuccessful()) {
     echo 'OK';
     exit(0);
 }
 
-echo "ERROR: ";
-echo $process->getErrorOutput();
-exit(1);
+echo 'Unknown error';
+exit(0);

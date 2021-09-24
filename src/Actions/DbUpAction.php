@@ -55,6 +55,18 @@ class DbUpAction extends StageAwareBaseAction
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
+        if ($plugin->ssh->exec('ls vendor/bin/craft-copy-import-db.php | wc -l')) {
+            if (trim($plugin->ssh->getOutput()) != '1') {
+                $this->errorBlock(
+                    [
+                        'Unable to import database. Deploy code first using this command:',
+                        'php craft copy/code/up',
+                    ]
+                );
+                return ExitCode::UNSPECIFIED_ERROR;
+            }
+        }
+
         $bar = $this->createProgressBar($steps);
 
         // Step 1: Create dump of the current database
@@ -69,6 +81,8 @@ class DbUpAction extends StageAwareBaseAction
             $bar->advance();
         }
 
+
+
         if ($this->force) {
             // Import on remote (does not require craft or copy on remote)
             $bar->setMessage($messages[] = 'Importing dump on fortrabbit App');
@@ -80,6 +94,10 @@ class DbUpAction extends StageAwareBaseAction
                 $plugin->ssh->exec(
                     "php vendor/bin/craft-copy-import-db.php {$transferFile} --force"
                 );
+                if (stristr($plugin->ssh->getOutput(), 'error')) {
+                    $this->errorBlock($plugin->ssh->getOutput());
+                }
+
                 $bar->advance();
                 $bar->setMessage('Database imported');
             } catch (RemoteException $e) {
@@ -91,7 +109,11 @@ class DbUpAction extends StageAwareBaseAction
                 );
                 return ExitCode::UNSPECIFIED_ERROR;
             }
-        } else {
+        }
+
+
+
+        else {
             // Step 3: Backup the remote database before importing the uploaded dump
             $bar->setMessage(
                 $messages[] = "Creating a database dump on fortrabbit App ({$backupFile})"
