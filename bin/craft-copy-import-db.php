@@ -47,25 +47,43 @@ if (!file_exists($file)) {
     exit(1);
 }
 
+$credentialsFile = "/tmp/mysql-extra.cnf";
+$credentialsFileContent = [
+      "[client]",
+      "user=" . getenv('DB_USER'),
+      "password=" . getenv('DB_PASSWORD'),
+      "host=" . getenv('DB_SERVER')
+];
 
-$cmd = 'mysql -u {DB_USER} -p{DB_PASSWORD} -h {DB_SERVER} {DB_DATABASE} < {file} && echo 1';
+if (false === file_put_contents($credentialsFile, join(PHP_EOL, $credentialsFileContent))) {
+    echo "ERROR: unable to write $credentialsFile";
+    exit(1);
+}
+
 $tokens = [
-    '{file}' => $file,
-    '{DB_USER}' => getenv('DB_USER'),
-    '{DB_PASSWORD}' => getenv('DB_PASSWORD'),
-    '{DB_SERVER}' => getenv('DB_SERVER'),
+    '{FILE}' => $file,
+    '{EXTRA_FILE}' => $credentialsFile,
     '{DB_DATABASE}' => getenv('DB_DATABASE'),
 ];
 
+$cmd = 'mysql --defaults-extra-file={EXTRA_FILE} --force {DB_DATABASE} < {FILE} && echo 1';
 $cmd = str_replace(array_keys($tokens), array_values($tokens), $cmd);
+
 $process = \Symfony\Component\Process\Process::fromShellCommandline($cmd);
 $process->run();
+
+unlink($credentialsFile);
+
+if ($stderr = $process->getErrorOutput()) {
+    fwrite(STDERR,  'ERROR (sql):' . PHP_EOL);
+    fwrite(STDERR,  substr($stderr, 0, 200));
+    exit(1);
+}
 
 if ($process->isSuccessful()) {
     echo 'OK';
     exit(0);
 }
 
-echo "ERROR: ";
-echo $process->getErrorOutput();
+fwrite(STDERR, 'ERROR (unknown)');
 exit(1);
