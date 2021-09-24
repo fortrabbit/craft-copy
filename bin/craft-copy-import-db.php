@@ -70,6 +70,7 @@ $cmd = 'mysql --defaults-extra-file={EXTRA_FILE} --force {DB_DATABASE} < {FILE} 
 $cmd = str_replace(array_keys($tokens), array_values($tokens), $cmd);
 
 $process = \Symfony\Component\Process\Process::fromShellCommandline($cmd);
+$process->setTimeout(1000);
 $process->run();
 
 unlink($credentialsFile);

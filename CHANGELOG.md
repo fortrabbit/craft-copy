@@ -1,5 +1,8 @@
 #  Changelog
 
+## 1.0.7 - 2021-09-24
+- Increased timeout for import script to 1000 seconds
+
 ## 1.0.6 - 2021-09-24
 - Exclude `resourcepaths` table from db backup
 - Ignore mysql import errors 🤞🏻
