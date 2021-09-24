@@ -57,13 +57,7 @@ class DbUpAction extends StageAwareBaseAction
 
         if ($plugin->ssh->exec('ls vendor/bin/craft-copy-import-db.php | wc -l')) {
             if (trim($plugin->ssh->getOutput()) !== '1') {
-                $this->errorBlock(
-                    [
-                        'Unable to import database. Deploy code first using this command:',
-                        'php craft copy/code/up',
-                    ]
-                );
-                return ExitCode::UNSPECIFIED_ERROR;
+                return $this->printAndExit(new PluginNotInstalledException());
             }
         }
 
@@ -92,12 +86,10 @@ class DbUpAction extends StageAwareBaseAction
                 $plugin->ssh->exec(
                     "php vendor/bin/craft-copy-import-db.php {$transferFile} --force"
                 );
-
                 $bar->advance();
                 $bar->setMessage('Database imported');
             } catch (RemoteException $e) {
-                $this->errorBlock([$e->getMessage()]);
-                return ExitCode::UNSPECIFIED_ERROR;
+                return $this->printAndExit($e);
             }
         } else {
             // Step 3: Backup the remote database before importing the uploaded dump
@@ -108,21 +100,8 @@ class DbUpAction extends StageAwareBaseAction
             try {
                 $plugin->ssh->exec("php craft copy/db/to-file {$backupFile} --interactive=0");
                 $bar->advance();
-            } catch (CraftNotInstalledException $e) {
-                $this->errorBlock(
-                    [
-                        'Unable to import database. Deploy code first using this command:',
-                        'php craft copy/code/up',
-                    ]
-                );
-                return ExitCode::UNSPECIFIED_ERROR;
-            } catch (PluginNotInstalledException $e) {
-                $this->errorBlock(
-                    [
-                        'The plugin seems not to be installed on fortrabbit. Deploy code first using this command:',
-                        'php craft copy/code/up',
-                    ]
-                );
+            } catch (RemoteException $e) {
+                return $this->printAndExit($e);
             }
 
             // Step 4: Import on remote
@@ -146,5 +125,32 @@ class DbUpAction extends StageAwareBaseAction
         }
 
         return ExitCode::OK;
+    }
+
+    protected function printAndExit(RemoteException $exception): int
+    {
+        if ($exception instanceof CraftNotInstalledException) {
+            $this->errorBlock(
+                [
+                    'Unable to import database. Deploy code first using this command:',
+                    'php craft copy/code/up',
+                ]
+            );
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+
+        if ($exception instanceof PluginNotInstalledException) {
+            $this->errorBlock(
+                [
+                    'The plugin seems not to be installed on fortrabbit. Deploy code first using this command:',
+                    'php craft copy/code/up',
+                ]
+            );
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+
+        $this->errorBlock([$exception->getMessage()]);
+
+        return ExitCode::UNSPECIFIED_ERROR;
     }
 }

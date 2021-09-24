@@ -126,7 +126,9 @@ class Ssh extends Component
         }
 
         if (trim($process->getErrorOutput()) === 'Could not open input file') {
-            throw new CraftNotInstalledException(trim($process->getErrorOutput()));
+            throw new CraftNotInstalledException(
+                trim($process->getErrorOutput())
+            );
         }
 
         if (stristr($process->getErrorOutput(), 'Unknown command')) {

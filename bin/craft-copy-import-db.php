@@ -72,9 +72,11 @@ $cmd = str_replace(array_keys($tokens), array_values($tokens), $cmd);
 $process = \Symfony\Component\Process\Process::fromShellCommandline($cmd);
 $process->run();
 
+unlink($credentialsFile);
+
 if ($stderr = $process->getErrorOutput()) {
-    echo 'ERROR (sql):' . PHP_EOL;
-    echo substr($stderr, 0, 200);
+    fwrite(STDERR,  'ERROR (sql):' . PHP_EOL);
+    fwrite(STDERR,  substr($stderr, 0, 200));
     exit(1);
 }
 
@@ -83,5 +85,5 @@ if ($process->isSuccessful()) {
     exit(0);
 }
 
-echo 'ERROR (unknown)';
+fwrite(STDERR, 'ERROR (unknown)');
 exit(1);
