@@ -125,16 +125,17 @@ class Ssh extends Component
             return true;
         }
 
-        if (trim($process->getErrorOutput()) === 'Could not open input file') {
-            throw new CraftNotInstalledException(
-                trim($process->getErrorOutput())
-            );
-        }
+        $out = $process->getOutput();
+        $err = $process->getOutput();
 
-        if (stristr($process->getErrorOutput(), 'Unknown command')) {
-            throw new PluginNotInstalledException(
-                'The Craft Copy plugin is not installed on remote.'
-            );
+        if (stristr($out, 'Could not open input file')) {
+            throw new CraftNotInstalledException();
+        }
+        if (stristr($err, 'Could not open input file')) {
+            throw new CraftNotInstalledException();
+        }
+        if (stristr($err, 'Unknown command')) {
+            throw new PluginNotInstalledException();
         }
 
         throw new RemoteException(
@@ -142,7 +143,7 @@ class Ssh extends Component
                 'SSH Remote error: ' . $process->getExitCode(),
                 'Command: ' . $process->getCommandLine(),
                 'Output:',
-                $process->getErrorOutput(),
+                $err,
             ])
         );
     }
