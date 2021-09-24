@@ -1,5 +1,9 @@
 #  Changelog
 
+## 1.0.6 - 2021-09-24
+- Exclude `resourcepaths` table from db backup
+- Ignore mysql import errors 🤞🏻
+
 ## 1.0.5 - 2021-05-12
 - Update craft-auto-migrate to use `project-config/apply`
 - Code style cleanup 
