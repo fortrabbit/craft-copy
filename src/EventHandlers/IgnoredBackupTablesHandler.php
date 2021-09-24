@@ -18,9 +18,15 @@ class IgnoredBackupTablesHandler
      */
     public function __invoke(BackupEvent $event): void
     {
-        // Since we sync assets, we keep assettransformindex
         if (property_exists($event, 'ignoreTables')) {
-            $event->ignoreTables = array_diff($event->ignoreTables, [Table::ASSETTRANSFORMINDEX]);
+
+            // Include assettransformindex (do backup)
+            $ignoreTables = array_diff($event->ignoreTables, [Table::ASSETTRANSFORMINDEX]);
+
+            // Exclude resourcepaths (don't backup)
+            $ignoreTables[] = Table::RESOURCEPATHS;
+
+            $event->ignoreTables = $ignoreTables;
         }
     }
 }
