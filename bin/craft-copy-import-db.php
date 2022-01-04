@@ -18,12 +18,15 @@ define('CRAFT_VENDOR_PATH', $root . '/vendor');
 define('CRAFT_BASE_PATH', $root);
 define('YII_DEBUG', false);
 
-// dotenv? 3.x vs 2.x
+// dotenv? 5.x vs 3.x vs 2.x
 if (file_exists($root . '/.env')) {
-    $dotenv = (method_exists('\Dotenv\Dotenv', 'create'))
-        ? \Dotenv\Dotenv::create($root)
-        : new \Dotenv\Dotenv($root);
-    $dotenv->load();
+    if (method_exists('\Dotenv\Dotenv', 'createUnsafeImmutable')) {
+        \Dotenv\Dotenv::createUnsafeImmutable($root)->safeLoad();
+    } elseif (method_exists('\Dotenv\Dotenv', 'create')) {
+        \Dotenv\Dotenv::create($root)->load();
+    } else {
+        (new \Dotenv\Dotenv($root))->load();
+    }
 }
 
 if (count($argv) < 2 || stristr($argv[1], '.sql') == false) {

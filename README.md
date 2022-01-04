@@ -34,6 +34,11 @@ cd your/craft-project
 composer config platform --unset
 composer require fortrabbit/craft-copy -W
 
+# With the latest version of composer (2.2 or higher) you may see this prompt: 
+# Do you trust "fortrabbit/craft-auto-migrate" to execute code and wish to enable it now? (writes "allow-plugins" to composer.json) [y,n,d,?] 
+#
+# Confirm with `y`
+
 # Install and enable the plugin with Craft CMS
 php craft plugin/install copy
 ```
