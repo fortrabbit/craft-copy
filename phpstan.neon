@@ -1,12 +1,16 @@
 parameters:
-    checkMissingIterableValueType: false
+    level: 5
+    paths:
+        - src
     scanFiles:
-        - %currentWorkingDirectory%/vendor/yiisoft/yii2/Yii.php
-        - %currentWorkingDirectory%/vendor/craftcms/cms/src/Craft.php
+        - vendor/yiisoft/yii2/Yii.php
+        - vendor/craftcms/cms/src/Craft.php
+    stubFiles:
+    	- vendor/craftcms/cms/stubs/BaseYii.stub
+    tmpDir: build/phpstan
+    checkMissingIterableValueType: false
 
     ignoreErrors:
         - '#Constant CRAFT_BASE_PATH not found#'
         - '#Access to an undefined property craft\\base\\Volume::\$path.#'
         - '#Access to an undefined property craft\\base\\LocalVolumeInterface&craft\\base\\Volume::\$path.#'
-        - '#Call to an undefined method yii\\console\\Application|yii\\web\\Application::getPath\(\).#'
-

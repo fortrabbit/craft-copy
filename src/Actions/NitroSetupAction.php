@@ -37,7 +37,7 @@ class NitroSetupAction extends Action
      */
     public function run(): int
     {
-        $targetPath = Craft::getAlias('@root/' . $this->outputFilename);
+        $targetPath = Craft::getAlias('@root/' . self::WRAPPER_SCRIPT);
 
         $this->head(self::INTRO_HEADLINE);
         $this->block(self::INTRO_MESSAGE);
@@ -51,7 +51,7 @@ class NitroSetupAction extends Action
         }
 
         if ($this->createScript($targetPath)) {
-            $this->successBlock(["The wrapper script was written to ./{$this->outputFilename}", self::SUCCESS_MESSAGE]);
+            $this->successBlock(['The wrapper script was written to ./' . self::WRAPPER_SCRIPT, self::SUCCESS_MESSAGE]);
             return ExitCode::OK;
         }
 
@@ -74,6 +74,4 @@ class NitroSetupAction extends Action
 
         return false;
     }
-
-
 }
