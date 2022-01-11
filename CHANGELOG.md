@@ -1,6 +1,9 @@
 #  Changelog
 
-## 1.0.8 - 2022-01-4
+## 1.1.0 - 2022-01-11
+- Support for Craft Nitro
+
+## 1.0.8 - 2022-01-04
 - Support dotenv version 5
 
 ## 1.0.7 - 2021-09-24
