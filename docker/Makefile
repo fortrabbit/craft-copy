@@ -1,4 +1,4 @@
-CONTAINER_NAME=metadaptive/craft-copy-nitro
+CONTAINER_NAME=ghcr.io/fortrabbit/craft-copy
 
 publish: build push
 
