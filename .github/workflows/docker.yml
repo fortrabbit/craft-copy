@@ -43,13 +43,13 @@ jobs:
                         --tag $DOCKER_REGISTRY_IMAGE:${{ matrix.craft_image_tag }} \
                         --tag $DOCKER_REGISTRY_IMAGE:${{ matrix.craft_image_tag }}_${{ steps.branch_slug.outputs.slug }} .
 
-            -   name: Push development image to registry
+            -   name: Push version image to registry
                 run: |
                     docker push $DOCKER_REGISTRY_IMAGE:${{ matrix.craft_image_tag }}_${{ steps.branch_slug.outputs.slug }}
 
             # Only publish main image (:8.0) on tag push matching "v1.0.5" format
             # https://stackoverflow.com/questions/58862864/github-actions-ci-conditional-regex
-            -   name: Check Tag
+            -   name: Check if we are on a git release tag (v1.2.3)
                 id: check-tag
                 run: |
                     if [[ ${{ github.event.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -58,5 +58,4 @@ jobs:
             -   name: Publish main image
                 if: steps.check-tag.outputs.match == 'true'
                 run: |
-                    docker tag
                     docker push $DOCKER_REGISTRY_IMAGE:${{ matrix.craft_image_tag }}
