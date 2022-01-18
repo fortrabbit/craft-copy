@@ -37,6 +37,7 @@ class AllDownAction extends StageAwareBaseAction
             'interactive' => true,
         ]) !== 0) {
             $this->errorBlock('Failed to copy the database');
+
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -44,6 +45,7 @@ class AllDownAction extends StageAwareBaseAction
             'interactive' => true,
         ]) !== 0) {
             $this->errorBlock('Failed to copy the assets');
+
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -51,6 +53,7 @@ class AllDownAction extends StageAwareBaseAction
             'interactive' => true,
         ]) !== 0) {
             $this->errorBlock('Failed to copy the code');
+
             return ExitCode::UNSPECIFIED_ERROR;
         }
 

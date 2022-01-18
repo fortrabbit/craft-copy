@@ -23,6 +23,7 @@ class RemoteException extends Exception
         if ($endPos = strpos($message, '∙ƒ')) {
             $message = substr($message, 0, $endPos);
         }
+
         return trim($message);
     }
 }

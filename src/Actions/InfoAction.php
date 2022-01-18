@@ -33,6 +33,7 @@ class InfoAction extends Action
             $fixer = new DeprecatedConfigFixer($this, $plugin->stage);
             $fixer->showWarning();
             $fixer->askAndRun();
+
             return 0;
         }
 
@@ -41,6 +42,7 @@ class InfoAction extends Action
                 'The plugin is not configured yet. Make sure to run this setup command first:'
             );
             $this->cmdBlock('php craft copy/setup');
+
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -61,6 +63,7 @@ class InfoAction extends Action
                 $this->errorBlock(
                     "Unable to get information about the fortrabbit App using '{$stage->sshUrl}'"
                 );
+
                 return ExitCode::UNSPECIFIED_ERROR;
             }
 

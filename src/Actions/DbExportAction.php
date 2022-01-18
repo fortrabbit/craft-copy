@@ -29,12 +29,15 @@ class DbExportAction extends Action
         try {
             $plugin->database->export($file);
             $this->info('OK');
+
             return ExitCode::OK;
         } catch (ShellCommandException $exception) {
             $this->errorBlock(['Mysql Import error', $exception->getMessage()]);
+
             return ExitCode::UNSPECIFIED_ERROR;
         } catch (Exception $exception) {
             $this->errorBlock([$exception->getMessage()]);
+
             return ExitCode::UNSPECIFIED_ERROR;
         }
     }

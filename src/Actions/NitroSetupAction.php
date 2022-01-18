@@ -29,7 +29,6 @@ class NitroSetupAction extends Action
                                      For full documentation see the Craft Copy README
                                      https://github.com/fortrabbit/craft-copy/#craft-nitro-support';
 
-
     /**
      * Generate a wrapper script to enable Copy to work with Nitro
      */
@@ -52,6 +51,7 @@ class NitroSetupAction extends Action
             $this->successBlock(
                 ['The wrapper script was written to ./' . self::WRAPPER_SCRIPT, $this->trimSpace(self::SUCCESS_MESSAGE)]
             );
+
             return ExitCode::OK;
         }
 

@@ -62,6 +62,7 @@ class VolumesUpAction extends StageAwareBaseAction
             $lastVolume = end($volumes);
         } catch (VolumeNotFound $exception) {
             $this->line('No local volumes found.' . PHP_EOL);
+
             return ExitCode::OK;
         }
 
@@ -77,6 +78,7 @@ class VolumesUpAction extends StageAwareBaseAction
 
             if (! is_dir($path)) {
                 $this->errorBlock("$path does not exist");
+
                 continue;
             }
 

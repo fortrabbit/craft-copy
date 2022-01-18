@@ -48,6 +48,7 @@ trait DeployHooksHelper
             $process->run();
             if (! $process->isSuccessful()) {
                 $this->errorBlock($process->getErrorOutput());
+
                 return false;
             }
             $outputLines = explode(PHP_EOL, $process->getOutput());

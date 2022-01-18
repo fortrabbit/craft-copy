@@ -39,6 +39,7 @@ class FolderUpAction extends StageAwareBaseAction
 
         if (! is_dir($folder)) {
             $this->errorBlock("$folder does not exist");
+
             return ExitCode::UNSPECIFIED_ERROR;
         }
 

@@ -55,6 +55,7 @@ abstract class StageAwareBaseAction extends Action
             $fixer = new DeprecatedConfigFixer($this, $this->plugin->stage);
             $fixer->showWarning();
             $fixer->askAndRun();
+
             return false;
         }
 

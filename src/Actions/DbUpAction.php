@@ -136,6 +136,7 @@ class DbUpAction extends StageAwareBaseAction
                     'php craft copy/code/up',
                 ]
             );
+
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -146,6 +147,7 @@ class DbUpAction extends StageAwareBaseAction
                     'php craft copy/code/up',
                 ]
             );
+
             return ExitCode::UNSPECIFIED_ERROR;
         }
 

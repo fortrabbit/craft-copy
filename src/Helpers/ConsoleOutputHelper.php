@@ -14,7 +14,7 @@ use Symfony\Component\Console\Helper\TableSeparator;
  * @package fortrabbit\Copy\services
  *
  * @property string $app
- * @property boolean $dryRun
+ * @property bool $dryRun
  * @property OutputStyle $output
  */
 trait ConsoleOutputHelper
@@ -52,6 +52,7 @@ trait ConsoleOutputHelper
     public function cmdBlock(string $cmd)
     {
         $this->block($cmd, null, 'fg=white;bg=default', '<comment>  $  </comment>', false, false);
+
         return true;
     }
 

@@ -207,6 +207,7 @@ class SetupAction extends Action
         }
 
         $this->errorBlock('Unable to run SSH command.');
+
         return false;
     }
 }

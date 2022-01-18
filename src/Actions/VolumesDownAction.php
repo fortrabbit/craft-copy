@@ -62,6 +62,7 @@ class VolumesDownAction extends StageAwareBaseAction
             $lastVolume = end($volumes);
         } catch (VolumeNotFound $exception) {
             $this->line('No local volumes found.' . PHP_EOL);
+
             return ExitCode::OK;
         }
 
