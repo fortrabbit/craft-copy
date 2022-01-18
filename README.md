@@ -1,4 +1,4 @@
-# Craft Copy Plugin (1.0.0)
+# Craft Copy Plugin (1.1)
 
 This little command line tool helps to speed up common tasks around Craft CMS deployment on [fortrabbit](https://www.fortrabbit.com/). Craft Copy syncs your local development environment with your fortrabbit App — up and down. It conveniently deploys code changes and synchronizes latest images and database entries. This Craft CMS plugin will be installed locally and on the fortrabbit App.
 
@@ -14,7 +14,7 @@ This little command line tool helps to speed up common tasks around Craft CMS de
 
 ## Requirements
 
-* A local development environment including: Craft 3+, PHP 7.2+ and Composer. 
+* A local development environment including: Craft 3+, PHP 7.3+ and Composer. 
 * The following binaries should be executable: `php`, `mysqldump`, `git` and `rsync`
 * A SSH key installed should with your fortrabbit Account (no password auth so far)
 * You need to have an App with fortrabbit

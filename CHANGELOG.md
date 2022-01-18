@@ -1,7 +1,8 @@
 #  Changelog
 
-## 1.1.0 - 2022-01-11
-- Support for Craft Nitro
+## 1.1.0 - 2022-01-18
+- Added support for Craft Nitro [see README.md](https://github.com/fortrabbit/craft-copy#craft-nitro-support)
+- Dropped PHP 7.2 support
 
 ## 1.0.8 - 2022-01-04
 - Support dotenv version 5
