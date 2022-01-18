@@ -21,3 +21,4 @@ prepros-6.config
 !.vscode/launch.json
 !.vscode/settings.json
 !.vscode/tasks.json
+/build/

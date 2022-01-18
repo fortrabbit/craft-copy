@@ -1,0 +1,91 @@
+#!/bin/bash
+
+PHP_VERSION="{{ phpVersion }}"
+
+COMMAND=${1:-"help"}
+DEBUG=false
+# Magic value for docker mac ssh-agent forwarding
+SSH_DOCKER_MAC_SOCK="/run/host-services/ssh-auth.sock"
+
+FR_CONTAINER_BASE_NAME="ghcr.io/fortrabbit/craft-copy"
+
+MAC="MAC"
+WINDOWS="WINDOWS"
+
+get_platform(){
+    local OS="UNKNOWN"
+
+    case "$OSTYPE" in
+      solaris*) OS="SOLARIS" ;;
+      darwin*)  OS=$MAC ;;
+      linux*)   OS="LINUX" ;;
+      bsd*)     OS="BSD" ;;
+      msys*)    OS=$WINDOWS ;;
+      cygwin*)  OS=$WINDOWS ;;
+      *)        OS="UNKNOWN: $OSTYPE" ;;
+    esac
+
+    echo "$OS"
+}
+
+get_php_version() {
+    echo "$PHP_VERSION"
+}
+
+get_container_name() {
+    echo "$FR_CONTAINER_BASE_NAME:$(get_php_version)"
+}
+
+get_ssh_socket_name() {
+    local SSH_SYSTEM_SOCK=${SSH_AUTH_SOCK}
+
+    if [ "$(get_platform)" = $MAC ]; then
+        SSH_SYSTEM_SOCK=${SSH_DOCKER_MAC_SOCK}
+    fi
+
+    echo "$SSH_SYSTEM_SOCK"
+}
+
+preflight() {
+    if [ $DEBUG == true ]; then
+        echo "----------------------------------------"
+        echo "START DEBUG OUTPUT:"
+        echo "Requested command craft $COMMAND";
+        echo "PHP Version $(get_php_version)";
+        echo "----------------------------------------"
+    fi
+
+    local OS
+    OS=$(get_platform)
+
+    if [ "$OS" = "$WINDOWS" ]; then
+        echo "Sorry, Windows is not supported yet due to SSH weirdness"
+        exit 1;
+    fi
+
+    if [ -z "$SSH_AUTH_SOCK" ]; then
+        echo "No ssh agent detected, unable to forward SSH to container without an agent"
+        exit 1;
+    else
+        echo "Checking host ssh-agent, you may be prompted for your SSH key password..."
+        ssh-add -l
+    fi
+}
+
+run() {
+    docker run -it \
+        --rm \
+        -v "$PWD":/app \
+        -v "$HOME"/.gitconfig:/home/www-data/.gitconfig \
+        -v "$(get_ssh_socket_name)":"$(get_ssh_socket_name)" \
+        -e SSH_AUTH_SOCK="$(get_ssh_socket_name)" \
+        --network=nitro-network \
+        "$(get_container_name)" "$@"
+}
+
+init() {
+    preflight
+    run "$@"
+}
+
+init "$@"
