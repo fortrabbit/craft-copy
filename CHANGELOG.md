@@ -1,5 +1,8 @@
 #  Changelog
 
+## 1.1.1 - 2022-02-07
+- Increased timeout (300s) for before/after deploy scripts eventually
+
 ## 1.1.0 - 2022-01-18
 - Added support for Craft Nitro [see README.md](https://github.com/fortrabbit/craft-copy#craft-nitro-support)
 - Dropped PHP 7.2 support
