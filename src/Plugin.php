@@ -48,6 +48,8 @@ class Plugin extends BasePlugin
 {
     public const DASHBOARD_URL = 'https://dashboard.fortrabbit.com';
 
+    public const DEPLOY_HOOK_TIMEOUT = 300;
+
     public const ENV_DEFAULT_STAGE = 'DEFAULT_STAGE';
 
     public const PLUGIN_ROOT_PATH = __DIR__;

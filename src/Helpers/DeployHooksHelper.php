@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace fortrabbit\Copy\Helpers;
 
+use fortrabbit\Copy\Plugin;
 use Symfony\Component\Process\Process;
 
 trait DeployHooksHelper
@@ -45,6 +46,7 @@ trait DeployHooksHelper
         foreach ($scripts as $script) {
             $this->cmdBlock($script);
             $process = Process::fromShellCommandline($script);
+            $process->setTimeout(Plugin::DEPLOY_HOOK_TIMEOUT);
             $process->run();
             if (! $process->isSuccessful()) {
                 $this->errorBlock($process->getErrorOutput());
