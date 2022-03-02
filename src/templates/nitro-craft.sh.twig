@@ -86,7 +86,6 @@ run() {
         --rm \
         -v "$PWD":/app \
         -v "$HOME"/.gitconfig:/home/www-data/.gitconfig:ro \
-        -v "$HOME"/.ssh:/home/www-data/.ssh:ro \
         -v "$FR_CONTAINER_SSH_CONFIG_FILE":/home/www-data/.ssh/config:ro \
         -v "$(get_ssh_socket_name)":"$(get_ssh_socket_name)" \
         -e SSH_AUTH_SOCK="$(get_ssh_socket_name)" \

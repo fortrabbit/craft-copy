@@ -25,13 +25,6 @@ class NitroDebugAction extends StageAwareBaseAction
      */
     public function run(?string $stage = null): int
     {
-        $this->output->title('Listing of ssh keys');
-        $process = Process::fromShellCommandline('ls -l $HOME/.ssh/');
-        $process->run();
-        $this->output->write($process->getOutput());
-
-        $this->output->title('Testing ssh remote execution with verbose output');
-
         $plugin = Plugin::getInstance();
         $plugin->ssh->setVerbose(true);
         try {
@@ -39,10 +32,14 @@ class NitroDebugAction extends StageAwareBaseAction
             $this->output->write($plugin->ssh->getOutput());
         } catch (RemoteException $e) {
             $this->output->write($e->getMessage());
+            $this->output->error('Above you should see ssh debug output');
+            return ExitCode::UNSPECIFIED_ERROR;
         }
 
 
-        return ExitCode::UNSPECIFIED_ERROR;
+        $this->output->success('LGTM');
+
+        return ExitCode::OK;
     }
 
 
