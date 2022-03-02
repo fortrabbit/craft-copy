@@ -1,13 +1,13 @@
 #!/bin/bash
 
 PHP_VERSION="{{ phpVersion }}"
-
 COMMAND=${1:-"help"}
 DEBUG=false
 # Magic value for docker mac ssh-agent forwarding
 SSH_DOCKER_MAC_SOCK="/run/host-services/ssh-auth.sock"
 
 FR_CONTAINER_BASE_NAME="ghcr.io/fortrabbit/craft-copy"
+FR_CONTAINER_SSH_CONFIG_FILE="$HOME/.ssh/fortrabbit_nitro_config"
 
 MAC="MAC"
 WINDOWS="WINDOWS"
@@ -63,6 +63,14 @@ preflight() {
         exit 1;
     fi
 
+    # Create custom ssh config we mount later in the container
+    if [ ! -f "$FR_CONTAINER_SSH_CONFIG_FILE" ]; then
+        echo "Creating $FR_CONTAINER_SSH_CONFIG_FILE"
+        echo "PubkeyAcceptedKeyTypes +ssh-rsa" > $FR_CONTAINER_SSH_CONFIG_FILE
+        echo "PreferredAuthentications publickey" >> $FR_CONTAINER_SSH_CONFIG_FILE
+        echo "StrictHostKeyChecking no" >> $FR_CONTAINER_SSH_CONFIG_FILE
+    fi
+
     if [ -z "$SSH_AUTH_SOCK" ]; then
         echo "No ssh agent detected, unable to forward SSH to container without an agent"
         exit 1;
@@ -70,13 +78,16 @@ preflight() {
         echo "Checking host ssh-agent, you may be prompted for your SSH key password..."
         ssh-add -l
     fi
+
 }
 
 run() {
     docker run -it \
         --rm \
         -v "$PWD":/app \
-        -v "$HOME"/.gitconfig:/home/www-data/.gitconfig \
+        -v "$HOME"/.gitconfig:/home/www-data/.gitconfig:ro \
+        -v "$HOME"/.ssh:/home/www-data/.ssh:ro \
+        -v "$FR_CONTAINER_SSH_CONFIG_FILE":/home/www-data/.ssh/config:ro \
         -v "$(get_ssh_socket_name)":"$(get_ssh_socket_name)" \
         -e SSH_AUTH_SOCK="$(get_ssh_socket_name)" \
         --network=nitro-network \
