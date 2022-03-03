@@ -19,7 +19,7 @@ class Ssh extends Component
 
     public const DOWNLOAD_COMMAND = 'ssh {remote} "cat {src} | gzip" | zcat > {target}';
 
-    public const REMOTE_EXEC_COMMAND = 'ssh {remote} "{command}"';
+    public const REMOTE_EXEC_COMMAND = 'ssh {remote} {options} "{command}"';
 
     public const SSH_EXEC_TIMEOUT = 1200;
 
@@ -32,6 +32,11 @@ class Ssh extends Component
      * @var string
      */
     protected $output;
+
+    /**
+     * @var bool
+     */
+    protected $verbose = false;
 
     // Public Methods
     // =========================================================================
@@ -109,6 +114,7 @@ class Ssh extends Component
         $tokens = [
             '{remote}' => $this->remote,
             '{command}' => $cmd,
+            '{options}' => ($this->verbose) ? '-vvv' : '',
         ];
 
         // create full
@@ -121,12 +127,11 @@ class Ssh extends Component
 
         if ($process->isSuccessful()) {
             $this->output = $process->getOutput();
-
             return true;
         }
 
         $out = $process->getOutput();
-        $err = $process->getOutput();
+        $err = $process->getErrorOutput();
 
         if (stristr($out, 'Could not open input file')) {
             throw new CraftNotInstalledException();
@@ -168,6 +173,11 @@ class Ssh extends Component
         ];
 
         return str_replace(array_keys($tokens), array_values($tokens), $cmd);
+    }
+
+    public function setVerbose(bool $verbose = true): void
+    {
+        $this->verbose = $verbose;
     }
 
     protected function getDownloadCommand(string $src, string $target)
