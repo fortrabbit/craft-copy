@@ -1,5 +1,9 @@
 #  Changelog
 
+## 1.2.0 - 2022-03-03
+- Fixed nitro support 
+- Added `copy/nitro/debug commmand` for testing ssh
+
 ## 1.1.1 - 2022-02-07
 - Increased timeout (300s) for before/after deploy scripts eventually
 
