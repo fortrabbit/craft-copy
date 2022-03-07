@@ -1,6 +1,6 @@
 #  Changelog
 
-## 1.2.0 - 2022-03-03
+## 1.2.1 - 2022-03-07
 - Fixed nitro support 
 - Added `copy/nitro/debug commmand` for testing ssh
 
