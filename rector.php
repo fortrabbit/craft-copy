@@ -5,6 +5,7 @@ declare(strict_types=1);
 use craft\rector\SetList as CraftSetList;
 use Rector\CodeQuality\Rector\If_\SimplifyIfReturnBoolRector;
 use Rector\CodeQuality\Rector\Ternary\UnnecessaryTernaryExpressionRector;
+use Rector\CodeQuality\Rector\If_\ExplicitBoolCompareRector;
 use Rector\CodingStyle\Rector\ClassConst\RemoveFinalFromConstRector;
 use Rector\CodingStyle\Rector\Encapsed\EncapsedStringsToSprintfRector;
 use Rector\Core\Configuration\Option;
@@ -21,7 +22,8 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             EncapsedStringsToSprintfRector::class,
             RemoveFinalFromConstRector::class,
             SimplifyIfReturnBoolRector::class,
-            UnnecessaryTernaryExpressionRector::class
+            UnnecessaryTernaryExpressionRector::class,
+            ExplicitBoolCompareRector::class
     ]);
 
 
