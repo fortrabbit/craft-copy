@@ -51,14 +51,6 @@ abstract class StageAwareBaseAction extends Action
      */
     protected function beforeRun()
     {
-        if (DeprecatedConfigFixer::hasDeprecatedConfig()) {
-            $fixer = new DeprecatedConfigFixer($this, $this->plugin->stage);
-            $fixer->showWarning();
-            $fixer->askAndRun();
-
-            return false;
-        }
-
         // No stage config files found?
         if ($this->plugin->stage->getConfigOptions() === []) {
             $this->errorBlock(

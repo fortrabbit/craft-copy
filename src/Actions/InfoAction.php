@@ -7,7 +7,6 @@ namespace fortrabbit\Copy\Actions;
 use Closure;
 use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Plugin;
-use fortrabbit\Copy\Services\DeprecatedConfigFixer;
 use ostark\Yii2ArtisanBridge\base\Action;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Throwable;
@@ -28,14 +27,6 @@ class InfoAction extends Action
     {
         $plugin = Plugin::getInstance();
         $stages = $plugin->stage->getConfigOptions();
-
-        if (DeprecatedConfigFixer::hasDeprecatedConfig()) {
-            $fixer = new DeprecatedConfigFixer($this, $plugin->stage);
-            $fixer->showWarning();
-            $fixer->askAndRun();
-
-            return 0;
-        }
 
         if ($stages === []) {
             $this->errorBlock(

@@ -27,7 +27,7 @@ trait ConsoleOutputHelper
         $head = $volumeHandle ? ['Volume', $volumeHandle] : ['Key', 'Value'];
 
         $rows = [
-            [\Directory::class, $dir],
+            ['Directory', $dir],
             new TableSeparator(),
             ['SSH remote', $remoteUrl],
             new TableSeparator(),
