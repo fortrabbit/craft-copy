@@ -6,9 +6,9 @@ namespace fortrabbit\Copy\Services;
 
 use Exception;
 use fortrabbit\Copy\Plugin;
-use GitWrapper\Exception\GitException;
-use GitWrapper\GitWorkingCopy;
-use GitWrapper\GitWrapper;
+use Symplify\GitWrapper\Exception\GitException;
+use Symplify\GitWrapper\GitWorkingCopy;
+use Symplify\GitWrapper\GitWrapper;
 use InvalidArgumentException;
 use LogicException;
 
@@ -28,7 +28,7 @@ final class Git
      */
     public static function fromDirectory(string $directory): \fortrabbit\Copy\Services\Git
     {
-        $wrapper = new GitWrapper();
+        $wrapper = new GitWrapper('git');
         $wrapper->setTimeout(300);
 
         return new self($wrapper->workingCopy($directory));
@@ -47,7 +47,7 @@ final class Git
         array $options = [
         ]
     ): \fortrabbit\Copy\Services\Git {
-        $wrapper = new GitWrapper();
+        $wrapper = new GitWrapper('git');
         $wrapper->setTimeout(300);
 
         return new self($wrapper->cloneRepository($repository, $directory, $options));
@@ -89,7 +89,6 @@ final class Git
 
     /**
      * @param string|null $for 'push' or 'pull'
-     * @return mixed[]
      */
     public function getRemotes(?string $for = 'push'): array
     {

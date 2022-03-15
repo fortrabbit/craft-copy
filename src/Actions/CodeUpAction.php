@@ -9,7 +9,7 @@ use craft\helpers\FileHelper;
 use Exception;
 use fortrabbit\Copy\Services\Git;
 use fortrabbit\Copy\Services\LocalVolume;
-use GitWrapper\Exception\GitException;
+use Symplify\GitWrapper\Exception\GitException;
 use ostark\Yii2ArtisanBridge\base\Commands;
 use Throwable;
 use yii\console\ExitCode;
@@ -51,7 +51,7 @@ class CodeUpAction extends StageAwareBaseAction
         if (count($localBranches) > 1) {
             $question = 'Select a local branch (checkout):';
             $branch = str_replace('* ', '', $this->choice($question, $localBranches, $branch));
-            $git->run('checkout', $branch);
+            $git->run('checkout', [$branch]);
         }
 
         // Ask for remote
@@ -136,9 +136,10 @@ class CodeUpAction extends StageAwareBaseAction
         // Get configured remote & sshUrl
         $upstream = explode('/', $this->stage->gitRemote)[0];
         $sshUrl = $this->stage->sshUrl;
+        $remotes = $git->getRemotes();
 
         // Nothing found
-        if (! $remotes = $git->getRemotes() && $this->confirm("No git remotes configured. Do you want to add '{$sshUrl}'?")) {
+        if (0 === count($remotes) && $this->confirm("No git remotes configured. Do you want to add '{$sshUrl}'?")) {
             return $git->addRemote($sshUrl);
         }
 

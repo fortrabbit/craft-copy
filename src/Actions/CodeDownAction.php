@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace fortrabbit\Copy\Actions;
 
-use GitWrapper\Exception\GitException;
+use Symplify\GitWrapper\Exception\GitException;
 use yii\console\ExitCode;
 
 class CodeDownAction extends StageAwareBaseAction
@@ -30,7 +30,7 @@ class CodeDownAction extends StageAwareBaseAction
         if (count($localBranches) > 1) {
             $question = 'Select a local branch (checkout):';
             $branch = str_replace('* ', '', $this->choice($question, $localBranches, $branch));
-            $git->run('checkout', $branch);
+            $git->run('checkout', [$branch]);
         }
 
         // Run 'before' commands and stop on error

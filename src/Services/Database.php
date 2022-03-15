@@ -18,7 +18,6 @@ class Database extends Component
     public $db;
 
     /**
-     * @return string|null
      * @throws \craft\errors\ShellCommandException
      * @throws \yii\base\Exception
      */
@@ -32,10 +31,6 @@ class Database extends Component
     }
 
     /**
-     * @param string $file
-     *
-     * @return string|null /path/to/file.sql
-     *
      * @throws \craft\errors\FileException
      * @throws \craft\errors\ShellCommandException
      * @throws \yii\base\Exception

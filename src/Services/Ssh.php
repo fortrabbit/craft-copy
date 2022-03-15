@@ -35,26 +35,15 @@ class Ssh extends Component
      */
     public const SSH_EXEC_TIMEOUT = 1200;
 
-    /**
-     * @var string
-     */
-    public $remote;
+    public string $remote;
 
-    /**
-     * @var string
-     */
-    protected $output;
+    protected string $output;
 
-    /**
-     * @var bool
-     */
-    protected $verbose = false;
+    protected bool $verbose = false;
 
-    // Public Methods
-    // =========================================================================
+
     /**
      * Upload a single file
-     *
      *
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
      */
@@ -75,7 +64,6 @@ class Ssh extends Component
 
     /**
      * Download a single file
-     *
      *
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
      */
@@ -161,8 +149,6 @@ class Ssh extends Component
 
     /**
      * Get output of command execution
-     *
-     * @return mixed
      */
     public function getOutput(): string
     {
