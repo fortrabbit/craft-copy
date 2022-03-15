@@ -157,8 +157,8 @@ class InfoAction extends Action
 
         return [
             "<fg={$color}>{$key}</>",
-            $obfuscate && $this->verbose === false ? $this->obfuscate($localValue) : $localValue,
-            $obfuscate && $this->verbose === false ? $this->obfuscate($remoteValue) : $remoteValue,
+            $obfuscate && !$this->verbose ? $this->obfuscate($localValue) : $localValue,
+            $obfuscate && !$this->verbose ? $this->obfuscate($remoteValue) : $remoteValue,
             $icon,
         ];
     }

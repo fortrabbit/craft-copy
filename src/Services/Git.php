@@ -89,6 +89,7 @@ final class Git
 
     /**
      * @param string|null $for 'push' or 'pull'
+     * @return mixed[]
      */
     public function getRemotes(?string $for = 'push'): array
     {

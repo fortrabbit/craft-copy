@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace fortrabbit\Copy\Actions;
 
 use Craft;
+use craft\helpers\App;
 use craft\helpers\FileHelper;
 use Exception;
 use fortrabbit\Copy\Services\Git;
-use fortrabbit\Copy\Services\LocalVolume;
+use fortrabbit\Copy\Services\LocalFilesystem;
 use Symplify\GitWrapper\Exception\GitException;
 use ostark\Yii2ArtisanBridge\base\Commands;
 use Throwable;
@@ -19,7 +20,7 @@ class CodeUpAction extends StageAwareBaseAction
     public function __construct(
         string $id,
         Commands $controller,
-        protected LocalVolume $localVolume,
+        protected LocalFilesystem $localFilesystem,
         array $config = []
     ) {
         parent::__construct($id, $controller, $config);
@@ -139,7 +140,7 @@ class CodeUpAction extends StageAwareBaseAction
         $remotes = $git->getRemotes();
 
         // Nothing found
-        if (0 === count($remotes) && $this->confirm("No git remotes configured. Do you want to add '{$sshUrl}'?")) {
+        if ([] === $remotes && $this->confirm("No git remotes configured. Do you want to add '{$sshUrl}'?")) {
             return $git->addRemote($sshUrl);
         }
 
@@ -164,9 +165,9 @@ class CodeUpAction extends StageAwareBaseAction
     protected function assureVolumesAreIgnored(): void
     {
         try {
-            $volumes = $this->localVolume->filterByHandle();
+            $volumes = $this->localFilesystem->filterByHandle();
             foreach ($volumes as $volume) {
-                $path = Craft::parseEnv('@root') . DIRECTORY_SEPARATOR . $volume->path;
+                $path = App::parseEnv('@root') . DIRECTORY_SEPARATOR . $volume->path;
                 FileHelper::writeGitignoreFile($path);
             }
         } catch (Throwable $throwable) {

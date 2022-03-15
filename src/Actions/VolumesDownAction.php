@@ -7,7 +7,7 @@ namespace fortrabbit\Copy\Actions;
 use fortrabbit\Copy\Exceptions\VolumeNotFound;
 use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Helpers\PathHelper;
-use fortrabbit\Copy\Services\LocalVolume;
+use fortrabbit\Copy\Services\LocalFilesystem;
 use ostark\Yii2ArtisanBridge\base\Commands;
 use yii\console\ExitCode;
 
@@ -23,7 +23,7 @@ class VolumesDownAction extends StageAwareBaseAction
     public function __construct(
         string $id,
         Commands $controller,
-        protected LocalVolume $localVolume,
+        protected LocalFilesystem $localFilesystem,
         array $config = []
     ) {
         parent::__construct($id, $controller, $config);
@@ -50,22 +50,22 @@ class VolumesDownAction extends StageAwareBaseAction
         }
 
         try {
-            $volumes = $this->localVolume->filterByHandle($volumeHandles);
-            $lastVolume = end($volumes);
+            $fs = $this->localFilesystem->filterByHandle($volumeHandles);
+            $lastFs= end($fs);
         } catch (VolumeNotFound) {
             $this->line('No local volumes found.' . PHP_EOL);
 
             return ExitCode::OK;
         }
 
-        foreach ($volumes as $volume) {
-            $path = $this->prepareForRsync($volume->path);
+        foreach ($fs as $filesystem) {
+            $path = $this->prepareForRsync($filesystem->path);
 
             // Info
             $this->rsyncInfo(
                 $path,
                 $this->plugin->rsync->remoteUrl,
-                $volume->handle
+                $filesystem->handle
             );
 
             // Ask
@@ -82,7 +82,7 @@ class VolumesDownAction extends StageAwareBaseAction
             $this->plugin->rsync->sync($path);
             $this->line(PHP_EOL);
             $this->line(
-                $volume === $lastVolume ? 'All done.' : "{$volume->name} done, next volume:"
+                $filesystem === $lastFs ? 'All done.' : "{$filesystem->name} done, next volume:"
             );
             $this->line(PHP_EOL);
         }

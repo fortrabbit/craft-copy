@@ -96,7 +96,7 @@ class SetupAction extends Action
             $this->line('Get Help: ' . self::HELP_SSH_URL);
         }
 
-        if ($mysql !== true || $ssh !== true) {
+        if (!$mysql || !$ssh) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
