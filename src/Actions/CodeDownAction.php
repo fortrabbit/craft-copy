@@ -13,10 +13,8 @@ class CodeDownAction extends StageAwareBaseAction
      * Git pull
      *
      * @param string|null $stage Name of the stage config
-     *
-     * @return int
      */
-    public function run(?string $stage = null)
+    public function run(?string $stage = null): int
     {
         $this->head(
             'Pull recent code changes for fortrabbit App.',
@@ -45,14 +43,14 @@ class CodeDownAction extends StageAwareBaseAction
         [$upstream, $branch] = explode('/', $remote);
 
         try {
-            $this->section("git pull ($upstream/$branch)");
+            $this->section("git pull ({$upstream}/{$branch})");
             $git->getWorkingCopy()->getWrapper()->streamOutput();
             $git->pull($upstream, $branch);
-        } catch (GitException $exception) {
-            $lines = count(explode(PHP_EOL, $exception->getMessage()));
+        } catch (GitException $gitException) {
+            $lines = count(explode(PHP_EOL, $gitException->getMessage()));
             $this->output->write(str_repeat("\x1B[1A\x1B[2K", $lines));
             $this->errorBlock('Ooops.');
-            $this->output->write("<fg=red>{$exception->getMessage()}</>");
+            $this->output->write("<fg=red>{$gitException->getMessage()}</>");
 
             return ExitCode::UNSPECIFIED_ERROR;
         }

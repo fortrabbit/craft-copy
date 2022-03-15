@@ -14,8 +14,11 @@ class AllUpAction extends StageAwareBaseAction
     use ConsoleOutputHelper;
     use PathHelper;
 
-    public $verbose = false;
+    public bool $verbose = false;
 
+    /**
+     * @var bool
+     */
     public $interactive = true;
 
     /**

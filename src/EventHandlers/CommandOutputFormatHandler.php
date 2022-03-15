@@ -18,10 +18,10 @@ class CommandOutputFormatHandler
         $action = $event->action;
 
         $style = new OutputFormatterStyle('blue');
-        $action->output->getFormatter()->setStyle('comment', $style);
-        $action->output->getFormatter()->setStyle('info', $style);
+        $action->getOutput()->getFormatter()->setStyle('comment', $style);
+        $action->getOutput()->getFormatter()->setStyle('info', $style);
 
-        $action->output->getFormatter()->setStyle(
+        $action->getOutput()->getFormatter()->setStyle(
             'underline',
             (new OutputFormatterStyle('blue', null, ['underscore']))
         );

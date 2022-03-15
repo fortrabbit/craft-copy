@@ -17,10 +17,8 @@ class DbExportAction extends Action
      * Export database from file
      *
      * @param string|null $file Filename of the sql dump
-     *
-     * @return int
      */
-    public function run(?string $file = null)
+    public function run(?string $file = null): int
     {
         $plugin = Plugin::getInstance();
         $this->assureMyCfnForMysqldump();
@@ -31,8 +29,8 @@ class DbExportAction extends Action
             $this->info('OK');
 
             return ExitCode::OK;
-        } catch (ShellCommandException $exception) {
-            $this->errorBlock(['Mysql Import error', $exception->getMessage()]);
+        } catch (ShellCommandException $shellCommandException) {
+            $this->errorBlock(['Mysql Import error', $shellCommandException->getMessage()]);
 
             return ExitCode::UNSPECIFIED_ERROR;
         } catch (Exception $exception) {

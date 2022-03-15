@@ -16,19 +16,12 @@ use yii\console\ExitCode;
 
 class CodeUpAction extends StageAwareBaseAction
 {
-    /**
-     * @var LocalVolume
-     */
-    protected $localVolume;
-
     public function __construct(
         string $id,
         Commands $controller,
-        LocalVolume $localVolume,
+        protected LocalVolume $localVolume,
         array $config = []
     ) {
-        $this->localVolume = $localVolume;
-
         parent::__construct($id, $controller, $config);
     }
 
@@ -37,10 +30,9 @@ class CodeUpAction extends StageAwareBaseAction
      *
      * @param string|null $stage Name of the stage config
      *
-     * @return int
      * @throws Exception
      */
-    public function run(?string $stage = null)
+    public function run(?string $stage = null): int
     {
         $this->head(
             'Deploy recent code changes.',
@@ -65,7 +57,7 @@ class CodeUpAction extends StageAwareBaseAction
         // Ask for remote
         // or create one
         // or pick the only one
-        if (! $upstream = $this->getUpstream($git)) {
+        if (($upstream = $this->getUpstream($git)) === '' || ($upstream = $this->getUpstream($git)) === '0') {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -75,17 +67,15 @@ class CodeUpAction extends StageAwareBaseAction
         try {
             if ($log = $git->getWorkingCopy()->log(
                 '--format=(%h) %cr: %s ',
-                "$upstream/master..HEAD"
+                "{$upstream}/master..HEAD"
             )) {
                 $this->noteBlock('Recent changes:' . PHP_EOL . trim($log));
             }
-        } catch (Throwable $e) {
+        } catch (Throwable) {
         }
 
-        if (! $git->getWorkingCopy()->hasChanges()) {
-            if (! $this->confirm('About to push latest commits, proceed?', true)) {
-                return ExitCode::OK;
-            }
+        if (! $git->getWorkingCopy()->hasChanges() && ! $this->confirm('About to push latest commits, proceed?', true)) {
+            return ExitCode::OK;
         }
 
         if ($status = $git->getWorkingCopy()->getStatus()) {
@@ -93,10 +83,13 @@ class CodeUpAction extends StageAwareBaseAction
             $this->noteBlock('Uncommitted changes:' . PHP_EOL . $status);
             $defaultMessage = $this->interactive ? null : 'init Craft';
 
-            if (! $msg = $this->ask(
+            if (($msg = $this->ask(
                 'Enter a commit message, or leave it empty to abort the commit',
                 $defaultMessage
-            )) {
+            )) === '' || ($msg = $this->ask(
+                'Enter a commit message, or leave it empty to abort the commit',
+                $defaultMessage
+            )) === '0') {
                 $this->errorBlock('Abort');
 
                 return ExitCode::UNSPECIFIED_ERROR;
@@ -115,14 +108,14 @@ class CodeUpAction extends StageAwareBaseAction
         }
 
         try {
-            $this->section("git push ($msg)");
+            $this->section("git push ({$msg})");
             $git->getWorkingCopy()->getWrapper()->streamOutput();
             $git->push($upstream, 'master');
-        } catch (GitException $exception) {
-            $lines = count(explode(PHP_EOL, $exception->getMessage()));
+        } catch (GitException $gitException) {
+            $lines = count(explode(PHP_EOL, $gitException->getMessage()));
             $this->output->write(str_repeat("\x1B[1A\x1B[2K", $lines));
             $this->errorBlock('Ooops.');
-            $this->output->write("<fg=red>{$exception->getMessage()}</>");
+            $this->output->write("<fg=red>{$gitException->getMessage()}</>");
 
             return ExitCode::UNSPECIFIED_ERROR;
         }
@@ -138,17 +131,15 @@ class CodeUpAction extends StageAwareBaseAction
      *
      * @return string upstream
      */
-    protected function getUpstream(Git $git): string
+    protected function getUpstream(Git $git): int|string
     {
         // Get configured remote & sshUrl
         $upstream = explode('/', $this->stage->gitRemote)[0];
         $sshUrl = $this->stage->sshUrl;
 
         // Nothing found
-        if (! $remotes = $git->getRemotes()) {
-            if ($this->confirm("No git remotes configured. Do you want to add '{$sshUrl}'?")) {
-                return $git->addRemote($sshUrl);
-            }
+        if (! $remotes = $git->getRemotes() && $this->confirm("No git remotes configured. Do you want to add '{$sshUrl}'?")) {
+            return $git->addRemote($sshUrl);
         }
 
         // Auto setup
@@ -177,9 +168,9 @@ class CodeUpAction extends StageAwareBaseAction
                 $path = Craft::parseEnv('@root') . DIRECTORY_SEPARATOR . $volume->path;
                 FileHelper::writeGitignoreFile($path);
             }
-        } catch (Throwable $exception) {
+        } catch (Throwable $throwable) {
             $this->line(PHP_EOL);
-            $this->line($exception->getMessage());
+            $this->line($throwable->getMessage());
             $this->line(PHP_EOL);
         }
     }

@@ -16,23 +16,16 @@ class VolumesUpAction extends StageAwareBaseAction
     use ConsoleOutputHelper;
     use PathHelper;
 
-    public $dryRun = false;
+    public bool $dryRun = false;
 
-    public $verbose = false;
-
-    /**
-     * @var LocalVolume
-     */
-    protected $localVolume;
+    public bool $verbose = false;
 
     public function __construct(
         string $id,
         Commands $controller,
-        LocalVolume $localVolume,
+        protected LocalVolume $localVolume,
         array $config = []
     ) {
-        $this->localVolume = $localVolume;
-
         parent::__construct($id, $controller, $config);
     }
 
@@ -42,10 +35,9 @@ class VolumesUpAction extends StageAwareBaseAction
      * @param string|null $stage Name of the stage config. Use '?' to choose.
      * @param array|null $volumeHandles Limit the command to specific volumes
      *
-     * @return int
      * @throws VolumeNotFound
      */
-    public function run(?string $stage = null, ?array $volumeHandles = null)
+    public function run(?string $stage = null, ?array $volumeHandles = null): int
     {
         $this->head(
             'Copy volumes up.',
@@ -60,7 +52,7 @@ class VolumesUpAction extends StageAwareBaseAction
         try {
             $volumes = $this->localVolume->filterByHandle($volumeHandles);
             $lastVolume = end($volumes);
-        } catch (VolumeNotFound $exception) {
+        } catch (VolumeNotFound) {
             $this->line('No local volumes found.' . PHP_EOL);
 
             return ExitCode::OK;
@@ -77,7 +69,7 @@ class VolumesUpAction extends StageAwareBaseAction
             );
 
             if (! is_dir($path)) {
-                $this->errorBlock("$path does not exist");
+                $this->errorBlock("{$path} does not exist");
 
                 continue;
             }

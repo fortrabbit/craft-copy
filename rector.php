@@ -3,7 +3,12 @@
 declare(strict_types=1);
 
 use craft\rector\SetList as CraftSetList;
+use Rector\CodeQuality\Rector\If_\SimplifyIfReturnBoolRector;
+use Rector\CodeQuality\Rector\Ternary\UnnecessaryTernaryExpressionRector;
+use Rector\CodingStyle\Rector\ClassConst\RemoveFinalFromConstRector;
+use Rector\CodingStyle\Rector\Encapsed\EncapsedStringsToSprintfRector;
 use Rector\Core\Configuration\Option;
+use Rector\Core\ValueObject\PhpVersion;
 use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -11,10 +16,14 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 return static function (ContainerConfigurator $containerConfigurator): void {
     // Optional directories to skip
     $parameters = $containerConfigurator->parameters();
-    /** @noinspection PhpParamsInspection */
+    $parameters->set(Option::PHP_VERSION_FEATURES, PhpVersion::PHP_80);
     $parameters->set(Option::SKIP, [
-        // __DIR__ . '/vendor/nystudio107/craft-seomatic/src/integrations',
+            EncapsedStringsToSprintfRector::class,
+            RemoveFinalFromConstRector::class,
+            SimplifyIfReturnBoolRector::class,
+            UnnecessaryTernaryExpressionRector::class
     ]);
+
 
     // Craft Version
     $containerConfigurator->import(CraftSetList::CRAFT_CMS_40);

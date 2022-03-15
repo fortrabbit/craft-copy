@@ -21,7 +21,7 @@
         }
     ],
     "require": {
-        "php": "^8.0.2|^9.0",
+        "php": "^8.0.2",
         "albertofem/rsync-lib": "^1.0.0",
         "symplify/git-wrapper": "^10.0",
         "craftcms/cms": "^3.5.0",
@@ -55,6 +55,7 @@
         "bin/craft-copy-import-db.php",
         "bin/craft-copy-env.php"
     ],
+
     "config": {
         "allow-plugins": {
             "yiisoft/yii2-composer": true,
@@ -62,6 +63,10 @@
             "composer/package-versions-deprecated": true,
             "craftcms/plugin-installer": true,
             "fortrabbit/craft-auto-migrate": true
+        },
+        "sort-packages": true,
+        "platform": {
+            "php": "8.0.15"
         }
     },
     "minimum-stability": "dev",

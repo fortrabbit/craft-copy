@@ -22,7 +22,7 @@ class Database extends Component
      * @throws \craft\errors\ShellCommandException
      * @throws \yii\base\Exception
      */
-    public function export(?string $file = null)
+    public function export(?string $file = null): string
     {
         $file = $this->prepareFile($file);
 
@@ -40,7 +40,7 @@ class Database extends Component
      * @throws \craft\errors\ShellCommandException
      * @throws \yii\base\Exception
      */
-    public function import(?string $file = null)
+    public function import(?string $file = null): string
     {
         $file = $this->prepareFile($file);
 
@@ -49,12 +49,7 @@ class Database extends Component
         return $file;
     }
 
-    /**
-     * @param string $file
-     *
-     * @return string
-     */
-    protected function prepareFile($file)
+    protected function prepareFile(string $file): string
     {
         $file = FileHelper::normalizePath($file);
         $dir = dirname($file);

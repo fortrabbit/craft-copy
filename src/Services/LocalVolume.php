@@ -16,14 +16,8 @@ use fortrabbit\Copy\Exceptions\VolumeNotFound;
  */
 class LocalVolume
 {
-    /**
-     * @var Volumes
-     */
-    protected $volumeService;
-
-    public function __construct(Volumes $volumeService)
+    public function __construct(protected Volumes $volumeService)
     {
-        $this->volumeService = $volumeService;
     }
 
     /**
@@ -53,23 +47,21 @@ class LocalVolume
             }
         }
 
-        if (count($volumes) === 0) {
+        if ($volumes === []) {
             throw new VolumeNotFound();
         }
 
         return $volumes;
     }
 
-    protected function getRelativePathFromVolume(LocalVolumeInterface $volume): ?string
+    protected function getRelativePathFromVolume(LocalVolumeInterface $volume): string
     {
         // Parse ENV var in subdirectories
         $parts = explode(DIRECTORY_SEPARATOR, $volume->getRootPath());
         $path = implode(
             DIRECTORY_SEPARATOR,
             array_map(
-                function ($part) {
-                    return Craft::parseEnv($part);
-                },
+                fn($part) => Craft::parseEnv($part),
                 $parts
             )
         );

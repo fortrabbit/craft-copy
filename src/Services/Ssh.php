@@ -15,12 +15,24 @@ use Symfony\Component\Process\Process;
  */
 class Ssh extends Component
 {
+    /**
+     * @var string
+     */
     public const UPLOAD_COMMAND = 'cat {src} | gzip | ssh {remote} "zcat > {target}"';
 
+    /**
+     * @var string
+     */
     public const DOWNLOAD_COMMAND = 'ssh {remote} "cat {src} | gzip" | zcat > {target}';
 
+    /**
+     * @var string
+     */
     public const REMOTE_EXEC_COMMAND = 'ssh {remote} {options} "{command}"';
 
+    /**
+     * @var int
+     */
     public const SSH_EXEC_TIMEOUT = 1200;
 
     /**
@@ -40,17 +52,13 @@ class Ssh extends Component
 
     // Public Methods
     // =========================================================================
-
     /**
      * Upload a single file
      *
-     * @param string $src
-     * @param string $target
      *
-     * @return bool
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
      */
-    public function upload($src, $target)
+    public function upload(string $src, string $target): bool
     {
         $process = Process::fromShellCommandline($this->getUploadCommand($src, $target));
         $process->setTimeout(self::SSH_EXEC_TIMEOUT);
@@ -68,13 +76,10 @@ class Ssh extends Component
     /**
      * Download a single file
      *
-     * @param string $src
-     * @param string $target
      *
-     * @return bool
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
      */
-    public function download($src, $target)
+    public function download(string $src, string $target): bool
     {
         $process = Process::fromShellCommandline($this->getDownloadCommand($src, $target));
         $process->setTimeout(self::SSH_EXEC_TIMEOUT);
@@ -104,12 +109,11 @@ class Ssh extends Component
     /**
      * Execute a command via ssh on remote
      *
-     * @return bool
      * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException
      * @throws \fortrabbit\Copy\Exceptions\PluginNotInstalledException
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
      */
-    public function exec(string $cmd)
+    public function exec(string $cmd): bool
     {
         $tokens = [
             '{remote}' => $this->remote,
@@ -136,9 +140,11 @@ class Ssh extends Component
         if (stristr($out, 'Could not open input file')) {
             throw new CraftNotInstalledException();
         }
+
         if (stristr($err, 'Could not open input file')) {
             throw new CraftNotInstalledException();
         }
+
         if (stristr($err, 'Unknown command')) {
             throw new PluginNotInstalledException();
         }
@@ -158,12 +164,12 @@ class Ssh extends Component
      *
      * @return mixed
      */
-    public function getOutput()
+    public function getOutput(): string
     {
         return $this->output;
     }
 
-    protected function getUploadCommand(string $src, string $target)
+    protected function getUploadCommand(string $src, string $target): string
     {
         $cmd = self::UPLOAD_COMMAND;
         $tokens = [
@@ -180,7 +186,7 @@ class Ssh extends Component
         $this->verbose = $verbose;
     }
 
-    protected function getDownloadCommand(string $src, string $target)
+    protected function getDownloadCommand(string $src, string $target): string
     {
         $cmd = self::DOWNLOAD_COMMAND;
         $tokens = [

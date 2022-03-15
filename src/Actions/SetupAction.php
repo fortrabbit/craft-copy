@@ -19,8 +19,14 @@ class SetupAction extends Action
     use ConsoleOutputHelper;
     use PathHelper;
 
+    /**
+     * @var string
+     */
     public const HELP_MYSQLDUMP_URL = 'https://github.com/fortrabbit/craft-copy#the-mysqldump-command-does-not-exist';
 
+    /**
+     * @var string
+     */
     public const HELP_SSH_URL = 'https://help.fortrabbit.com/ssh-keys';
 
     /**
@@ -31,13 +37,12 @@ class SetupAction extends Action
     /**
      * Connect local dev with fortrabbit App
      *
-     * @return int
      * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException
      * @throws \fortrabbit\Copy\Exceptions\PluginNotInstalledException
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
      * @throws \yii\base\Exception
      */
-    public function run()
+    public function run(): int
     {
         $this->input->setInteractive(true);
         $app = $this->ask("What's the name of your fortrabbit App?", '');
@@ -57,7 +62,7 @@ class SetupAction extends Action
 
         $stageName = $this->anticipate(
             "What's a good name for the stage of the fortrabbit App? <fg=default>(use arrow keys or type)</>",
-            [$app, 'production', "$app-prod", "$app-staging", 'prod', 'staging'],
+            [$app, 'production', "{$app}-prod", "{$app}-staging", 'prod', 'staging'],
             $app
         );
 
@@ -105,7 +110,7 @@ class SetupAction extends Action
      */
     protected function guessRegion(string $app): ?string
     {
-        if ($records = dns_get_record("$app.frb.io", DNS_CNAME)) {
+        if ($records = dns_get_record("{$app}.frb.io", DNS_CNAME)) {
             return explode('.', $records[0]['target'])[1];
         }
 
@@ -120,14 +125,14 @@ class SetupAction extends Action
         $config = new StageConfig();
         $config->app = $app;
         $config->sshUrl = "{$app}@deploy.{$region}.frbit.com";
-        $config->gitRemote = "$app/master";
+        $config->gitRemote = "{$app}/master";
         $config->setName($stageName);
         Plugin::getInstance()->stage->setName($stageName);
 
         // Check if file already exist
         if (file_exists(Plugin::getInstance()->stage->getFullPathToConfig())) {
             $file = Plugin::getInstance()->stage->getConfigFileName();
-            if (! $this->confirm("Do you want to overwrite your existing config? ($file)", true)) {
+            if (! $this->confirm("Do you want to overwrite your existing config? ({$file})", true)) {
                 return $config;
             }
         }
@@ -141,13 +146,13 @@ class SetupAction extends Action
             Plugin::ENV_DEFAULT_STAGE => $stageName,
         ] as $name => $value) {
             Craft::$app->getConfig()->setDotEnvVar($name, $value);
-            putenv("$name=$value");
+            putenv("{$name}={$value}");
         }
 
         return $config;
     }
 
-    protected function checkAndWrite(string $message, bool $success)
+    protected function checkAndWrite(string $message, bool $success): bool
     {
         $this->output->write(PHP_EOL . $message);
         $this->output->write($success ? ' <info>OK</info>' : ' <error>⚠ Error</error>');
@@ -160,16 +165,15 @@ class SetupAction extends Action
         $process = Process::fromShellCommandline($cmd, CRAFT_BASE_PATH);
         $exitCode = $process->run();
 
-        return $exitCode === 0 ? true : false;
+        return $exitCode === 0;
     }
 
     /**
-     * @return bool
      * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException
      * @throws \fortrabbit\Copy\Exceptions\PluginNotInstalledException
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
      */
-    protected function setupRemote(StageConfig $config)
+    protected function setupRemote(StageConfig $config): bool
     {
         $plugin = Plugin::getInstance();
 

@@ -11,16 +11,13 @@ use ostark\Yii2ArtisanBridge\base\Action;
 
 class DeprecatedConfigFixer
 {
+    /**
+     * @var string
+     */
     public const ENV_DEFAULT_CONFIG = 'DEFAULT_CONFIG';
 
-    private $action;
-
-    private $stage;
-
-    public function __construct(Action $action, StageConfigAccess $stage)
+    public function __construct(private Action $action, private StageConfigAccess $stage)
     {
-        $this->action = $action;
-        $this->stage = $stage;
     }
 
     public static function hasDeprecatedConfig(): bool
@@ -29,7 +26,7 @@ class DeprecatedConfigFixer
             return true;
         }
 
-        if (count(glob(Craft::$app->getPath()->getConfigPath() . '/fortrabbit.*'))) {
+        if ((is_countable(glob(Craft::$app->getPath()->getConfigPath() . '/fortrabbit.*')) ? count(glob(Craft::$app->getPath()->getConfigPath() . '/fortrabbit.*')) : 0) > 0) {
             return true;
         }
 

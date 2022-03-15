@@ -12,21 +12,15 @@ use InvalidArgumentException;
  */
 class Rsync
 {
-    public $remoteUrl;
-
-    protected $rsync;
-
-    protected function __construct(RsyncLib $rsync, ?string $remoteUrl = null)
+    protected function __construct(protected RsyncLib $rsync, public ?string $remoteUrl = null)
     {
-        $this->rsync = $rsync;
-        $this->remoteUrl = $remoteUrl;
     }
 
-    public static function remoteFactory($remoteUrl)
+    public static function remoteFactory($remoteUrl): \fortrabbit\Copy\Services\Rsync
     {
-        if (strpos($remoteUrl, '@') === false) {
+        if (!str_contains($remoteUrl, '@')) {
             throw new InvalidArgumentException(
-                "SSH remote URL must contain a user@host, '$remoteUrl' given."
+                "SSH remote URL must contain a user@host, '{$remoteUrl}' given."
             );
         }
 

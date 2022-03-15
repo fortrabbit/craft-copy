@@ -41,7 +41,7 @@ trait DeployHooksHelper
             return true;
         }
 
-        $this->head("Run $when scripts", null, false);
+        $this->head("Run {$when} scripts", null, false);
 
         foreach ($scripts as $script) {
             $this->cmdBlock($script);
@@ -53,9 +53,10 @@ trait DeployHooksHelper
 
                 return false;
             }
+
             $outputLines = explode(PHP_EOL, $process->getOutput());
             foreach ($outputLines as $line) {
-                $this->output->writeln("   $line");
+                $this->output->writeln("   {$line}");
             }
         }
 

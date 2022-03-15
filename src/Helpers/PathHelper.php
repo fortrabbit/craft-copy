@@ -10,10 +10,10 @@ trait PathHelper
     {
         $path = rtrim(trim($path), '/');
 
-        if (strpos($path, './') === 0) {
-            return "$path/";
+        if (str_starts_with($path, './')) {
+            return "{$path}/";
         }
 
-        return "./$path/";
+        return "./{$path}/";
     }
 }
