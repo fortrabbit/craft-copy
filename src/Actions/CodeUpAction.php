@@ -84,13 +84,10 @@ class CodeUpAction extends StageAwareBaseAction
             $this->noteBlock('Uncommitted changes:' . PHP_EOL . $status);
             $defaultMessage = $this->interactive ? null : 'init Craft';
 
-            if (($msg = $this->ask(
+            if (! $msg = $this->ask(
                 'Enter a commit message, or leave it empty to abort the commit',
                 $defaultMessage
-            )) === '' || ($msg = $this->ask(
-                'Enter a commit message, or leave it empty to abort the commit',
-                $defaultMessage
-            )) === '0') {
+            )) {
                 $this->errorBlock('Abort');
 
                 return ExitCode::UNSPECIFIED_ERROR;
