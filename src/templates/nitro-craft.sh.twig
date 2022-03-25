@@ -66,6 +66,7 @@ preflight() {
     # Create custom ssh config we mount later in the container
     if [ ! -f "$FR_CONTAINER_SSH_CONFIG_FILE" ]; then
         echo "Creating $FR_CONTAINER_SSH_CONFIG_FILE"
+        mkdir -p "$(dirname "$FR_CONTAINER_SSH_CONFIG_FILE")"
         echo "PubkeyAcceptedKeyTypes +ssh-rsa" > $FR_CONTAINER_SSH_CONFIG_FILE
         echo "PreferredAuthentications publickey" >> $FR_CONTAINER_SSH_CONFIG_FILE
         echo "StrictHostKeyChecking no" >> $FR_CONTAINER_SSH_CONFIG_FILE
