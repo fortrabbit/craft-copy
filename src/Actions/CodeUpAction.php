@@ -5,30 +5,24 @@ declare(strict_types=1);
 namespace fortrabbit\Copy\Actions;
 
 use Craft;
+use craft\helpers\App;
 use craft\helpers\FileHelper;
 use Exception;
 use fortrabbit\Copy\Services\Git;
-use fortrabbit\Copy\Services\LocalVolume;
-use GitWrapper\Exception\GitException;
+use fortrabbit\Copy\Services\LocalFilesystem;
+use Symplify\GitWrapper\Exception\GitException;
 use ostark\Yii2ArtisanBridge\base\Commands;
 use Throwable;
 use yii\console\ExitCode;
 
 class CodeUpAction extends StageAwareBaseAction
 {
-    /**
-     * @var LocalVolume
-     */
-    protected $localVolume;
-
     public function __construct(
         string $id,
         Commands $controller,
-        LocalVolume $localVolume,
+        protected LocalFilesystem $localFilesystem,
         array $config = []
     ) {
-        $this->localVolume = $localVolume;
-
         parent::__construct($id, $controller, $config);
     }
 
@@ -37,10 +31,9 @@ class CodeUpAction extends StageAwareBaseAction
      *
      * @param string|null $stage Name of the stage config
      *
-     * @return int
      * @throws Exception
      */
-    public function run(?string $stage = null)
+    public function run(?string $stage = null): int
     {
         $this->head(
             'Deploy recent code changes.',
@@ -59,13 +52,13 @@ class CodeUpAction extends StageAwareBaseAction
         if (count($localBranches) > 1) {
             $question = 'Select a local branch (checkout):';
             $branch = str_replace('* ', '', $this->choice($question, $localBranches, $branch));
-            $git->run('checkout', $branch);
+            $git->run('checkout', [$branch]);
         }
 
         // Ask for remote
         // or create one
         // or pick the only one
-        if (! $upstream = $this->getUpstream($git)) {
+        if (!($upstream = $this->getUpstream($git))) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -75,17 +68,15 @@ class CodeUpAction extends StageAwareBaseAction
         try {
             if ($log = $git->getWorkingCopy()->log(
                 '--format=(%h) %cr: %s ',
-                "$upstream/master..HEAD"
+                "{$upstream}/master..HEAD"
             )) {
                 $this->noteBlock('Recent changes:' . PHP_EOL . trim($log));
             }
-        } catch (Throwable $e) {
+        } catch (Throwable) {
         }
 
-        if (! $git->getWorkingCopy()->hasChanges()) {
-            if (! $this->confirm('About to push latest commits, proceed?', true)) {
-                return ExitCode::OK;
-            }
+        if (! $git->getWorkingCopy()->hasChanges() && ! $this->confirm('About to push latest commits, proceed?', true)) {
+            return ExitCode::OK;
         }
 
         if ($status = $git->getWorkingCopy()->getStatus()) {
@@ -115,14 +106,14 @@ class CodeUpAction extends StageAwareBaseAction
         }
 
         try {
-            $this->section("git push ($msg)");
+            $this->section("git push ({$msg})");
             $git->getWorkingCopy()->getWrapper()->streamOutput();
-            $git->push($upstream, 'master');
-        } catch (GitException $exception) {
-            $lines = count(explode(PHP_EOL, $exception->getMessage()));
+            $git->push($upstream, "{$branch}:master");
+        } catch (GitException $gitException) {
+            $lines = count(explode(PHP_EOL, $gitException->getMessage()));
             $this->output->write(str_repeat("\x1B[1A\x1B[2K", $lines));
             $this->errorBlock('Ooops.');
-            $this->output->write("<fg=red>{$exception->getMessage()}</>");
+            $this->output->write("<fg=red>{$gitException->getMessage()}</>");
 
             return ExitCode::UNSPECIFIED_ERROR;
         }
@@ -143,12 +134,11 @@ class CodeUpAction extends StageAwareBaseAction
         // Get configured remote & sshUrl
         $upstream = explode('/', $this->stage->gitRemote)[0];
         $sshUrl = $this->stage->sshUrl;
+        $remotes = $git->getRemotes();
 
         // Nothing found
-        if (! $remotes = $git->getRemotes()) {
-            if ($this->confirm("No git remotes configured. Do you want to add '{$sshUrl}'?")) {
-                return $git->addRemote($sshUrl);
-            }
+        if ([] === $remotes && $this->confirm("No git remotes configured. Do you want to add '{$sshUrl}'?")) {
+            return $git->addRemote($sshUrl);
         }
 
         // Auto setup
@@ -172,14 +162,14 @@ class CodeUpAction extends StageAwareBaseAction
     protected function assureVolumesAreIgnored(): void
     {
         try {
-            $volumes = $this->localVolume->filterByHandle();
+            $volumes = $this->localFilesystem->filterByHandle();
             foreach ($volumes as $volume) {
-                $path = Craft::parseEnv('@root') . DIRECTORY_SEPARATOR . $volume->path;
+                $path = App::parseEnv('@root') . DIRECTORY_SEPARATOR . $volume->path;
                 FileHelper::writeGitignoreFile($path);
             }
-        } catch (Throwable $exception) {
+        } catch (Throwable $throwable) {
             $this->line(PHP_EOL);
-            $this->line($exception->getMessage());
+            $this->line($throwable->getMessage());
             $this->line(PHP_EOL);
         }
     }

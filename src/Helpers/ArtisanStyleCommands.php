@@ -13,7 +13,7 @@ use ostark\Yii2ArtisanBridge\base\Commands;
  */
 class ArtisanStyleCommands extends Commands
 {
-    public function getHelpSummary()
+    public function getHelpSummary(): string
     {
         return 'Craft Copy - deployment tooling for fortrabbit.';
     }

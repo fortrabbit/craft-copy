@@ -15,7 +15,6 @@ class DbDownAction extends StageAwareBaseAction
      *
      * @param string|null $stage Name of the stage config
      *
-     * @return int
      *
      * @throws \craft\errors\FileException
      * @throws \craft\errors\ShellCommandException
@@ -24,7 +23,7 @@ class DbDownAction extends StageAwareBaseAction
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
      * @throws \yii\base\Exception
      */
-    public function run(?string $stage = null)
+    public function run(?string $stage = null): int
     {
         $plugin = Plugin::getInstance();
         $path = './storage/';
@@ -36,7 +35,7 @@ class DbDownAction extends StageAwareBaseAction
         $this->head(
             'Export DB from fortrabbit, download and import locally.',
             $this->getContextHeadline($this->stage),
-            $this->interactive ? true : false
+            $this->interactive
         );
 
         if (! $this->confirm('Are you sure?', true)) {
@@ -56,7 +55,7 @@ class DbDownAction extends StageAwareBaseAction
         try {
             $plugin->ssh->exec("php craft copy/db/to-file {$transferFile} --interactive=0");
             $bar->advance();
-        } catch (PluginNotInstalledException $e) {
+        } catch (PluginNotInstalledException) {
             $this->errorBlock('Make sure to deploy the plugin first.');
         }
 

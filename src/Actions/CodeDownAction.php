@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace fortrabbit\Copy\Actions;
 
-use GitWrapper\Exception\GitException;
+use Symplify\GitWrapper\Exception\GitException;
 use yii\console\ExitCode;
 
 class CodeDownAction extends StageAwareBaseAction
@@ -13,10 +13,8 @@ class CodeDownAction extends StageAwareBaseAction
      * Git pull
      *
      * @param string|null $stage Name of the stage config
-     *
-     * @return int
      */
-    public function run(?string $stage = null)
+    public function run(?string $stage = null): int
     {
         $this->head(
             'Pull recent code changes for fortrabbit App.',
@@ -32,7 +30,7 @@ class CodeDownAction extends StageAwareBaseAction
         if (count($localBranches) > 1) {
             $question = 'Select a local branch (checkout):';
             $branch = str_replace('* ', '', $this->choice($question, $localBranches, $branch));
-            $git->run('checkout', $branch);
+            $git->run('checkout', [$branch]);
         }
 
         // Run 'before' commands and stop on error
@@ -45,14 +43,14 @@ class CodeDownAction extends StageAwareBaseAction
         [$upstream, $branch] = explode('/', $remote);
 
         try {
-            $this->section("git pull ($upstream/$branch)");
+            $this->section("git pull ({$upstream}/{$branch})");
             $git->getWorkingCopy()->getWrapper()->streamOutput();
             $git->pull($upstream, $branch);
-        } catch (GitException $exception) {
-            $lines = count(explode(PHP_EOL, $exception->getMessage()));
+        } catch (GitException $gitException) {
+            $lines = count(explode(PHP_EOL, $gitException->getMessage()));
             $this->output->write(str_repeat("\x1B[1A\x1B[2K", $lines));
             $this->errorBlock('Ooops.');
-            $this->output->write("<fg=red>{$exception->getMessage()}</>");
+            $this->output->write("<fg=red>{$gitException->getMessage()}</>");
 
             return ExitCode::UNSPECIFIED_ERROR;
         }

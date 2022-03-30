@@ -26,12 +26,12 @@ abstract class StageAwareBaseAction extends Action
     /**
      * @var string Name of the Environment (to apply multi staging configs)
      */
-    public $env = null;
+    public $env;
 
     /**
      * @var \fortrabbit\Copy\Models\StageConfig|null
      */
-    protected $stage = null;
+    protected $stage;
 
     /**
      * @var \fortrabbit\Copy\Plugin
@@ -49,18 +49,10 @@ abstract class StageAwareBaseAction extends Action
      * @return bool
      * @throws \yii\base\Exception
      */
-    public function beforeRun()
+    protected function beforeRun()
     {
-        if (DeprecatedConfigFixer::hasDeprecatedConfig()) {
-            $fixer = new DeprecatedConfigFixer($this, $this->plugin->stage);
-            $fixer->showWarning();
-            $fixer->askAndRun();
-
-            return false;
-        }
-
         // No stage config files found?
-        if (count($this->plugin->stage->getConfigOptions()) === 0) {
+        if ($this->plugin->stage->getConfigOptions() === []) {
             $this->errorBlock(
                 'The plugin is not configured yet. Make sure to run this setup command first:'
             );
@@ -90,7 +82,7 @@ abstract class StageAwareBaseAction extends Action
         try {
             $this->plugin->stage->setName($stageName);
             $this->stage = Plugin::getInstance()->stage->get();
-        } catch (StageConfigNotFoundException $exception) {
+        } catch (StageConfigNotFoundException) {
             $configFile = $this->plugin->stage->getFullPathToConfig();
             $this->errorBlock(["Unable to find deploy config file '{$configFile}'"]);
 
@@ -100,7 +92,7 @@ abstract class StageAwareBaseAction extends Action
         return true;
     }
 
-    public function afterRun()
+    protected function afterRun()
     {
         Event::on(
             Controller::class,
@@ -131,7 +123,7 @@ abstract class StageAwareBaseAction extends Action
         $action = new ReflectionClass(static::class);
         $runMethod = $action->getMethod('run');
 
-        if (count($runMethod->getParameters()) === 0) {
+        if ($runMethod->getParameters() === []) {
             throw new InvalidArgumentException('function run() has no parameters.');
         }
 

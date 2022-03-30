@@ -6,9 +6,9 @@ namespace fortrabbit\Copy\Services;
 
 use Exception;
 use fortrabbit\Copy\Plugin;
-use GitWrapper\Exception\GitException;
-use GitWrapper\GitWorkingCopy;
-use GitWrapper\GitWrapper;
+use Symplify\GitWrapper\Exception\GitException;
+use Symplify\GitWrapper\GitWorkingCopy;
+use Symplify\GitWrapper\GitWrapper;
 use InvalidArgumentException;
 use LogicException;
 
@@ -17,26 +17,18 @@ use LogicException;
  */
 final class Git
 {
-    /**
-     * @var \GitWrapper\GitWorkingCopy
-     */
-    private $gitWorkingCopy;
-
-    private function __construct(GitWorkingCopy $gitWorkingCopy)
+    private function __construct(private GitWorkingCopy $gitWorkingCopy)
     {
-        $this->gitWorkingCopy = $gitWorkingCopy;
     }
 
     /**
      * Directory Factory
      *
      * @param string $directory Path to the directory containing the working copy.
-     *
-     * @return \fortrabbit\Copy\Services\Git
      */
-    public static function fromDirectory(string $directory)
+    public static function fromDirectory(string $directory): \fortrabbit\Copy\Services\Git
     {
-        $wrapper = new GitWrapper();
+        $wrapper = new GitWrapper('git');
         $wrapper->setTimeout(300);
 
         return new self($wrapper->workingCopy($directory));
@@ -48,16 +40,14 @@ final class Git
      * @param string $repository The Git URL of the repository being cloned.
      * @param string|null $directory The directory that the repository will be cloned into.
      * @param mixed[] $options An associative array of command line options.
-     *
-     * @return \fortrabbit\Copy\Services\Git
      */
     public static function fromClone(
         string $repository,
         ?string $directory = null,
         array $options = [
         ]
-    ) {
-        $wrapper = new GitWrapper();
+    ): \fortrabbit\Copy\Services\Git {
+        $wrapper = new GitWrapper('git');
         $wrapper->setTimeout(300);
 
         return new self($wrapper->cloneRepository($repository, $directory, $options));
@@ -84,6 +74,9 @@ final class Git
         return null;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getLocalBranches(): array
     {
         $localBranches = [];
@@ -96,6 +89,7 @@ final class Git
 
     /**
      * @param string|null $for 'push' or 'pull'
+     * @return mixed[]
      */
     public function getRemotes(?string $for = 'push'): array
     {
@@ -111,7 +105,7 @@ final class Git
 
         try {
             $remotes = $this->gitWorkingCopy->getRemotes();
-        } catch (GitException $e) {
+        } catch (GitException) {
             return [];
         }
 
@@ -124,17 +118,15 @@ final class Git
 
     /**
      * Returns remote tracking upstream/branch for HEAD.
-     *
-     * @param bool $includeBranch
      */
-    public function getTracking($includeBranch = false): ?string
+    public function getTracking(bool $includeBranch = false): ?string
     {
         try {
-            $result = $this->run('rev-parse', '@{u}', [
+            $result = $this->run('rev-parse', ['@{u}', [
                 'abbrev-ref' => true,
                 'symbolic-full-name' => true,
-            ]);
-        } catch (GitException $gitException) {
+            ]]);
+        } catch (GitException) {
             return null;
         }
 
@@ -146,10 +138,7 @@ final class Git
         return explode('/', $result)[0];
     }
 
-    /**
-     * @param array ...$argsAndOptions
-     */
-    public function run(string $command, ...$argsAndOptions): string
+    public function run(string $command, array $argsAndOptions = []): string
     {
         return $this->gitWorkingCopy->run($command, $argsAndOptions);
     }
@@ -157,7 +146,7 @@ final class Git
     /**
      * @return string Name of the remote
      */
-    public function addRemote(string $sshRemote)
+    public function addRemote(string $sshRemote): string
     {
         if (! stristr($sshRemote, 'frbit.com')) {
             throw new InvalidArgumentException(
@@ -182,13 +171,12 @@ final class Git
     /**
      * Create .gitignore or adjust the existing
      *
-     * @return bool
      * @throws Exception
      */
-    public function assureDotGitignore()
+    public function assureDotGitignore(): bool
     {
         $path = $this->getWorkingCopy()->getDirectory();
-        $gitignoreFile = "$path/.gitignore";
+        $gitignoreFile = "{$path}/.gitignore";
         $gitignoreExampleFile = Plugin::PLUGIN_ROOT_PATH . '/.gitignore.example';
 
         if (! file_exists($gitignoreExampleFile)) {
@@ -205,7 +193,7 @@ final class Git
         }
 
         // Append existing .gitignore
-        if (strpos($gitignored, '.sql') === false) {
+        if (!str_contains($gitignored, '.sql')) {
             $gitignored .= PHP_EOL;
             $gitignored .= PHP_EOL . '# Prevent to .sql files (added by fortrabbit/craft-copy)';
             $gitignored .= PHP_EOL . '*.sql' . PHP_EOL;

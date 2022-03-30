@@ -11,8 +11,11 @@ use craft\helpers\StringHelper;
  * Class that represents the yml config
  * see src/fortrabbit.example.yml
  */
-class StageConfig extends Model
+class StageConfig extends Model implements \Stringable
 {
+    /**
+     * @var string[]
+     */
     public const DEPREACTED_PROPERTIES = ['sshPath', 'assetPath'];
 
     /**
@@ -62,6 +65,7 @@ class StageConfig extends Model
             if (in_array($prop, self::DEPREACTED_PROPERTIES, true)) {
                 continue;
             }
+
             $config[$prop] = $value;
         }
 
@@ -76,6 +80,7 @@ class StageConfig extends Model
     /**
      * Converts the model into an array
      * with SnakeCase keys
+     * @return mixed[]
      */
     public function toArray(
         array $fields = [],

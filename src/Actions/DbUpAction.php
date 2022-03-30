@@ -22,7 +22,6 @@ class DbUpAction extends StageAwareBaseAction
      *
      * @param string|null $stage Name of the stage config
      *
-     * @return int
      *
      * @throws \craft\errors\ShellCommandException
      * @throws \fortrabbit\Copy\Exceptions\CraftNotInstalledException
@@ -30,7 +29,7 @@ class DbUpAction extends StageAwareBaseAction
      * @throws \fortrabbit\Copy\Exceptions\RemoteException
      * @throws \yii\base\Exception
      */
-    public function run(?string $stage = null)
+    public function run(?string $stage = null): int
     {
         $plugin = Plugin::getInstance();
         $path = './storage/';
@@ -46,7 +45,7 @@ class DbUpAction extends StageAwareBaseAction
         );
 
         // Always ask (default no), but skip question in non-interactive mode
-        if (! $this->confirm('Are you sure?', $this->force ? true : false)) {
+        if (! $this->confirm('Are you sure?', $this->force)) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -55,10 +54,8 @@ class DbUpAction extends StageAwareBaseAction
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        if ($plugin->ssh->exec('ls vendor/bin/craft-copy-import-db.php | wc -l')) {
-            if (trim($plugin->ssh->getOutput()) !== '1') {
-                return $this->printAndExit(new PluginNotInstalledException());
-            }
+        if ($plugin->ssh->exec('ls vendor/bin/craft-copy-import-db.php | wc -l') && trim($plugin->ssh->getOutput()) !== '1') {
+            return $this->printAndExit(new PluginNotInstalledException());
         }
 
         $bar = $this->createProgressBar($steps);
@@ -80,7 +77,7 @@ class DbUpAction extends StageAwareBaseAction
             $bar->setMessage($messages[] = 'Importing dump on fortrabbit App');
 
             // Try to create storage path first
-            $plugin->ssh->exec("mkdir -p $path");
+            $plugin->ssh->exec("mkdir -p {$path}");
 
             try {
                 $plugin->ssh->exec(
@@ -88,8 +85,8 @@ class DbUpAction extends StageAwareBaseAction
                 );
                 $bar->advance();
                 $bar->setMessage('Database imported');
-            } catch (RemoteException $e) {
-                return $this->printAndExit($e);
+            } catch (RemoteException $remoteException) {
+                return $this->printAndExit($remoteException);
             }
         } else {
             // Step 3: Backup the remote database before importing the uploaded dump
@@ -100,8 +97,8 @@ class DbUpAction extends StageAwareBaseAction
             try {
                 $plugin->ssh->exec("php craft copy/db/to-file {$backupFile} --interactive=0");
                 $bar->advance();
-            } catch (RemoteException $e) {
-                return $this->printAndExit($e);
+            } catch (RemoteException $remoteException) {
+                return $this->printAndExit($remoteException);
             }
 
             // Step 4: Import on remote

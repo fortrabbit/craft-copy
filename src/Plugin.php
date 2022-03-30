@@ -47,14 +47,29 @@ use yii\console\Application as ConsoleApplication;
  */
 class Plugin extends BasePlugin
 {
+    /**
+     * @var string
+     */
     public const DASHBOARD_URL = 'https://dashboard.fortrabbit.com';
 
+    /**
+     * @var int
+     */
     public const DEPLOY_HOOK_TIMEOUT = 300;
 
+    /**
+     * @var string
+     */
     public const ENV_DEFAULT_STAGE = 'DEFAULT_STAGE';
 
+    /**
+     * @var string
+     */
     public const PLUGIN_ROOT_PATH = __DIR__;
 
+    /**
+     * @var array<string, string>
+     */
     public const REGIONS = [
         'us1' => 'US (AWS US-EAST-1 / Virginia)',
         'eu2' => 'EU (AWS EU-WEST-1 / Ireland)',
@@ -124,22 +139,14 @@ class Plugin extends BasePlugin
         $this->setComponents(
             [
                 'stage' => StageConfigAccess::class,
-                'database' => function () {
-                    return new DatabaseService([
-                        'db' => Craft::$app->getDb(),
-                    ]);
-                },
-                'git' => function () {
-                    return GitService::fromDirectory(Craft::getAlias('@root') ?: CRAFT_BASE_PATH);
-                },
-                'rsync' => function () {
-                    return RsyncService::remoteFactory($this->stage->get()->sshUrl);
-                },
-                'ssh' => function () {
-                    return new SshService([
-                        'remote' => $this->stage->get()->sshUrl,
-                    ]);
-                },
+                'database' => fn() => new DatabaseService([
+                    'db' => Craft::$app->getDb(),
+                ]),
+                'git' => fn() => GitService::fromDirectory(Craft::getAlias('@root') ?: CRAFT_BASE_PATH),
+                'rsync' => fn() => RsyncService::remoteFactory($this->stage->get()->sshUrl),
+                'ssh' => fn() => new SshService([
+                    'remote' => $this->stage->get()->sshUrl,
+                ]),
             ]
         );
     }

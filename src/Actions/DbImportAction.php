@@ -17,10 +17,8 @@ class DbImportAction extends Action
      * Import database from file
      *
      * @param string $file Import a sql dump
-     *
-     * @return int
      */
-    public function run(string $file)
+    public function run(string $file): int
     {
         if (! file_exists($file)) {
             $this->errorBlock("File '{$file}' does not exist.");
@@ -47,8 +45,8 @@ class DbImportAction extends Action
             }
 
             return ExitCode::OK;
-        } catch (ShellCommandException $exception) {
-            $this->errorBlock(['Mysql Import error', $exception->getMessage()]);
+        } catch (ShellCommandException $shellCommandException) {
+            $this->errorBlock(['Mysql Import error', $shellCommandException->getMessage()]);
 
             return ExitCode::UNSPECIFIED_ERROR;
         } catch (Exception $exception) {

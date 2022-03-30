@@ -16,8 +16,14 @@ use Symfony\Component\Yaml\Yaml;
  */
 class StageConfigAccess
 {
+    /**
+     * @var string
+     */
     public const FILE_NAME_TEMPLATE = 'fortrabbit.{name}.yaml';
 
+    /**
+     * @var string
+     */
     public const CONFIG_SUBFOLDER = 'craft-copy';
 
     /**
@@ -86,6 +92,7 @@ class StageConfigAccess
      * Iterates over all config files and extracts the middle names
      *
      * @throws \yii\base\Exception
+     * @return string[]
      */
     public function getConfigOptions(): array
     {
@@ -98,9 +105,7 @@ class StageConfigAccess
 
         // extract the prefix of the existing config files
         return array_map(
-            function ($path) use ($suffix, $prefix) {
-                return str_replace($prefix, '', basename($path, $suffix));
-            },
+            fn($path) => str_replace($prefix, '', basename($path, $suffix)),
             $files
         );
     }

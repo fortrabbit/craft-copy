@@ -13,19 +13,17 @@ class FolderDownAction extends StageAwareBaseAction
     use ConsoleOutputHelper;
     use PathHelper;
 
-    public $dryRun = false;
+    public bool $dryRun = false;
 
-    public $verbose = false;
+    public bool $verbose = false;
 
     /**
      * Download a folder
      *
      * @param string|null $stage Name of the stage config
      * @param string|null $folder Directory, relative to the project root, defaults to web/assets
-     *
-     * @return int
      */
-    public function run(?string $stage = null, ?string $folder = null)
+    public function run(?string $stage = null, ?string $folder = null): int
     {
         $this->head(
             'Copy folder down.',

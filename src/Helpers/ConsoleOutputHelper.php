@@ -24,11 +24,7 @@ trait ConsoleOutputHelper
         ?string $remoteUrl = null,
         ?string $volumeHandle = null
     ): void {
-        if ($volumeHandle) {
-            $head = ['Volume', $volumeHandle];
-        } else {
-            $head = ['Key', 'Value'];
-        }
+        $head = $volumeHandle ? ['Volume', $volumeHandle] : ['Key', 'Value'];
 
         $rows = [
             ['Directory', $dir],
@@ -56,21 +52,18 @@ trait ConsoleOutputHelper
         return true;
     }
 
-    /**
-     * @param bool $clear
-     */
-    public function head(string $message, ?string $context = null, $clear = true): void
+    public function head(string $message, ?string $context = null, bool $clear = true): void
     {
-        $messages = ["<options=bold;fg=white>$message</>"];
+        $messages = ["<options=bold;fg=white>{$message}</>"];
 
         // clear the screen
         if ($clear) {
-            $this->output->write(sprintf("\033\143"));
+            $this->output->write("\033\143");
         }
 
         // Add context before the actual message
         if (is_string($context)) {
-            $messages = array_merge([$context], $messages);
+            $messages = [...[$context], ...$messages];
         }
 
         $this->block($messages, null, 'fg=white;', '<comment>▏</comment>', false, false);

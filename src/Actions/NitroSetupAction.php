@@ -13,14 +13,31 @@ class NitroSetupAction extends Action
 {
     use ConsoleOutputHelper;
 
+    /**
+     * @var string
+     */
     private const WRAPPER_SCRIPT = 'nitro-craft';
+
+    /**
+     * @var string
+     */
     private const INTRO_HEADLINE = 'Generate a shell script that will allow Craft Copy to work with Nitro';
+
+    /**
+     * @var string
+     */
     private const INTRO_MESSAGE = 'This script functions as a wrapper for running the craft cli inside a 
                                    Docker container which has the dependencies Craft Copy requires in order to run, 
                                    while still having read/write access to your code, assets + database in Nitro';
 
+    /**
+     * @var string
+     */
     private const OVERWRITE_MESSAGE = 'An entry point file already exists, do you want to overwrite it? (required to apply PHP version change)';
 
+    /**
+     * @var string
+     */
     private const SUCCESS_MESSAGE = 'This script should be run from your host machine (not inside of Nitro) 
                                      and should be used instead of `nitro craft` when running Craft Copy console commands 
                                      (all other Craft console commands should work too)
@@ -40,10 +57,10 @@ class NitroSetupAction extends Action
         $this->block($this->trimSpace(self::INTRO_MESSAGE));
 
         if (file_exists($targetPath)) {
-            if ($this->confirm($this->trimSpace(self::OVERWRITE_MESSAGE)) === false) {
+            if (!$this->confirm($this->trimSpace(self::OVERWRITE_MESSAGE))) {
                 return ExitCode::UNSPECIFIED_ERROR;
             }
-        } elseif ($this->confirm('Do you want to generate the script now?', true) === false) {
+        } elseif (!$this->confirm('Do you want to generate the script now?', true)) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -62,7 +79,7 @@ class NitroSetupAction extends Action
 
     private function trimSpace(string $string): string
     {
-        $string = preg_replace("/[[:blank:]]+/", " ", $string);
+        $string = preg_replace("#[[:blank:]]+#", " ", $string);
         $string = str_replace(PHP_EOL . " ", PHP_EOL, $string);
 
         return trim($string);

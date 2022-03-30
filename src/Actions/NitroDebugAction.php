@@ -20,8 +20,6 @@ class NitroDebugAction extends StageAwareBaseAction
      * Upload a folder
      *
      * @param string|null $stage Name of the stage config
-     *
-     * @return int
      */
     public function run(?string $stage = null): int
     {
@@ -30,8 +28,8 @@ class NitroDebugAction extends StageAwareBaseAction
         try {
             $plugin->ssh->exec('ls -l');
             $this->output->write($plugin->ssh->getOutput());
-        } catch (RemoteException $e) {
-            $this->output->write($e->getMessage());
+        } catch (RemoteException $remoteException) {
+            $this->output->write($remoteException->getMessage());
             $this->output->error('Above you should see ssh debug output');
             return ExitCode::UNSPECIFIED_ERROR;
         }

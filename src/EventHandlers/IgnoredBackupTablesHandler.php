@@ -21,7 +21,7 @@ class IgnoredBackupTablesHandler
         if (property_exists($event, 'ignoreTables')) {
 
             // Include assettransformindex (do backup)
-            $ignoreTables = array_diff($event->ignoreTables, [Table::ASSETTRANSFORMINDEX]);
+            $ignoreTables = array_diff($event->ignoreTables, [Table::IMAGETRANSFORMINDEX]);
 
             // Exclude resourcepaths (don't backup)
             $ignoreTables[] = Table::RESOURCEPATHS;

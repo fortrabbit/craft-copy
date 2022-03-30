@@ -7,7 +7,6 @@ namespace fortrabbit\Copy\Actions;
 use Closure;
 use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Plugin;
-use fortrabbit\Copy\Services\DeprecatedConfigFixer;
 use ostark\Yii2ArtisanBridge\base\Action;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Throwable;
@@ -17,27 +16,19 @@ class InfoAction extends Action
 {
     use ConsoleOutputHelper;
 
-    public $verbose = false;
+    public bool $verbose = false;
 
-    private $remoteInfo = [];
+    private array $remoteInfo = [];
 
     /**
      * Environment check
      */
-    public function run()
+    public function run(): int
     {
         $plugin = Plugin::getInstance();
         $stages = $plugin->stage->getConfigOptions();
 
-        if (DeprecatedConfigFixer::hasDeprecatedConfig()) {
-            $fixer = new DeprecatedConfigFixer($this, $plugin->stage);
-            $fixer->showWarning();
-            $fixer->askAndRun();
-
-            return 0;
-        }
-
-        if (count($stages) === 0) {
+        if ($stages === []) {
             $this->errorBlock(
                 'The plugin is not configured yet. Make sure to run this setup command first:'
             );
@@ -47,7 +38,7 @@ class InfoAction extends Action
         }
 
         foreach ($stages as $key => $stageName) {
-            $this->head('Environment check', "<info>$stageName</info>", $key === 0 ? true : false);
+            $this->head('Environment check', "<info>{$stageName}</info>", $key === 0);
 
             $plugin->stage->setName($stageName);
             $stage = $plugin->stage->get();
@@ -58,8 +49,8 @@ class InfoAction extends Action
             // Get environment info from remote
             try {
                 $plugin->ssh->exec('php vendor/bin/craft-copy-env.php');
-                $this->remoteInfo = json_decode($plugin->ssh->getOutput(), true);
-            } catch (Throwable $e) {
+                $this->remoteInfo = json_decode($plugin->ssh->getOutput(), true, 512, JSON_THROW_ON_ERROR);
+            } catch (Throwable) {
                 $this->errorBlock(
                     "Unable to get information about the fortrabbit App using '{$stage->sshUrl}'"
                 );
@@ -69,17 +60,13 @@ class InfoAction extends Action
 
             // Rows
             $rows = [
-                $this->envRow('ENVIRONMENT', function ($local, $remote) {
-                    return ! $local || ! $remote ? false : ($local !== $remote);
-                }),
+                $this->envRow('ENVIRONMENT', fn($local, $remote) => ! $local || ! $remote ? false : ($local !== $remote)),
                 new TableSeparator(),
 
                 $this->envRow('SECURITY_KEY', null, true),
                 new TableSeparator(),
 
-                $this->envRow('DB_SERVER', function ($local, $remote) {
-                    return stristr($remote, '.frbit.com');
-                }),
+                $this->envRow('DB_SERVER', fn($local, $remote) => stristr($remote, '.frbit.com')),
             ];
 
             // Optional rows
@@ -105,19 +92,17 @@ class InfoAction extends Action
             );
 
             // Error message with more instructions
-            $errors = array_filter(['SECURITY_KEY'], function ($key) {
-                return ! self::assertEquals(
-                    $this->remoteInfo[$key],
-                    getenv($key)
-                );
-            });
+            $errors = array_filter(['SECURITY_KEY'], fn($key) => ! self::assertEquals(
+                $this->remoteInfo[$key],
+                getenv($key)
+            ));
 
-            if (count($errors)) {
+            if ($errors !== []) {
                 $varsUrl = sprintf('%s/apps/%s/vars', Plugin::DASHBOARD_URL, $app);
                 $messages = ['These local ENV vars are not in sync with the fortrabbit App:'];
 
                 foreach ($errors as $key) {
-                    $messages[] = "<fg=white>$key=" . getenv($key) . '</>';
+                    $messages[] = "<fg=white>{$key}=" . getenv($key) . '</>';
                 }
 
                 $messages[] = count($errors) === 1
@@ -136,32 +121,23 @@ class InfoAction extends Action
         return ExitCode::OK;
     }
 
-    /**
-     * @param string|bool $localValue
-     * @param string|bool $remoteValue
-     *
-     * @return bool
-     */
     protected static function assertEquals(
-        $localValue,
-        $remoteValue,
+        bool|string $localValue,
+        bool|string $remoteValue,
         ?Closure $comparisonCallback = null
-    ) {
+    ): bool {
         if ($comparisonCallback === null) {
-            return $localValue === $remoteValue ? true : false;
+            return $localValue === $remoteValue;
         }
 
         return $comparisonCallback($localValue, $remoteValue) ? true : false;
     }
 
     /**
-     * @param string $key
-     * @param \Closure|null $callback
-     * @param bool $obfuscate
      *
-     * @return array
+     * @return mixed[]
      */
-    protected function envRow($key, $callback = null, $obfuscate = false)
+    protected function envRow(string $key, ?\Closure $callback = null, bool $obfuscate = false): array
     {
         $localValue = getenv($key);
         $remoteValue = $this->remoteInfo[$key] ?? '';
@@ -171,19 +147,14 @@ class InfoAction extends Action
         $color = $success ? 'white' : 'red';
 
         return [
-            "<fg=$color>$key</>",
-            $obfuscate && $this->verbose === false ? $this->obfuscate($localValue) : $localValue,
-            $obfuscate && $this->verbose === false ? $this->obfuscate($remoteValue) : $remoteValue,
+            "<fg={$color}>{$key}</>",
+            $obfuscate && !$this->verbose ? $this->obfuscate($localValue) : $localValue,
+            $obfuscate && !$this->verbose ? $this->obfuscate($remoteValue) : $remoteValue,
             $icon,
         ];
     }
 
-    /**
-     * @param int $visibleChars
-     *
-     * @return string
-     */
-    protected function obfuscate(string $value, $visibleChars = 5)
+    protected function obfuscate(string $value, int $visibleChars = 5): string
     {
         return substr($value, 0, $visibleChars) . '*******';
     }

@@ -17,7 +17,8 @@ class RemoteException extends Exception
     protected function cleanMessage(string $message): string
     {
         // remove double new lines
-        $message = preg_replace("/[\r\n]+/", "\n", $message);
+        $message = preg_replace("#[
+]+#", "\n", $message);
 
         // strip after ∙ƒ
         if ($endPos = strpos($message, '∙ƒ')) {

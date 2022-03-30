@@ -13,19 +13,17 @@ class FolderUpAction extends StageAwareBaseAction
     use ConsoleOutputHelper;
     use PathHelper;
 
-    public $dryRun = false;
+    public bool $dryRun = false;
 
-    public $verbose = false;
+    public bool $verbose = false;
 
     /**
      * Upload a folder
      *
      * @param string|null $stage Name of the stage config
      * @param string|null $folder Directory, relative to the project root, defaults to web/assets
-     *
-     * @return int
      */
-    public function run(?string $stage = null, ?string $folder = null)
+    public function run(?string $stage = null, ?string $folder = null): int
     {
         $this->head(
             'Copy folder up.',
@@ -38,7 +36,7 @@ class FolderUpAction extends StageAwareBaseAction
         $this->rsyncInfo($folder, $this->plugin->rsync->remoteUrl);
 
         if (! is_dir($folder)) {
-            $this->errorBlock("$folder does not exist");
+            $this->errorBlock("{$folder} does not exist");
 
             return ExitCode::UNSPECIFIED_ERROR;
         }
