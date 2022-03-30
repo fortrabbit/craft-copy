@@ -58,7 +58,7 @@ class CodeUpAction extends StageAwareBaseAction
         // Ask for remote
         // or create one
         // or pick the only one
-        if (($upstream = $this->getUpstream($git)) === '' || ($upstream = $this->getUpstream($git)) === '0') {
+        if (!($upstream = $this->getUpstream($git))) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
@@ -108,7 +108,7 @@ class CodeUpAction extends StageAwareBaseAction
         try {
             $this->section("git push ({$msg})");
             $git->getWorkingCopy()->getWrapper()->streamOutput();
-            $git->push($upstream, 'master');
+            $git->push($upstream, "{$branch}:master");
         } catch (GitException $gitException) {
             $lines = count(explode(PHP_EOL, $gitException->getMessage()));
             $this->output->write(str_repeat("\x1B[1A\x1B[2K", $lines));
@@ -129,7 +129,7 @@ class CodeUpAction extends StageAwareBaseAction
      *
      * @return string upstream
      */
-    protected function getUpstream(Git $git): int|string
+    protected function getUpstream(Git $git): string
     {
         // Get configured remote & sshUrl
         $upstream = explode('/', $this->stage->gitRemote)[0];
