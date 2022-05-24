@@ -159,9 +159,9 @@ Just use `./nitro-craft` instead of `nitro craft` like so:
 
 ```
 # Without Nitro
-nitro craft copy/info
+nitro craft copy/db/up
 # With Nitro
-./nitro-craft copy/info
+./nitro-craft copy/db/up
 ```
 
 This works essentially the same way as `nitro craft`, but runs in a Docker container that adds the required dependencies and forwards your host's ssh-agent so that it is available to make git, rsync and mysqldump work. All `nitro craft` commands should work when run through `./nitro-craft`, not just Craft Copy commands.
