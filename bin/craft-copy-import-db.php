@@ -53,9 +53,9 @@ if (!file_exists($file)) {
 $credentialsFile = "/tmp/mysql-extra.cnf";
 $credentialsFileContent = [
       "[client]",
-      "user=" . getenv('DB_USER'),
-      "password=" . getenv('DB_PASSWORD'),
-      "host=" . getenv('DB_SERVER')
+      "user=" . getenv('MYSQL_USER'),
+      "password=" . getenv('MYSQL_PASSWORD'),
+      "host=" . getenv('MYSQL_HOST')
 ];
 
 if (false === file_put_contents($credentialsFile, join(PHP_EOL, $credentialsFileContent))) {
@@ -66,10 +66,10 @@ if (false === file_put_contents($credentialsFile, join(PHP_EOL, $credentialsFile
 $tokens = [
     '{FILE}' => $file,
     '{EXTRA_FILE}' => $credentialsFile,
-    '{DB_DATABASE}' => getenv('DB_DATABASE'),
+    '{MYSQL_DATABASE}' => getenv('MYSQL_DATABASE'),
 ];
 
-$cmd = 'mysql --defaults-extra-file={EXTRA_FILE} --force {DB_DATABASE} < {FILE} && echo 1';
+$cmd = 'mysql --defaults-extra-file={EXTRA_FILE} --force {MYSQL_DATABASE} < {FILE} && echo 1';
 $cmd = str_replace(array_keys($tokens), array_values($tokens), $cmd);
 
 $process = \Symfony\Component\Process\Process::fromShellCommandline($cmd);

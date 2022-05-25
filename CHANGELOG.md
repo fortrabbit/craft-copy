@@ -1,5 +1,9 @@
 #  Changelog
 
+## 2.1.0 - 2022-05-25
+- Adjust ENV vars
+- Remove info action
+
 ## 2.0.0 - 2022-05-23
 - Craft 4 support
 - No further changes, but a stable release

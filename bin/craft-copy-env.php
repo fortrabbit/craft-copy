@@ -26,10 +26,10 @@ if (file_exists($root . '/.env')) {
 
 // ENV basics
 $env = [
-    'ENVIRONMENT'     => getenv('ENVIRONMENT'),
-    'SECURITY_KEY'    => getenv('SECURITY_KEY'),
-    'DB_TABLE_PREFIX' => getenv('DB_TABLE_PREFIX'),
-    'DB_SERVER'       => getenv('DB_SERVER'),
+    'CRAFT_ENVIRONMENT'     => getenv('CRAFT_ENVIRONMENT') ?: getenv('SECURITY_KEY'),
+    'CRAFT_SECURITY_KEY'    => getenv('CRAFT_SECURITY_KEY') ?: getenv('SECURITY_KEY'),
+    'CRAFT_DB_TABLE_PREFIX' => getenv('CRAFT_DB_TABLE_PREFIX') ?: getenv('DB_TABLE_PREFIX'),
+    'CRAFT_DB_DSN'          => getenv('CRAFT_DB_DSN') ?: getenv('DB_DSN')
 ];
 
 // S3

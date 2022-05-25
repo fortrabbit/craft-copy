@@ -110,7 +110,6 @@ class Plugin extends BasePlugin
             'db/to-file' => DbExportAction::class,
             'db/from-file' => DbImportAction::class,
             'setup' => SetupAction::class,
-            'info' => InfoAction::class,
             'nitro/setup' => NitroSetupAction::class,
             'nitro/debug' => NitroDebugAction::class,
 
@@ -127,7 +126,7 @@ class Plugin extends BasePlugin
 
         $group = (new ActionGroup('copy', 'Copy Craft between environments.'))
             ->setActions($actions)
-            ->setDefaultAction('info')
+            ->setDefaultAction('all/up')
             ->setOptions($options);
 
         // Register console commands
