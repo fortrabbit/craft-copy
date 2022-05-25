@@ -12,7 +12,7 @@ This little command line tool helps to speed up common tasks around Craft CMS de
 
 ## Requirements
 
-* A local development environment including: Craft 3+, PHP 7.3+ and Composer. 
+* A local development environment including: Craft 3|4, PHP 8 and Composer. 
 * The following binaries should be executable: `php`, `mysqldump`, `git` and `rsync`
 * A SSH key installed should with your fortrabbit Account (no password auth so far)
 * You need to have an App with fortrabbit
@@ -62,9 +62,6 @@ php craft copy/setup
 ```shell
 # See a list of available commands
 php craft help copy
-
-# Run environment checks
-php craft copy
 ```
 
 ### Database
@@ -298,7 +295,7 @@ Craft Copy can help to bring together the different data types required to run C
 
 ### Template and dependencies code via Git
 
-Craft Copy offers a light weight Git wrapper with auto-suggestions for Composer updates and other candy. This is the most optional part of Craft Copy. The direction will be in most case up only (push code), since you will develop locally first and then push changes up to the fortrabbit App. Since Git is transport layer and version history, those changes are non-destructive. You can always roll back.
+Craft Copy offers a light weight Git wrapper. The direction will be in most case `up` (push code), since you will develop locally first and then push changes up to the fortrabbit App. Since Git is transport layer and version history, those changes are non-destructive. You can always roll back.
 
 The `composer.json` is also managed in Git and when you push a change to that file, Composer will run during deployment on fortrabbit. That's not Craft Copy but a fortrabbit feature. So you don't need to login by SSH and run Composer manually. Also you should not trigger any updates with the Craft CMS Control Panel on the fortrabbit App itself.
 
