@@ -193,7 +193,7 @@ final class Git
         }
 
         // Append existing .gitignore
-        if (!str_contains($gitignored, '.sql')) {
+        if (!str_contains($gitignored, '*.sql')) {
             $gitignored .= PHP_EOL;
             $gitignored .= PHP_EOL . '# Prevent to .sql files (added by fortrabbit/craft-copy)';
             $gitignored .= PHP_EOL . '*.sql' . PHP_EOL;
