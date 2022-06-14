@@ -1,5 +1,8 @@
 #  Changelog
 
+## 1.2.3 - 2022-06-14
+- correct Github docker image builds
+
 ## 1.2.2 - 2022-06-14
 - add /app as git safe directory, [see pull request](https://github.com/fortrabbit/craft-copy/pull/138)
 
