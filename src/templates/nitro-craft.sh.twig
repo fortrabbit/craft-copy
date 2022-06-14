@@ -96,7 +96,8 @@ run() {
         -v "$(get_ssh_socket_name)":"$(get_ssh_socket_name)" \
         -e SSH_AUTH_SOCK="$(get_ssh_socket_name)" \
         --network=nitro-network \
-        "$(get_container_name)" "$@"
+        "$(get_container_name)" \
+        ./craft $@
 }
 
 init() {
