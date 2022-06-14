@@ -1,5 +1,8 @@
 #  Changelog
 
+## 1.2.2 - 2022-06-14
+- add /app as git safe directory, [see pull request](https://github.com/fortrabbit/craft-copy/pull/138)
+
 ## 1.2.1 - 2022-03-07
 - Fixed nitro support 
 - Added `copy/nitro/debug commmand` for testing ssh

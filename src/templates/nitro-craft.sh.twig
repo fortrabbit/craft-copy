@@ -6,6 +6,7 @@ DEBUG=false
 # Magic value for docker mac ssh-agent forwarding
 SSH_DOCKER_MAC_SOCK="/run/host-services/ssh-auth.sock"
 
+FR_CONTAINER_DEBUG_BRANCH=""
 FR_CONTAINER_BASE_NAME="ghcr.io/fortrabbit/craft-copy"
 FR_CONTAINER_SSH_CONFIG_FILE="$HOME/.ssh/fortrabbit_nitro_config"
 
@@ -33,7 +34,11 @@ get_php_version() {
 }
 
 get_container_name() {
-    echo "$FR_CONTAINER_BASE_NAME:$(get_php_version)"
+    if [[ -n "$FR_CONTAINER_DEBUG_BRANCH" ]]; then
+        echo "$FR_CONTAINER_BASE_NAME-dev:$(get_php_version)_$FR_CONTAINER_DEBUG_BRANCH"
+    else
+        echo "$FR_CONTAINER_BASE_NAME:$(get_php_version)"
+    fi
 }
 
 get_ssh_socket_name() {
