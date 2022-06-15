@@ -1,5 +1,8 @@
 #  Changelog
 
+## 1.2.4 - 2022-06-15
+- build docker image locally, [see pull request](https://github.com/fortrabbit/craft-copy/pull/139)
+
 ## 1.2.3 - 2022-06-14
 - correct Github docker image builds
 
