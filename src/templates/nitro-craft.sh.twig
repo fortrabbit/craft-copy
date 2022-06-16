@@ -3,6 +3,7 @@
 PHP_VERSION="{{ phpVersion }}"
 COMMAND=${1:-"help"}
 DEBUG=false
+
 # Magic value for docker mac ssh-agent forwarding
 SSH_DOCKER_MAC_SOCK="/run/host-services/ssh-auth.sock"
 
@@ -66,6 +67,7 @@ preflight() {
     # Create custom ssh config we mount later in the container
     if [ ! -f "$FR_CONTAINER_SSH_CONFIG_FILE" ]; then
         echo "Creating $FR_CONTAINER_SSH_CONFIG_FILE"
+        mkdir -p "$(dirname "$FR_CONTAINER_SSH_CONFIG_FILE")"
         echo "PubkeyAcceptedKeyTypes +ssh-rsa" > $FR_CONTAINER_SSH_CONFIG_FILE
         echo "PreferredAuthentications publickey" >> $FR_CONTAINER_SSH_CONFIG_FILE
         echo "StrictHostKeyChecking no" >> $FR_CONTAINER_SSH_CONFIG_FILE
@@ -79,18 +81,28 @@ preflight() {
         ssh-add -l
     fi
 
+    docker_extra="--quiet"
+    if [ $DEBUG == true ]; then
+      docker_extra=""
+    fi
+
+    echo "Building docker container image, please be patient..."
+    docker build $docker_extra \
+        --build-arg CRAFT_IMAGE_TAG=$PHP_VERSION \
+        --tag "$(get_container_name)" \
+        vendor/fortrabbit/craft-copy/docker
 }
 
 run() {
-    docker run -it \
-        --rm \
+    docker run -it --rm \
         -v "$PWD":/app \
         -v "$HOME"/.gitconfig:/home/www-data/.gitconfig \
         -v "$FR_CONTAINER_SSH_CONFIG_FILE":/home/www-data/.ssh/config:ro \
         -v "$(get_ssh_socket_name)":"$(get_ssh_socket_name)" \
         -e SSH_AUTH_SOCK="$(get_ssh_socket_name)" \
         --network=nitro-network \
-        "$(get_container_name)" "$@"
+        "$(get_container_name)" \
+        ./craft $@
 }
 
 init() {

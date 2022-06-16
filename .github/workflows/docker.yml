@@ -1,13 +1,8 @@
 name: Docker Build
-on:
-    push:
-        tags:
-            - '[0-9]+.[0-9]+.[0-9]+'
-        branches:
-            - master
-
+on: [push]
 env:
     DOCKER_REGISTRY_IMAGE: ghcr.io/fortrabbit/craft-copy
+    DOCKER_REGISTRY_IMAGE_DEV: ghcr.io/fortrabbit/craft-copy-dev
 
 jobs:
     build:
@@ -19,7 +14,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                craft_image_tag: ['7.3', '7.4', '8.0', '8.1']
+                craft_image_tag: ['7.4', '8.0', '8.1']
         steps:
             -   uses: actions/checkout@v1
 
@@ -39,23 +34,34 @@ jobs:
             -   name: Build docker image
                 working-directory: ./docker
                 run: |
-                    docker build --build-arg CRAFT_IMAGE_TAG="${{ matrix.craft_image_tag }}" \
+                    docker build \
+                        --build-arg CRAFT_IMAGE_TAG="${{ matrix.craft_image_tag }}" \
                         --tag $DOCKER_REGISTRY_IMAGE:${{ matrix.craft_image_tag }} \
-                        --tag $DOCKER_REGISTRY_IMAGE:${{ matrix.craft_image_tag }}_${{ steps.branch_slug.outputs.slug }} .
-
-            -   name: Push version image to registry
-                run: |
-                    docker push $DOCKER_REGISTRY_IMAGE:${{ matrix.craft_image_tag }}_${{ steps.branch_slug.outputs.slug }}
+                        --tag $DOCKER_REGISTRY_IMAGE:${{ matrix.craft_image_tag }}_${{ steps.branch_slug.outputs.slug }} \
+                        --tag $DOCKER_REGISTRY_IMAGE_DEV:${{ matrix.craft_image_tag }}_${{ steps.branch_slug.outputs.slug }} \
+                        .
 
             # Only publish main image (:8.0) on tag push matching "1.0.5" format
             # https://stackoverflow.com/questions/58862864/github-actions-ci-conditional-regex
-            -   name: Check if we are on a git tag (1.2.3)
+            -   name: Check if we are on a semantic git tag
                 id: check-tag
                 run: |
                     if [[ ${{ github.event.ref }} =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
                       echo ::set-output name=match::true
                     fi
+
+            # Dev image will contain all builds from all branches
+            # ghcr.io/fortrabbit/craft-copy-dev:8.0_main
+            # ghcr.io/fortrabbit/craft-copy-dev:8.0_feature-branch
+            -   name: Publish dev image
+                if: steps.check-tag.outputs.match != 'true'
+                run: |
+                    docker push $DOCKER_REGISTRY_IMAGE_DEV:${{ matrix.craft_image_tag }}_${{ steps.branch_slug.outputs.slug }}
+
+            # Main image will contain only builds from semantic tags
+            # ghcr.io/fortrabbit/craft-copy:8.0 - removed push to not break old installs of craft-copy that depend on old version of the image
+            # ghcr.io/fortrabbit/craft-copy:8.0_1.2.3
             -   name: Publish main image
                 if: steps.check-tag.outputs.match == 'true'
                 run: |
-                    docker push $DOCKER_REGISTRY_IMAGE:${{ matrix.craft_image_tag }}
+                    docker push $DOCKER_REGISTRY_IMAGE:${{ matrix.craft_image_tag }}_${{ steps.branch_slug.outputs.slug }}

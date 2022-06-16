@@ -41,7 +41,7 @@ class NitroSetupAction extends Action
     private const SUCCESS_MESSAGE = 'This script should be run from your host machine (not inside of Nitro) 
                                      and should be used instead of `nitro craft` when running Craft Copy console commands 
                                      (all other Craft console commands should work too)
-                                     e.g. `./nitro-craft copy/info`
+                                     e.g. `./nitro-craft copy/db/up`
 
                                      For full documentation see the Craft Copy README
                                      https://github.com/fortrabbit/craft-copy/#craft-nitro-support';
