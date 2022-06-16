@@ -1,4 +1,9 @@
 #  Changelog
+
+## 2.1.1 - 2022-06-16
+- add /app as git safe directory, [see pull request](https://github.com/fortrabbit/craft-copy/pull/138)
+- build docker image locally, [see pull request](https://github.com/fortrabbit/craft-copy/pull/139)
+
 ## 2.1.0 - 2022-05-25
 - Adjust ENV vars
 - Remove info action
