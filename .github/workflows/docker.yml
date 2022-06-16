@@ -59,10 +59,9 @@ jobs:
                     docker push $DOCKER_REGISTRY_IMAGE_DEV:${{ matrix.craft_image_tag }}_${{ steps.branch_slug.outputs.slug }}
 
             # Main image will contain only builds from semantic tags
-            # ghcr.io/fortrabbit/craft-copy:8.0
+            # ghcr.io/fortrabbit/craft-copy:8.0 - removed push to not break old installs of craft-copy that depend on old version of the image
             # ghcr.io/fortrabbit/craft-copy:8.0_1.2.3
             -   name: Publish main image
                 if: steps.check-tag.outputs.match == 'true'
                 run: |
-                    docker push $DOCKER_REGISTRY_IMAGE:${{ matrix.craft_image_tag }}
                     docker push $DOCKER_REGISTRY_IMAGE:${{ matrix.craft_image_tag }}_${{ steps.branch_slug.outputs.slug }}
