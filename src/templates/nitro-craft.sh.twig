@@ -3,10 +3,10 @@
 PHP_VERSION="{{ phpVersion }}"
 COMMAND=${1:-"help"}
 DEBUG=false
+
 # Magic value for docker mac ssh-agent forwarding
 SSH_DOCKER_MAC_SOCK="/run/host-services/ssh-auth.sock"
 
-FR_CONTAINER_DEBUG_BRANCH=""
 FR_CONTAINER_BASE_NAME="ghcr.io/fortrabbit/craft-copy"
 FR_CONTAINER_SSH_CONFIG_FILE="$HOME/.ssh/fortrabbit_nitro_config"
 
@@ -34,11 +34,7 @@ get_php_version() {
 }
 
 get_container_name() {
-    if [[ -n "$FR_CONTAINER_DEBUG_BRANCH" ]]; then
-        echo "$FR_CONTAINER_BASE_NAME-dev:$(get_php_version)_$FR_CONTAINER_DEBUG_BRANCH"
-    else
-        echo "$FR_CONTAINER_BASE_NAME:$(get_php_version)"
-    fi
+    echo "$FR_CONTAINER_BASE_NAME:$(get_php_version)"
 }
 
 get_ssh_socket_name() {
@@ -85,18 +81,28 @@ preflight() {
         ssh-add -l
     fi
 
+    docker_extra="--quiet"
+    if [ $DEBUG == true ]; then
+      docker_extra=""
+    fi
+
+    echo "Building docker container image, please be patient..."
+    docker build $docker_extra \
+        --build-arg CRAFT_IMAGE_TAG=$PHP_VERSION \
+        --tag "$(get_container_name)" \
+        vendor/fortrabbit/craft-copy/docker
 }
 
 run() {
-    docker run -it \
-        --rm \
+    docker run -it --rm \
         -v "$PWD":/app \
         -v "$HOME"/.gitconfig:/home/www-data/.gitconfig \
         -v "$FR_CONTAINER_SSH_CONFIG_FILE":/home/www-data/.ssh/config:ro \
         -v "$(get_ssh_socket_name)":"$(get_ssh_socket_name)" \
         -e SSH_AUTH_SOCK="$(get_ssh_socket_name)" \
         --network=nitro-network \
-        "$(get_container_name)" "$@"
+        "$(get_container_name)" \
+        ./craft $@
 }
 
 init() {
