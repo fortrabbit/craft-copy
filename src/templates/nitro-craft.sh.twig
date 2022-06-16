@@ -81,7 +81,13 @@ preflight() {
         ssh-add -l
     fi
 
-    docker build \
+    docker_extra="--quiet"
+    if [ $DEBUG == true ]; then
+      docker_extra=""
+    fi
+
+    echo "Building docker container image, please be patient..."
+    docker build $docker_extra \
         --build-arg CRAFT_IMAGE_TAG=$PHP_VERSION \
         --tag "$(get_container_name)" \
         vendor/fortrabbit/craft-copy/docker
