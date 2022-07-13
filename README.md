@@ -130,6 +130,8 @@ Craft Copy supports [Craft Nitro](https://craftcms.com/docs/nitro/2.x/) - the lo
 
 Some additional setup and a small change to your workflow is required. This is because Nitro containers are lacking the dependencies Craft Copy requires in order to transfer files/data between stages and does not mount your SSH keys from your host machine.
 
+Please note that [Craft Nitro is retiring](https://craftcms.com/blog/retiring-craft-nitro), therefore no new features will be added to the Craft Nitro support by Craft Copy and it will evenatually be removed one day.
+
 ### Enabling Craft Nitro support
 
 **1. Install the Craft Copy plugin in your Nitro container**
