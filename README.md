@@ -387,3 +387,19 @@ composer config platform --unset
 composer update
 php craft migrate/all
 ```
+
+### Composer allow plugin issue
+
+You see a warning like this when trying to deploy:
+
+```shell
+In PluginManager.php line 762: fortrabbit/craft-auto-migrate contains a Composer plugin  which is blocked by your allow-plugins config. You may add  it to the list if you consider it safe. You can run "composer config --no-plugins allow-plugins.fortrabbit/craft-auto-migrate [true|false]" to enable it (true) or disable it explicitly and suppress this exception (false) See https://getcomposer.org/allow-plugins
+```
+
+That's a new Composer security policy in action and should only happen when you installed the plugin a while ago.
+
+**Fix:** Configure Composer to allow fortrabbit to install plugins:
+
+```shell
+composer config --no-plugins allow-plugins.fortrabbit/craft-auto-migrate false
+```
