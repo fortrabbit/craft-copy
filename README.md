@@ -165,6 +165,11 @@ nitro craft copy/db/up
 
 This works essentially the same way as `nitro craft`, but runs in a Docker container that adds the required dependencies and forwards your host's ssh-agent so that it is available to make git, rsync and mysqldump work. All `nitro craft` commands should work when run through `./nitro-craft`, not just Craft Copy commands.
 
+### Craft Nitro SSH connection fails
+
+The SSH key you want to use to connect to fortrabbit needs to be added to your SSH agent in macOS, this is how it can be accessed inside the Docker container. SSH keys are automatically added to the agent whenever you use them. But if you have created a custom key only for fortrabbit, then you might have to add it manually to the ssh-agent. Either by connecting once using standard ssh, or using this direct command: `ssh-add ~/.ssh/[your-custom-ssh-key-name]`
+
+
 ### Craft Copy with Craft Nitro requirements
 
 - Craft Nitro 2.x and all it's requirments (Docker)
