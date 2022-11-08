@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace fortrabbit\Copy\Actions;
 
+use Composer\Factory;
 use Craft;
 use craft\helpers\App;
 use craft\helpers\FileHelper;
@@ -39,6 +40,15 @@ class CodeUpAction extends StageAwareBaseAction
             'Deploy recent code changes.',
             $this->getContextHeadline($this->stage)
         );
+
+        // Verify auto-migrate plugin is allowed
+        if (!$this->composerPluginIsAllowed()) {
+            $this->errorBlock('Missing permissions for fortrabbit/craft-auto-migrate');
+            $this->output->writeln("Learn how to grand the missing permissions:");
+            $this->output->writeln("https://github.com/fortrabbit/craft-copy#composer-allow-plugin-issue" . PHP_EOL);
+
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
 
         $git = $this->plugin->git;
         $git->getWorkingCopy()->init();
@@ -172,5 +182,31 @@ class CodeUpAction extends StageAwareBaseAction
             $this->line($throwable->getMessage());
             $this->line(PHP_EOL);
         }
+    }
+
+
+    protected function composerPluginIsAllowed(): bool
+    {
+        if (!$file = file_get_contents(realpath(Factory::getComposerFile()))) {
+            throw new \Exception("Unable to locate composer.json");
+        }
+
+        $composer = json_decode($file, true);
+        $allowList = $composer['config']['allow-plugins'] ?? [];
+
+        if ($allowList === true) {
+            return true;
+        }
+        if ($allowList === false || $allowList === []) {
+            return false;
+        }
+        if (!isset($allowList['fortrabbit/craft-auto-migrate'])) {
+            return false;
+        }
+        if ($allowList['fortrabbit/craft-auto-migrate'] !== true) {
+            return false;
+        }
+
+        return true;
     }
 }

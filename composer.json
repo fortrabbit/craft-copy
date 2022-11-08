@@ -30,7 +30,7 @@
         "symfony/process": "^5.0 | ^6.0",
         "vlucas/phpdotenv": "^3.4.0 | ^5.4",
         "symfony/yaml": "^4.2 | ^5.0",
-        "fortrabbit/craft-auto-migrate":"^2.4.0"
+        "fortrabbit/craft-auto-migrate":"^2.5.0"
     },
     "require-dev": {
         "craftcms/phpstan": "dev-main",
