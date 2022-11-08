@@ -1,5 +1,9 @@
 #  Changelog
 
+## 2.2.0 - 2022-11-08
+- show warning if composer plugins are not allowed
+- remove project config after applying (via `fortrabbit/craft-auto-migrate`)
+
 ## 2.1.1 - 2022-06-16
 - add /app as git safe directory, [see pull request](https://github.com/fortrabbit/craft-copy/pull/138)
 - build docker image locally, [see pull request](https://github.com/fortrabbit/craft-copy/pull/139)
