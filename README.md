@@ -316,7 +316,7 @@ The MySQL database is getting copied over by using `mysqldump`. So it basically 
 
 #### my.conf file
 
-Craft Copy creates a `my.conf` file. It sets some defaults to ensure maximal compability when working with different MySQL versions. See the [annotated file here](https://github.com/fortrabbit/craft-copy/blob/master/src/.my.cnf.example) and read about SUPER priviliges [here](https://help.fortrabbit.test/mysql-troubleshooting#toc-access-denied-missing-super-privileges).
+Craft Copy creates a `my.conf` file. It sets some defaults to ensure maximal compability when working with different MySQL versions. See the [annotated file here](https://github.com/fortrabbit/craft-copy/blob/master/src/.my.cnf.example) and read about SUPER priviliges [here](https://help.fortrabbit.com/mysql-troubleshooting#toc-access-denied-missing-super-privileges).
 
 ## Troubleshooting Craft Copy
 
