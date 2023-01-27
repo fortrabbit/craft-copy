@@ -8,7 +8,6 @@ use fortrabbit\Copy\Exceptions\StageConfigNotFoundException;
 use fortrabbit\Copy\Helpers\DeployHooksHelper;
 use fortrabbit\Copy\Models\StageConfig;
 use fortrabbit\Copy\Plugin;
-use fortrabbit\Copy\Services\DeprecatedConfigFixer;
 use InvalidArgumentException;
 use ostark\Yii2ArtisanBridge\base\Action;
 use ostark\Yii2ArtisanBridge\base\Commands;
@@ -26,7 +25,7 @@ abstract class StageAwareBaseAction extends Action
     /**
      * @var string Name of the Environment (to apply multi staging configs)
      */
-    public $env;
+    public string $env;
 
     /**
      * @var \fortrabbit\Copy\Models\StageConfig|null
@@ -36,7 +35,7 @@ abstract class StageAwareBaseAction extends Action
     /**
      * @var \fortrabbit\Copy\Plugin
      */
-    protected $plugin;
+    protected Plugin $plugin;
 
     public function __construct(string $id, Commands $controller, array $config = [])
     {
