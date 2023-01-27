@@ -28,7 +28,7 @@ class Database extends Component
     {
         $file = $this->prepareFile($file);
 
-        $this->overwriteCraftDefaultBackupCommand($file);
+        $this->alterCraftDefaultBackupCommand($file);
 
         $this->db->backupTo($file);
 
@@ -62,7 +62,7 @@ class Database extends Component
     }
 
 
-    protected function overwriteCraftDefaultBackupCommand($file): void
+    protected function alterCraftDefaultBackupCommand(string $file): void
     {
         // Fire a 'beforeCreateBackup' event
         $event = new BackupEvent([
