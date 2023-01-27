@@ -51,6 +51,17 @@ abstract class StageAwareBaseAction extends Action
      */
     protected function beforeRun()
     {
+        if ($this->isFortrabbitEnv()) {
+            $this->errorBlock("
+                It looks like you are running this command in a fortrabbit app container. 
+                That won't work. Instead, you need to run Craft Copy commands from your local development environment.
+                More here: https://github.com/fortrabbit/craft-copy#usage
+            ");
+
+            return false;
+        }
+
+
         // No stage config files found?
         if ($this->plugin->stage->getConfigOptions() === []) {
             $this->errorBlock(
@@ -134,5 +145,10 @@ abstract class StageAwareBaseAction extends Action
         return Yii::$app->requestedParams[0]
             ?? getenv(Plugin::ENV_DEFAULT_STAGE)
                 ?: 'production';
+    }
+
+    protected function isFortrabbitEnv(): bool
+    {
+        return getenv('APP_SECRETS') === '/etc/secrets.json';
     }
 }
