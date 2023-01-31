@@ -22,7 +22,7 @@ class CodeDownAction extends StageAwareBaseAction
         );
 
         $git = $this->plugin->git;
-        $git->getWorkingCopy()->init();
+        $git->getClient()->init();
 
         $localBranches = $git->getLocalBranches();
         $branch = $git->getLocalHead();
@@ -30,7 +30,7 @@ class CodeDownAction extends StageAwareBaseAction
         if (count($localBranches) > 1) {
             $question = 'Select a local branch (checkout):';
             $branch = str_replace('* ', '', $this->choice($question, $localBranches, $branch));
-            $git->run('checkout', [$branch]);
+            $git->getClient()->checkout($branch);
         }
 
         // Run 'before' commands and stop on error
@@ -44,7 +44,7 @@ class CodeDownAction extends StageAwareBaseAction
 
         try {
             $this->section("git pull ({$upstream}/{$branch})");
-            $git->getWorkingCopy()->getWrapper()->streamOutput();
+            $git->getClient()->streamOutput();
             $git->pull($upstream, $branch);
         } catch (GitException $gitException) {
             $lines = count(explode(PHP_EOL, $gitException->getMessage()));
