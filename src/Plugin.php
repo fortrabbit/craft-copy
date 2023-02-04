@@ -82,6 +82,8 @@ class Plugin extends BasePlugin
     {
         parent::init();
 
+        $this->dontWriteYamlAutomatically();
+
         // Only console matters
         if ( ! (Craft::$app instanceof ConsoleApplication)) {
             return;
@@ -92,8 +94,6 @@ class Plugin extends BasePlugin
         $this->registerComponents();
 
         $this->registerEventHandlers();
-
-        $this->dontWriteYamlAutomatically();
 
     }
 
