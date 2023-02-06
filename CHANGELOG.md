@@ -1,7 +1,9 @@
 #  Changelog
 
-## 2.3.0 - 2023-XX-XX
-- Use `--defaults-extra-file` to support custom .my.cnf
+## 2.3.0 - 2023-02-06
+- use `--defaults-extra-file` to support custom .my.cnf
+- ignore `project.yaml` in production to prevent comparison of external and internal Project Config 
+- show warning and stop console commands when using in production
 
 ## 2.2.0 - 2022-11-08
 - show warning if composer plugins are not allowed
