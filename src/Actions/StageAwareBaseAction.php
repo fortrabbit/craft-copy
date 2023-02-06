@@ -50,7 +50,7 @@ abstract class StageAwareBaseAction extends Action
      */
     protected function beforeRun()
     {
-        if ($this->isFortrabbitEnv()) {
+        if (Plugin::isFortrabbitEnv()) {
             $this->errorBlock("
                 It looks like you are running this command in a fortrabbit app container. 
                 That won't work. Instead, you need to run Craft Copy commands from your local development environment.
@@ -146,8 +146,4 @@ abstract class StageAwareBaseAction extends Action
                 ?: 'production';
     }
 
-    protected function isFortrabbitEnv(): bool
-    {
-        return getenv('APP_SECRETS') === '/etc/secrets.json';
-    }
 }
