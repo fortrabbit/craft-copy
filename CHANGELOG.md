@@ -1,5 +1,8 @@
 #  Changelog
 
+## 2.3.0 - 2023-XX-XX
+- Use `--defaults-extra-file` to support custom .my.cnf
+
 ## 2.2.0 - 2022-11-08
 - show warning if composer plugins are not allowed
 - remove project config after applying (via `fortrabbit/craft-auto-migrate`)
