@@ -186,9 +186,15 @@ The `setup` command creates a configuration file within the Craft `/config` fold
 
 ### Automatic migrations
 
-Craft Copy incorporates another package called [Craft auto migrate](https://github.com/fortrabbit/craft-auto-migrate). It makes sure that database migrations will always run when deploying to the fortrabbit App. That means that every time you'll push code via Git, a database migration will be triggered and changes from `project.yml` will be applied right away, without the need to click the apply changes button with the Control Panel. 
+Craft Copy incorporates another package called [Craft auto migrate](https://github.com/fortrabbit/craft-auto-migrate). It makes sure that database migrations will always run when deploying to the fortrabbit App. That means that every time you'll push code via Git, a database migration will be triggered and changes from `project.yaml` will be applied right away, without the need to click the apply changes button with the Control Panel. 
 
 The other way around, when pulling down changes, a database migration will also run. This is configured via a default [after command](#beforeafter-commands) in the [config file](#config-file).
+
+### Project Config
+
+Craft Copy alters the behaviour of the `ProjectConfig` class to prevent Project Config actions in the CP. 
+By default, we `apply` the potential changes during deployment after composer install.
+
 
 ### Multi staging
 
