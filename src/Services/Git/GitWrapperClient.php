@@ -63,7 +63,7 @@ class GitWrapperClient implements Client {
             throw new LogicException(
                 sprintf(
                     'Argument 1 passed to %s must be "pull" or "push", %s given.',
-                    'fortrabbit\Copy\Services\Git::getRemotes()',
+                    'fortrabbit\Copy\Services\Git\Client::getRemotes()',
                     $for
                 )
             );

@@ -7,7 +7,7 @@ namespace fortrabbit\Copy\Services;
 use Exception;
 use fortrabbit\Copy\Plugin;
 use fortrabbit\Copy\Services\Git\Client;
-use fortrabbit\Copy\Services\Git\GitWrapperClient;
+use fortrabbit\Copy\Services\Git\GitonomyClient;
 use InvalidArgumentException;
 
 /**
@@ -26,7 +26,7 @@ final class Git
      */
     public static function fromDirectory(string $directory): \fortrabbit\Copy\Services\Git
     {
-        $client = new GitWrapperClient();
+        $client = new GitonomyClient();
         $client->setDirectory($directory);
 
         return new self($client);
@@ -45,7 +45,7 @@ final class Git
         array $options = [
         ]
     ): \fortrabbit\Copy\Services\Git {
-        $client = new GitWrapperClient();
+        $client = new GitonomyClient();
         $client->clone($repository, $directory, $options);
 
         return new self($client);

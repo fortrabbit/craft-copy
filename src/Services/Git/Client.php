@@ -2,12 +2,13 @@
 
 namespace fortrabbit\Copy\Services\Git;
 
-interface Client {
-
-	public function clone(string $repository,
-        ?string $directory = null,
-        array $options = [
-        ]);
+interface Client
+{
+	public function clone(
+		string $repository,
+		?string $directory = null,
+		array $options = []
+	);
 
 	public function push(string $upstream, string $branch = 'master'): string;
 
@@ -31,16 +32,15 @@ interface Client {
 
 	public function init();
 
-    public function log(...$argsOrOptions): string;
+	public function log(...$argsOrOptions): string;
 
-    public function hasChanges(): bool;
+	public function hasChanges(): bool;
 
-    public function getStatus(): string;
+	public function getStatus(): string;
 
-    public function add(string $filepattern, array $options = []): string;
+	public function add(string $filepattern, array $options = []): string;
 
-    public function commit(...$argsOrOptions): string;
+	public function commit(...$argsOrOptions): string;
 
-    public function streamOutput(bool $streamOutput = true): void;		
-
+	public function streamOutput(bool $streamOutput = true): void;
 }
