@@ -2,10 +2,13 @@
 
 namespace fortrabbit\Copy\Services\Git;
 
+use fortrabbit\Copy\Exceptions\GitException;
 use Gitonomy\Git\Admin;
 use Gitonomy\Git\Exception\ProcessException;
+use Gitonomy\Git\Reference\Branch;
 use Gitonomy\Git\Repository;
 use LogicException;
+use RuntimeException;
 
 class GitonomyClient implements Client
 {
@@ -35,9 +38,11 @@ class GitonomyClient implements Client
 
 	public function getLocalHead(): ?string
 	{
-		if ($this->repository->isHeadAttached()) {
-			return $this->repository->getHead()->getFullName();
+		$head = $this->repository->getHead();
+		if ($head instanceof Branch) {
+			return $head->getName();
 		}
+		return $head->getFullName();
 	}
 
 	public function getLocalBranches(): array
@@ -152,6 +157,10 @@ class GitonomyClient implements Client
 
 	private function run(string $command, array $args): string
 	{
-		return $this->repository->run($command, $args);
+		try {
+			return $this->repository->run($command, $args);
+		} catch (RuntimeException $exception) {
+			throw new GitException($exception->getMessage(), $exception->getCode(), $exception);
+		}
 	}
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace fortrabbit\Copy\Actions;
 
-use Symplify\GitWrapper\Exception\GitException;
+use fortrabbit\Copy\Exceptions\GitException;
 use yii\console\ExitCode;
 
 class CodeDownAction extends StageAwareBaseAction
