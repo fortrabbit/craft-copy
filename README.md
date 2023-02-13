@@ -192,8 +192,7 @@ The other way around, when pulling down changes, a database migration will also 
 
 ### Project Config
 
-Craft Copy alters the behaviour of the `ProjectConfig` class to prevent Project Config actions in the CP. 
-By default, we `apply` the potential changes during deployment after composer install.
+Craft Copy applies potential changes from the `project.yml` files during deployment (after composer install). To prevent version conflict warnings in the Craft CMS control panel, the behaviour of the `ProjectConfig` class is alterted.
 
 
 ### Multi staging
