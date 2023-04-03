@@ -69,7 +69,7 @@ $tokens = [
     '{MYSQL_DATABASE}' => getenv('MYSQL_DATABASE'),
 ];
 
-$cmd = 'mysql --defaults-extra-file={EXTRA_FILE} --force {MYSQL_DATABASE} < {FILE} && echo 1';
+$cmd = 'mysql --defaults-extra-file={EXTRA_FILE} --ssl-mode=DISABLED --force {MYSQL_DATABASE} < {FILE} && echo 1';
 $cmd = str_replace(array_keys($tokens), array_values($tokens), $cmd);
 
 $process = \Symfony\Component\Process\Process::fromShellCommandline($cmd);
