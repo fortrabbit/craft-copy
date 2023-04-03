@@ -18,6 +18,8 @@ use yii\console\ExitCode;
 
 class CodeUpAction extends StageAwareBaseAction
 {
+    public string $commitMessage = "init Craft";
+
     public function __construct(
         string $id,
         Commands $controller,
@@ -92,7 +94,7 @@ class CodeUpAction extends StageAwareBaseAction
         if ($status = $git->getWorkingCopy()->getStatus()) {
             // Changed files
             $this->noteBlock('Uncommitted changes:' . PHP_EOL . $status);
-            $defaultMessage = $this->interactive ? null : 'init Craft';
+            $defaultMessage = $this->interactive ? null : $this->commitMessage;
 
             if (! $msg = $this->ask(
                 'Enter a commit message, or leave it empty to abort the commit',
