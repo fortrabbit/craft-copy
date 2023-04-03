@@ -6,6 +6,7 @@ namespace fortrabbit\Copy\Actions;
 
 use craft\errors\ShellCommandException;
 use craft\helpers\FileHelper;
+use fortrabbit\Copy\Helpers\MysqlConfigFile;
 use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
 use yii\base\Exception;
@@ -13,6 +14,8 @@ use yii\console\ExitCode;
 
 class DbImportAction extends Action
 {
+    use MysqlConfigFile;
+
     /**
      * Import database from file
      *
@@ -31,6 +34,7 @@ class DbImportAction extends Action
         }
 
         $this->info("Importing DB Dump from '{$file}'");
+        $this->assureMyCnf();
 
         try {
             $file = Plugin::getInstance()->database->import($file);

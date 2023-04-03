@@ -44,6 +44,8 @@ class Database extends Component
     {
         $file = $this->prepareFile($file);
 
+        $this->alterCraftDefaultRestoreCommand($file);
+
         $this->db->restore($file);
 
         return $file;
@@ -81,10 +83,39 @@ class Database extends Component
         // The actual overwrite to allow .my.cnf again
         // It basically reverts this change:
         // https://github.com/craftcms/cms/commit/c1068dd56974172a98213b616461266711aef86a
-        Craft::$app->getConfig()->getGeneral()->backupCommand = str_replace(
+        $backupCommand = str_replace(
             '--defaults-file',
             '--defaults-extra-file',
             $backupCommand
         );
+
+        // Disable single-transaction for now
+        $backupCommand = str_replace(
+            ' --single-transaction',
+            '',
+            $backupCommand
+        );
+
+        // Disable ssl-mode for now
+        $backupCommand = str_replace(
+            '--no-tablespaces',
+            '--no-tablespaces --ssl-mode=DISABLED',
+            $backupCommand
+        );
+
+        Craft::$app->getConfig()->getGeneral()->backupCommand = $backupCommand;
+    }
+
+    protected function alterCraftDefaultRestoreCommand(): void
+    {
+        // Determine the command that should be executed
+        $restoreCommand = $this->db->getSchema()->getDefaultRestoreCommand();
+
+        Craft::$app->getConfig()->getGeneral()->restoreCommand = str_replace(
+            '.cnf"',
+            '.cnf" --ssl-mode=DISABLED',
+            $restoreCommand
+        );
+
     }
 }

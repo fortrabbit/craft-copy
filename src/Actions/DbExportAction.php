@@ -6,6 +6,7 @@ namespace fortrabbit\Copy\Actions;
 
 use Craft;
 use craft\errors\ShellCommandException;
+use fortrabbit\Copy\Helpers\MysqlConfigFile;
 use fortrabbit\Copy\Plugin;
 use ostark\Yii2ArtisanBridge\base\Action;
 use yii\base\Exception;
@@ -13,6 +14,8 @@ use yii\console\ExitCode;
 
 class DbExportAction extends Action
 {
+    use MysqlConfigFile;
+
     /**
      * Export database from file
      *
@@ -21,7 +24,7 @@ class DbExportAction extends Action
     public function run(?string $file = null): int
     {
         $plugin = Plugin::getInstance();
-        $this->assureMyCfnForMysqldump();
+        $this->assureMyCnf();
         $this->info("Creating DB Dump in '{$file}'");
 
         try {
@@ -40,15 +43,5 @@ class DbExportAction extends Action
         }
     }
 
-    protected function assureMyCfnForMysqldump(): bool
-    {
-        $mycnfDest = Craft::getAlias('@root') . '/.my.cnf';
-        $mycnfSrc = Plugin::PLUGIN_ROOT_PATH . '/.my.cnf.example';
 
-        if (! file_exists($mycnfDest)) {
-            return copy($mycnfSrc, $mycnfDest);
-        }
-
-        return true;
-    }
 }

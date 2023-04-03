@@ -1,5 +1,8 @@
 #  Changelog
 
+## 2.3.1 - 2023-04-03
+- More tweaks on the mysql command line options
+
 ## 2.3.0 - 2023-02-06
 - use `--defaults-extra-file` to support custom .my.cnf
 - ignore `project.yaml` in production to prevent comparison of external and internal Project Config 
