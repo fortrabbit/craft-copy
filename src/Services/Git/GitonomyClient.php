@@ -101,6 +101,7 @@ class GitonomyClient implements Client
 
 	public function addRemote(string $name, ?string $url)
 	{
+		$this->repository->run(GitCommand::REMOTE, ['add', $name, $url]);
 	}
 
 	public function setDirectory(string $directory)
