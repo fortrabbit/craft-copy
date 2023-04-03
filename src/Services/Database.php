@@ -83,7 +83,7 @@ class Database extends Component
         // https://github.com/craftcms/cms/commit/c1068dd56974172a98213b616461266711aef86a
         $backupCommand = str_replace(
             '--defaults-file',
-            '--ssl-mode=DISABLED --defaults-extra-file',
+            '--defaults-extra-file',
             $backupCommand
         );
 
@@ -93,6 +93,15 @@ class Database extends Component
             '',
             $backupCommand
         );
+
+        // Disable ssl-mode for now
+        $backupCommand = str_replace(
+            '--no-tablespaces',
+            '--no-tablespaces --ssl-mode=DISABLED',
+            $backupCommand
+        );
+
+
 
         Craft::$app->getConfig()->getGeneral()->backupCommand = $backupCommand;
     }
