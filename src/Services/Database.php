@@ -44,6 +44,8 @@ class Database extends Component
     {
         $file = $this->prepareFile($file);
 
+        $this->alterCraftDefaultRestoreCommand($file);
+
         $this->db->restore($file);
 
         return $file;
@@ -101,8 +103,19 @@ class Database extends Component
             $backupCommand
         );
 
-
-
         Craft::$app->getConfig()->getGeneral()->backupCommand = $backupCommand;
+    }
+
+    protected function alterCraftDefaultRestoreCommand(): void
+    {
+        // Determine the command that should be executed
+        $restoreCommand = $this->db->getSchema()->getDefaultRestoreCommand();
+
+        Craft::$app->getConfig()->getGeneral()->restoreCommand = str_replace(
+            '.cnf"',
+            '.cnf" --ssl-mode=DISABLED',
+            $restoreCommand
+        );
+
     }
 }
