@@ -151,10 +151,6 @@ class GitonomyClient implements Client
 		return $this->run(GitCommand::COMMIT, $argsOrOptions);
 	}
 
-	public function streamOutput(bool $streamOutput = true): void
-	{
-	}
-
 	private function run(string $command, array $args): string
 	{
 		try {

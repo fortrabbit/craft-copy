@@ -122,7 +122,6 @@ class CodeUpAction extends StageAwareBaseAction
 
         try {
             $this->section("git push ({$msg})");
-            $git->getClient()->streamOutput();
             $git->push($upstream, "{$branch}:master");
         } catch (GitException $gitException) {
             $lines = count(explode(PHP_EOL, $gitException->getMessage()));

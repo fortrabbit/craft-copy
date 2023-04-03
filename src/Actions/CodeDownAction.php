@@ -44,7 +44,6 @@ class CodeDownAction extends StageAwareBaseAction
 
         try {
             $this->section("git pull ({$upstream}/{$branch})");
-            $git->getClient()->streamOutput();
             $git->pull($upstream, $branch);
         } catch (GitException $gitException) {
             $lines = count(explode(PHP_EOL, $gitException->getMessage()));

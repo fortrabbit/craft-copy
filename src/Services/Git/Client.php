@@ -41,6 +41,4 @@ interface Client
 	public function add(string $filepattern, array $options = []): string;
 
 	public function commit(...$argsOrOptions): string;
-
-	public function streamOutput(bool $streamOutput = true): void;
 }
