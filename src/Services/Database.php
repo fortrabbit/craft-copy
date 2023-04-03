@@ -83,7 +83,7 @@ class Database extends Component
         // https://github.com/craftcms/cms/commit/c1068dd56974172a98213b616461266711aef86a
         $backupCommand = str_replace(
             '--defaults-file',
-            '--defaults-extra-file --ssl-mode=DISABLED',
+            '--ssl-mode=DISABLED --defaults-extra-file',
             $backupCommand
         );
 
