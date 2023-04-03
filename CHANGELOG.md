@@ -1,6 +1,9 @@
 #  Changelog
 
-## 2.3.0 - 2023-XX-XX
+## 2.3.1 - 2023-04-03
+- More tweaks on the mysql command line options
+
+## 2.3.0 - 2023-03-01
 - Use `--defaults-extra-file` to support custom .my.cnf
 
 ## 2.2.0 - 2022-11-08
