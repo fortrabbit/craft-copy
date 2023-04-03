@@ -71,6 +71,13 @@ class GitonomyClient implements Client
 
 		$remotes = explode(PHP_EOL, rtrim($this->run(GitCommand::REMOTE, ['-v'])));
 
+		$map = [];
+        foreach ($remotes as $mixed) {
+            [$key, $value] = explode("\t", $mixed);
+            $map[$key] = strtok($value, " ");
+        }
+        $remotes = $map;
+
 		return $remotes;
 	}
 
