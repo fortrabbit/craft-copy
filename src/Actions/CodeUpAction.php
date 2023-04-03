@@ -44,7 +44,7 @@ class CodeUpAction extends StageAwareBaseAction
         // Verify auto-migrate plugin is allowed
         if (!$this->composerPluginIsAllowed()) {
             $this->errorBlock('Missing permissions for fortrabbit/craft-auto-migrate');
-            $this->output->writeln("Learn how to grand the missing permissions:");
+            $this->output->writeln("Learn how to grant the missing permissions:");
             $this->output->writeln("https://github.com/fortrabbit/craft-copy#composer-allow-plugin-issue" . PHP_EOL);
 
             return ExitCode::UNSPECIFIED_ERROR;
@@ -106,6 +106,11 @@ class CodeUpAction extends StageAwareBaseAction
             // Add and commit
             $git->getWorkingCopy()->add('.');
             $git->getWorkingCopy()->commit($msg);
+
+            // Ask for the branch name again if this is the first commit in the repo
+            if ($branch === NULL) {
+                $branch = $git->getLocalHead();
+            }
         } else {
             $msg = 'empty commit';
         }

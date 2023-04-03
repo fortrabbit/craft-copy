@@ -82,8 +82,10 @@ class Plugin extends BasePlugin
     {
         parent::init();
 
+        $this->dontWriteYamlAutomatically();
+
         // Only console matters
-        if (! (Craft::$app instanceof ConsoleApplication)) {
+        if ( ! (Craft::$app instanceof ConsoleApplication)) {
             return;
         }
 
@@ -92,6 +94,7 @@ class Plugin extends BasePlugin
         $this->registerComponents();
 
         $this->registerEventHandlers();
+
     }
 
     private function registerConsoleCommands(): void
@@ -139,13 +142,13 @@ class Plugin extends BasePlugin
             [
                 'stage' => StageConfigAccess::class,
                 'database' => fn() => new DatabaseService([
-                    'db' => Craft::$app->getDb(),
-                ]),
+                                                              'db' => Craft::$app->getDb(),
+                                                          ]),
                 'git' => fn() => GitService::fromDirectory(Craft::getAlias('@root') ?: CRAFT_BASE_PATH),
                 'rsync' => fn() => RsyncService::remoteFactory($this->stage->get()->sshUrl),
                 'ssh' => fn() => new SshService([
-                    'remote' => $this->stage->get()->sshUrl,
-                ]),
+                                                    'remote' => $this->stage->get()->sshUrl,
+                                                ]),
             ]
         );
     }
@@ -162,5 +165,17 @@ class Plugin extends BasePlugin
             Connection::EVENT_BEFORE_CREATE_BACKUP,
             new IgnoredBackupTablesHandler()
         );
+    }
+
+    private function dontWriteYamlAutomatically(): void
+    {
+        if (Plugin::isFortrabbitEnv()) {
+            Craft::$app->getProjectConfig()->writeYamlAutomatically = false;
+        }
+    }
+
+    public static function isFortrabbitEnv(): bool
+    {
+        return getenv('APP_SECRETS') === '/etc/secrets.json';
     }
 }

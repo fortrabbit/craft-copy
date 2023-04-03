@@ -8,7 +8,6 @@ use fortrabbit\Copy\Exceptions\StageConfigNotFoundException;
 use fortrabbit\Copy\Helpers\DeployHooksHelper;
 use fortrabbit\Copy\Models\StageConfig;
 use fortrabbit\Copy\Plugin;
-use fortrabbit\Copy\Services\DeprecatedConfigFixer;
 use InvalidArgumentException;
 use ostark\Yii2ArtisanBridge\base\Action;
 use ostark\Yii2ArtisanBridge\base\Commands;
@@ -26,7 +25,7 @@ abstract class StageAwareBaseAction extends Action
     /**
      * @var string Name of the Environment (to apply multi staging configs)
      */
-    public $env;
+    public string $env;
 
     /**
      * @var \fortrabbit\Copy\Models\StageConfig|null
@@ -36,7 +35,7 @@ abstract class StageAwareBaseAction extends Action
     /**
      * @var \fortrabbit\Copy\Plugin
      */
-    protected $plugin;
+    protected Plugin $plugin;
 
     public function __construct(string $id, Commands $controller, array $config = [])
     {
@@ -51,6 +50,17 @@ abstract class StageAwareBaseAction extends Action
      */
     protected function beforeRun()
     {
+        if (Plugin::isFortrabbitEnv()) {
+            $this->errorBlock("
+                It looks like you are running this command in a fortrabbit app container. 
+                That won't work. Instead, you need to run Craft Copy commands from your local development environment.
+                More here: https://github.com/fortrabbit/craft-copy#usage
+            ");
+
+            return false;
+        }
+
+
         // No stage config files found?
         if ($this->plugin->stage->getConfigOptions() === []) {
             $this->errorBlock(
@@ -135,4 +145,5 @@ abstract class StageAwareBaseAction extends Action
             ?? getenv(Plugin::ENV_DEFAULT_STAGE)
                 ?: 'production';
     }
+
 }
