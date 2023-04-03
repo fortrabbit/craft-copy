@@ -83,19 +83,17 @@ class Database extends Component
         // https://github.com/craftcms/cms/commit/c1068dd56974172a98213b616461266711aef86a
         $backupCommand = str_replace(
             '--defaults-file',
-            '--defaults-extra-file',
+            '--defaults-extra-file --ssl-mode=DISABLED',
             $backupCommand
         );
 
-        // Disable single-transaction for now and change ssl-mode
+        // Disable single-transaction for now
         $backupCommand = str_replace(
             ' --single-transaction',
-            ' --ssl-mode=DISABLED',
+            '',
             $backupCommand
         );
 
-
         Craft::$app->getConfig()->getGeneral()->backupCommand = $backupCommand;
-
     }
 }
