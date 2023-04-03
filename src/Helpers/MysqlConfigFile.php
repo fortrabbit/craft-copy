@@ -2,6 +2,7 @@
 
 namespace fortrabbit\Copy\Helpers;
 
+use Craft;
 use fortrabbit\Copy\Plugin;
 
 trait MysqlConfigFile
