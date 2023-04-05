@@ -16,20 +16,19 @@ jobs:
             matrix:
                 craft_image_tag: ['7.4', '8.0', '8.1']
         steps:
-            -   uses: actions/checkout@v1
+            -   uses: actions/checkout@v3
 
             -   name: Login to GitHub Container Registry
-                uses: docker/login-action@v1
+                uses: docker/login-action@v2
                 with:
                     registry: ghcr.io
                     username: ${{ github.repository_owner }}
                     password: ${{ secrets.GITHUB_TOKEN }}
 
-            -   name: Slugify branch/tag name
+            -   name: Slugify branch name
                 shell: bash
-                run: echo "##[set-output name=slug;]$(echo $GITHUB_REF | sed -E 's/refs\/(heads|tags)\///g' | iconv -t ascii//TRANSLIT | sed -E 's/[^a-zA-Z0-9]+/-/g' | sed -E 's/^-+|-+$//g' | tr A-Z a-z)"
-                id: branch_slug
-                # Usage: ${{ steps.branch_slug.outputs.slug }}
+                run: echo "branch_slug=$(echo $GITHUB_REF | sed -E 's/refs\/(heads|tags)\///g' | iconv -t ascii//TRANSLIT | sed -E 's/[^a-zA-Z0-9]+/-/g' | sed -E 's/^-+|-+$//g' | tr A-Z a-z)" >> $GITHUB_ENV
+                # Usage: ${{ env.branch_slug }}
 
             -   name: Build docker image
                 working-directory: ./docker
@@ -37,8 +36,8 @@ jobs:
                     docker build \
                         --build-arg CRAFT_IMAGE_TAG="${{ matrix.craft_image_tag }}" \
                         --tag $DOCKER_REGISTRY_IMAGE:${{ matrix.craft_image_tag }} \
-                        --tag $DOCKER_REGISTRY_IMAGE:${{ matrix.craft_image_tag }}_${{ steps.branch_slug.outputs.slug }} \
-                        --tag $DOCKER_REGISTRY_IMAGE_DEV:${{ matrix.craft_image_tag }}_${{ steps.branch_slug.outputs.slug }} \
+                        --tag $DOCKER_REGISTRY_IMAGE:${{ matrix.craft_image_tag }}_${{ env.branch_slug }} \
+                        --tag $DOCKER_REGISTRY_IMAGE_DEV:${{ matrix.craft_image_tag }}_${{ env.branch_slug }} \
                         .
 
             # Only publish main image (:8.0) on tag push matching "1.0.5" format
@@ -56,7 +55,7 @@ jobs:
             -   name: Publish dev image
                 if: steps.check-tag.outputs.match != 'true'
                 run: |
-                    docker push $DOCKER_REGISTRY_IMAGE_DEV:${{ matrix.craft_image_tag }}_${{ steps.branch_slug.outputs.slug }}
+                    docker push $DOCKER_REGISTRY_IMAGE_DEV:${{ matrix.craft_image_tag }}_${{ env.branch_slug }}
 
             # Main image will contain only builds from semantic tags
             # ghcr.io/fortrabbit/craft-copy:8.0 - removed push to not break old installs of craft-copy that depend on old version of the image
@@ -64,4 +63,4 @@ jobs:
             -   name: Publish main image
                 if: steps.check-tag.outputs.match == 'true'
                 run: |
-                    docker push $DOCKER_REGISTRY_IMAGE:${{ matrix.craft_image_tag }}_${{ steps.branch_slug.outputs.slug }}
+                    docker push $DOCKER_REGISTRY_IMAGE:${{ matrix.craft_image_tag }}_${{ env.branch_slug }}
