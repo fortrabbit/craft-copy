@@ -89,6 +89,9 @@ php craft copy/code/up {stage}
 php craft copy/code/down {stage}
 ```
 
+#### Options and arguments
+* To prevent a prompt, for instance when running the command in a CI pipeline, you can use `php craft copy/code/up -i=0 -m="your commit message"`.
+
 ### Asset Volumes
 
 Assets in Craft CMS are media files that are uploaded by editors and managed by the CMS. Assets are getting stored in volumes and are not part of Git.

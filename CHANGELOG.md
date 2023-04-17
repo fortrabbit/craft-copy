@@ -1,5 +1,9 @@
 #  Changelog
 
+## 2.4.0 - 2023-04-17
+- Replace `cpliakas/git-wrapper` with `gitonomy/gitlib`
+- Allow customising commit message made in `code/up` command
+
 ## 2.3.2 - 2023-04-05
 - Revert mysql command line tweaks
 
