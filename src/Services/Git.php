@@ -6,19 +6,17 @@ namespace fortrabbit\Copy\Services;
 
 use Exception;
 use fortrabbit\Copy\Plugin;
-use Symplify\GitWrapper\Exception\GitException;
-use Symplify\GitWrapper\GitWorkingCopy;
-use Symplify\GitWrapper\GitWrapper;
+use fortrabbit\Copy\Services\Git\Client;
+use fortrabbit\Copy\Services\Git\GitonomyClient;
 use InvalidArgumentException;
-use LogicException;
 
 /**
  * Git Service
  */
 final class Git
 {
-    private function __construct(private GitWorkingCopy $gitWorkingCopy)
-    {
+    private function __construct(private Client $gitClient)
+    {   
     }
 
     /**
@@ -28,10 +26,10 @@ final class Git
      */
     public static function fromDirectory(string $directory): \fortrabbit\Copy\Services\Git
     {
-        $wrapper = new GitWrapper('git');
-        $wrapper->setTimeout(300);
+        $client = new GitonomyClient();
+        $client->setDirectory($directory);
 
-        return new self($wrapper->workingCopy($directory));
+        return new self($client);
     }
 
     /**
@@ -47,31 +45,25 @@ final class Git
         array $options = [
         ]
     ): \fortrabbit\Copy\Services\Git {
-        $wrapper = new GitWrapper('git');
-        $wrapper->setTimeout(300);
+        $client = new GitonomyClient();
+        $client->clone($repository, $directory, $options);
 
-        return new self($wrapper->cloneRepository($repository, $directory, $options));
+        return new self($client);
     }
 
     public function push(string $upstream, string $branch = 'master'): string
     {
-        return $this->gitWorkingCopy->push($upstream, $branch);
+        return $this->gitClient->push($upstream, $branch);
     }
 
     public function pull(string $upstream, string $branch = 'master'): string
     {
-        return $this->gitWorkingCopy->pull($upstream, $branch);
+        return $this->gitClient->pull($upstream, $branch);
     }
 
     public function getLocalHead(): ?string
     {
-        foreach ($this->getLocalBranches() as $key => $name) {
-            if (stristr($name, '*')) {
-                return $key;
-            }
-        }
-
-        return null;
+        return $this->gitClient->getLocalHead();
     }
 
     /**
@@ -79,12 +71,7 @@ final class Git
      */
     public function getLocalBranches(): array
     {
-        $localBranches = [];
-        foreach (explode(PHP_EOL, trim($this->gitWorkingCopy->run('branch'))) as $branch) {
-            $localBranches[trim(ltrim($branch, '*'))] = $branch;
-        }
-
-        return $localBranches;
+        return $this->gitClient->getLocalBranches();
     }
 
     /**
@@ -93,27 +80,7 @@ final class Git
      */
     public function getRemotes(?string $for = 'push'): array
     {
-        if (! in_array($for, ['push', 'pull'], true)) {
-            throw new LogicException(
-                sprintf(
-                    'Argument 1 passed to %s must be "pull" or "push", %s given.',
-                    'fortrabbit\Copy\Services\Git::getRemotes()',
-                    $for
-                )
-            );
-        }
-
-        try {
-            $remotes = $this->gitWorkingCopy->getRemotes();
-        } catch (GitException) {
-            return [];
-        }
-
-        foreach ($remotes as $name => $upstreams) {
-            $remotes[$name] = $upstreams[$for];
-        }
-
-        return $remotes;
+        return $this->gitClient->getRemotes($for);
     }
 
     /**
@@ -121,26 +88,7 @@ final class Git
      */
     public function getTracking(bool $includeBranch = false): ?string
     {
-        try {
-            $result = $this->run('rev-parse', ['@{u}', [
-                'abbrev-ref' => true,
-                'symbolic-full-name' => true,
-            ]]);
-        } catch (GitException) {
-            return null;
-        }
-
-        if ($includeBranch) {
-            return $result;
-        }
-
-        // Split upstream/branch and return upstream only
-        return explode('/', $result)[0];
-    }
-
-    public function run(string $command, array $argsAndOptions = []): string
-    {
-        return $this->gitWorkingCopy->run($command, $argsAndOptions);
+        return $this->gitClient->getTracking($includeBranch);
     }
 
     /**
@@ -158,14 +106,14 @@ final class Git
         }
 
         $app = explode('@', $sshRemote)[0];
-        $this->getWorkingCopy()->addRemote($app, "{$sshRemote}:{$app}.git");
+        $this->gitClient->addRemote($app, "{$sshRemote}:{$app}.git");
 
         return $app;
     }
 
-    public function getWorkingCopy(): GitWorkingCopy
+    public function getClient(): Client
     {
-        return $this->gitWorkingCopy;
+        return $this->gitClient;
     }
 
     /**
@@ -175,7 +123,7 @@ final class Git
      */
     public function assureDotGitignore(): bool
     {
-        $path = $this->getWorkingCopy()->getDirectory();
+        $path = $this->gitClient->getDirectory();
         $gitignoreFile = "{$path}/.gitignore";
         $gitignoreExampleFile = Plugin::PLUGIN_ROOT_PATH . '/.gitignore.example';
 

@@ -9,9 +9,9 @@ use Craft;
 use craft\helpers\App;
 use craft\helpers\FileHelper;
 use Exception;
+use fortrabbit\Copy\Exceptions\GitException;
 use fortrabbit\Copy\Services\Git;
 use fortrabbit\Copy\Services\LocalFilesystem;
-use Symplify\GitWrapper\Exception\GitException;
 use ostark\Yii2ArtisanBridge\base\Commands;
 use Throwable;
 use yii\console\ExitCode;
@@ -53,7 +53,7 @@ class CodeUpAction extends StageAwareBaseAction
         }
 
         $git = $this->plugin->git;
-        $git->getWorkingCopy()->init();
+        $git->getClient()->init();
 
         // Project .gitignore
         $git->assureDotGitignore();
@@ -64,7 +64,7 @@ class CodeUpAction extends StageAwareBaseAction
         if (count($localBranches) > 1) {
             $question = 'Select a local branch (checkout):';
             $branch = str_replace('* ', '', $this->choice($question, $localBranches, $branch));
-            $git->run('checkout', [$branch]);
+            $git->getClient()->checkout($branch);
         }
 
         // Ask for remote
@@ -78,7 +78,7 @@ class CodeUpAction extends StageAwareBaseAction
         $this->assureVolumesAreIgnored();
 
         try {
-            if ($log = $git->getWorkingCopy()->log(
+            if ($log = $git->getClient()->log(
                 '--format=(%h) %cr: %s ',
                 "{$upstream}/master..HEAD"
             )) {
@@ -87,11 +87,11 @@ class CodeUpAction extends StageAwareBaseAction
         } catch (Throwable) {
         }
 
-        if (! $git->getWorkingCopy()->hasChanges() && ! $this->confirm('About to push latest commits, proceed?', true)) {
+        if (! $git->getClient()->hasChanges() && ! $this->confirm('About to push latest commits, proceed?', true)) {
             return ExitCode::OK;
         }
 
-        if ($status = $git->getWorkingCopy()->getStatus()) {
+        if ($status = $git->getClient()->getStatus()) {
             // Changed files
             $this->noteBlock('Uncommitted changes:' . PHP_EOL . $status);
 
@@ -112,8 +112,8 @@ class CodeUpAction extends StageAwareBaseAction
             }
 
             // Add and commit
-            $git->getWorkingCopy()->add('.');
-            $git->getWorkingCopy()->commit($msg);
+            $git->getClient()->add('.');
+            $git->getClient()->commit($msg);
 
             // Ask for the branch name again if this is the first commit in the repo
             if ($branch === NULL) {
@@ -130,7 +130,6 @@ class CodeUpAction extends StageAwareBaseAction
 
         try {
             $this->section("git push ({$msg})");
-            $git->getWorkingCopy()->getWrapper()->streamOutput();
             $git->push($upstream, "{$branch}:master");
         } catch (GitException $gitException) {
             $lines = count(explode(PHP_EOL, $gitException->getMessage()));
