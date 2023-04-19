@@ -5,6 +5,7 @@ namespace fortrabbit\Copy\Services\Git;
 use fortrabbit\Copy\Exceptions\GitException;
 use Gitonomy\Git\Admin;
 use Gitonomy\Git\Exception\ProcessException;
+use Gitonomy\Git\Exception\ReferenceNotFoundException;
 use Gitonomy\Git\Reference\Branch;
 use Gitonomy\Git\Repository;
 use LogicException;
@@ -38,11 +39,19 @@ class GitonomyClient implements Client
 
 	public function getLocalHead(): ?string
 	{
-		$head = $this->repository->getHead();
-		if ($head instanceof Branch) {
-			return $head->getName();
+		try {
+			$head = $this->repository->getHead();
+
+			if ($head instanceof Branch) {
+				return $head->getName();
+			}
+
+			return $head->getFullName();
+		} catch (ReferenceNotFoundException) {
+			return NULL;
 		}
-		return $head->getFullName();
+		
+		return NULL;
 	}
 
 	public function getLocalBranches(): array
@@ -72,11 +81,13 @@ class GitonomyClient implements Client
 		$remotes = explode(PHP_EOL, rtrim($this->run(GitCommand::REMOTE, ['-v'])));
 
 		$map = [];
-        foreach ($remotes as $mixed) {
-            [$key, $value] = explode("\t", $mixed);
-            $map[$key] = strtok($value, " ");
-        }
-        $remotes = $map;
+		foreach ($remotes as $mixed) {
+			if ($mixed === '') continue;
+			
+			[$key, $value] = explode("\t", $mixed);
+			$map[$key] = strtok($value, " ");
+		}
+		$remotes = $map;
 
 		return $remotes;
 	}
@@ -114,7 +125,6 @@ class GitonomyClient implements Client
 	public function setDirectory(string $directory)
 	{
 		$this->directory = $directory;
-		$this->repository = new Repository($directory);
 	}
 
 	public function getDirectory(): string
@@ -124,7 +134,8 @@ class GitonomyClient implements Client
 
 	public function init()
 	{
-		Admin::init($this->directory, $this->repository->isBare());
+		Admin::init($this->directory, false);
+		$this->repository = new Repository($this->directory);
 	}
 
 	public function log(...$argsOrOptions): string
