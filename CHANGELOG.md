@@ -1,5 +1,8 @@
 #  Changelog
 
+## 2.4.1 - 2023-04-19
+- Add support for no existing repo with new git client
+
 ## 2.4.0 - 2023-04-17
 - Replace `cpliakas/git-wrapper` with `gitonomy/gitlib`
 - Allow customising commit message made in `code/up` command
