@@ -127,7 +127,9 @@ php craft copy/all/down
 
 * This is not including the folder action by default.
 
-## Craft Nitro support
+## Craft Nitro support (deprecated)
+
+**This feature will be removed with the next major version** since Craft Nitro is retired.
 
 Craft Copy supports [Craft Nitro](https://craftcms.com/docs/nitro/2.x/) - the local development environment for Craft CMS based on Docker. 
 
