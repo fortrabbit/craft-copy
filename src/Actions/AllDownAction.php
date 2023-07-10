@@ -37,7 +37,7 @@ class AllDownAction extends StageAwareBaseAction
         }
 
         if (Craft::$app->runAction('copy/db/down', [
-            'interactive' => true,
+            'interactive' => $this->interactive,
         ]) !== 0) {
             $this->errorBlock('Failed to copy the database');
 
@@ -45,7 +45,7 @@ class AllDownAction extends StageAwareBaseAction
         }
 
         if (Craft::$app->runAction('copy/volumes/down', [
-            'interactive' => true,
+            'interactive' => $this->interactive,
         ]) !== 0) {
             $this->errorBlock('Failed to copy the assets');
 

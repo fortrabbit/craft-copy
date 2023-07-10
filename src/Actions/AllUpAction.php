@@ -39,7 +39,7 @@ class AllUpAction extends StageAwareBaseAction
 
         if (Craft::$app->runAction('copy/db/up', [
             $stage,
-            'interactive' => true,
+            'interactive' => $this->interactive,
             'force' => true,
         ]) !== 0) {
             $this->errorBlock('Failed to copy the database');
@@ -49,7 +49,7 @@ class AllUpAction extends StageAwareBaseAction
 
         if (Craft::$app->runAction('copy/volumes/up', [
             $stage,
-            'interactive' => true,
+            'interactive' => $this->interactive,
         ]) !== 0) {
             $this->errorBlock('Failed to copy the assets');
 
