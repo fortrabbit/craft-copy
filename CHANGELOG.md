@@ -1,5 +1,9 @@
 #  Changelog
 
+## 2.4.2 - 2023-07-10
+- SSH check fails when no keys are SSH configured
+- `--interactive=0` works with all/up and all/down commands
+
 ## 2.4.1 - 2023-04-19
 - Add support for no existing repo with new git client
 
