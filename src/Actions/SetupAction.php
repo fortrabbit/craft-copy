@@ -79,7 +79,7 @@ class SetupAction extends Action
         );
         $ssh = $this->checkAndWrite(
             'Testing SSH access',
-            $this->canExecBinary("ssh {$config->sshUrl} secrets")
+            $this->canExecBinary("ssh {$config->sshUrl} -o PasswordAuthentication=no secrets")
         );
 
         if (! $mysql) {
