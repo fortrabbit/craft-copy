@@ -10,6 +10,7 @@ use Gitonomy\Git\Reference\Branch;
 use Gitonomy\Git\Repository;
 use LogicException;
 use RuntimeException;
+use Symfony\Component\Process\Process;
 
 class GitonomyClient implements Client
 {
@@ -29,8 +30,15 @@ class GitonomyClient implements Client
 
 	public function push(string $upstream, string $branch = 'master'): string
 	{
-		return $this->run(GitCommand::PUSH, [$upstream, $branch]);
+        return $this->run(GitCommand::PUSH, [$upstream, $branch]);
 	}
+
+    public function pushAndStream(string $upstream, string $branch = 'master'): Process
+    {
+        $repository = new RepositoryWrapper($this->repository);
+
+        return $repository->start(GitCommand::PUSH, [$upstream, $branch]);
+    }
 
 	public function pull(string $upstream, string $branch = 'master'): string
 	{
@@ -135,7 +143,7 @@ class GitonomyClient implements Client
 	public function init()
 	{
 		Admin::init($this->directory, false);
-		$this->repository = new Repository($this->directory);
+		$this->repository = new \fortrabbit\Copy\Services\Git\RepositoryWrapper($this->directory);
 	}
 
 	public function log(...$argsOrOptions): string
@@ -178,4 +186,5 @@ class GitonomyClient implements Client
 			throw new GitException($exception->getMessage(), $exception->getCode(), $exception);
 		}
 	}
+
 }

@@ -2,6 +2,8 @@
 
 namespace fortrabbit\Copy\Services\Git;
 
+use Symfony\Component\Process\Process;
+
 interface Client
 {
 	public function clone(
@@ -12,7 +14,9 @@ interface Client
 
 	public function push(string $upstream, string $branch = 'master'): string;
 
-	public function pull(string $upstream, string $branch = 'master'): string;
+    public function pushAndStream(string $upstream, string $branch = 'master'): Process;
+
+    public function pull(string $upstream, string $branch = 'master'): string;
 
 	public function getLocalHead(): ?string;
 
