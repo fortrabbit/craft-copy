@@ -17,7 +17,7 @@ This little command line tool helps to speed up common tasks around Craft CMS de
 * A SSH key installed should with your fortrabbit Account (no password auth so far)
 * You need to have an App with fortrabbit
 
-Craft Copy works for Universal Apps and Professional Apps. Asset synchronisation is only available for Universal Apps with local asset volumes.
+Craft Copy works for Universal Apps and Professional Apps. Asset synchronisation is only available for Universal Apps with local asset volumes. It's known to work locally with Laravel Herd, Laravel Valet and DDEV.
 
 ## Installation
 
@@ -127,58 +127,19 @@ php craft copy/all/down
 
 * This is not including the folder action by default.
 
+## DDEV support
+
+Craft Copy supports [DDEV](https://ddev.com/). Once you got the container running:
+
+1. `ddev auth ssh` - Copy SSH keys from the host into the container
+2. `ddev ssh` - Login to the container
+3. From their proceed as required
+  
+See our slighlty old [blog post](https://blog.fortrabbit.com/local-craft-dev-site-ddev-development-tool) on how to set it up together.
+
 ## Craft Nitro support (deprecated)
 
 **This feature will be removed with the next major version** since Craft Nitro is retired.
-
-Craft Copy supports [Craft Nitro](https://craftcms.com/docs/nitro/2.x/) - the local development environment for Craft CMS based on Docker. 
-
-Some additional setup and a small change to your workflow is required. This is because Nitro containers are lacking the dependencies Craft Copy requires in order to transfer files/data between stages and does not mount your SSH keys from your host machine.
-
-Please note that [Craft Nitro is retiring](https://craftcms.com/blog/retiring-craft-nitro), therefore no new features will be added to the Craft Nitro support by Craft Copy and it will evenatually be removed one day.
-
-### Enabling Craft Nitro support
-
-**1. Install the Craft Copy plugin in your Nitro container**
-
-```bash
-nitro composer config platform --unset
-nitro composer require fortrabbit/craft-copy -W
-nitro craft plugin/install copy
-```
-
-**2. Generate the wrapper script**
-
-```bash
-nitro craft copy/nitro/setup
-```
-
-This will create a new shell script in your project root called `nitro-craft`. You should check the `nitro-craft` file into version control.
-
-When changing the PHP version you are using in Nitro for this site you need to re-generate the script by calling `nitro craft copy/nitro/setup` again. This is because Nitro uses different containers for different versions of PHP, and Craft Copy needs to use the same container name for everything to work.
-
-### Running Craft Copy commands under Craft Nitro
-
-Just use `./nitro-craft` instead of `nitro craft` like so:
-
-```
-# Without Nitro
-nitro craft copy/db/up
-# With Nitro
-./nitro-craft copy/db/up
-```
-
-This works essentially the same way as `nitro craft`, but runs in a Docker container that adds the required dependencies and forwards your host's ssh-agent so that it is available to make git, rsync and mysqldump work. All `nitro craft` commands should work when run through `./nitro-craft`, not just Craft Copy commands.
-
-### Craft Nitro SSH connection fails
-
-The SSH key you want to use to connect to fortrabbit needs to be added to your SSH agent in macOS, this is how it can be accessed inside the Docker container. SSH keys are automatically added to the agent whenever you use them. But if you have created a custom key only for fortrabbit, then you might have to add it manually to the ssh-agent. Either by connecting once using standard ssh, or using this direct command: `ssh-add ~/.ssh/[your-custom-ssh-key-name]`
-
-
-### Craft Copy with Craft Nitro requirements
-
-- Craft Nitro 2.x and all it's requirments (Docker)
-- Currently only Mac and Linux hosts are supported. Windows is untested at the moment (sorry!). It _probably_ works under WSL but ssh-agent forwarding may be buggy. PR's welcome!
 
 ## Advanced usage
 
