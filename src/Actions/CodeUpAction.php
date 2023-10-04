@@ -91,7 +91,8 @@ class CodeUpAction extends StageAwareBaseAction
         if ($status = $git->getWorkingCopy()->getStatus()) {
             // Changed files
             $this->noteBlock('Uncommitted changes:' . PHP_EOL . $status);
-            $defaultMessage = $this->interactive ? null : 'init Craft';
+
+            $defaultMessage = $this->interactive ? null :  "Auto push latest to $upstream";
 
             if (! $msg = $this->ask(
                 'Enter a commit message, or leave it empty to abort the commit',
@@ -115,9 +116,9 @@ class CodeUpAction extends StageAwareBaseAction
         }
 
         try {
-            $this->section("git push ($msg)");
+            $this->section("git push ($msg) to $upstream from $branch to master");
             $git->getWorkingCopy()->getWrapper()->streamOutput();
-            $git->push($upstream, 'master');
+            $git->push($upstream, "$branch:master");
         } catch (GitException $exception) {
             $lines = count(explode(PHP_EOL, $exception->getMessage()));
             $this->output->write(str_repeat("\x1B[1A\x1B[2K", $lines));
