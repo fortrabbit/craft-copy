@@ -93,6 +93,7 @@ class CodeUpAction extends StageAwareBaseAction
             $this->noteBlock('Uncommitted changes:' . PHP_EOL . $status);
 
             $defaultMessage = $this->interactive ? null :  "Auto push latest to $upstream";
+            $defaultMessage = $this->commitMessage ? $this->commitMessage : $defaultMessage;
 
             if (! $msg = $this->ask(
                 'Enter a commit message, or leave it empty to abort the commit',
