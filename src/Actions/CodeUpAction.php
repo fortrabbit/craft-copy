@@ -21,6 +21,8 @@ class CodeUpAction extends StageAwareBaseAction
      */
     protected $localVolume;
 
+    public $commitMessage = '';
+
     public function __construct(
         string $id,
         Commands $controller,
