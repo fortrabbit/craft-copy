@@ -375,8 +375,8 @@ In PluginManager.php line 762: fortrabbit/craft-auto-migrate contains a Composer
 
 That's a new Composer security policy in action and should only happen when you installed the plugin a while ago.
 
-**Fix:** Configure Composer to allow fortrabbit to install plugins:
+**Fix:** Configure Composer to allow plugins:
 
 ```shell
-composer config --no-plugins allow-plugins.fortrabbit/craft-auto-migrate false
+composer config --no-plugins allow-plugins.fortrabbit/craft-auto-migrate true
 ```
