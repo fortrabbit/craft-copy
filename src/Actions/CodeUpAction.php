@@ -133,11 +133,7 @@ class CodeUpAction extends StageAwareBaseAction
         $process = $git->push($upstream, "{$branch}:master");
 
         foreach ($process as $type => $data) {
-            if ($process::OUT === $type) {
-                $this->output->write($data);
-            } else { // $process::ERR === $type
-                $this->output->write("<fg=red>{$data}</>");
-            }
+            $this->output->write($data);
         }
 
         if (! $process->isSuccessful()) {
