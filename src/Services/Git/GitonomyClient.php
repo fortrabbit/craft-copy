@@ -3,7 +3,6 @@
 namespace fortrabbit\Copy\Services\Git;
 
 use fortrabbit\Copy\Exceptions\GitException;
-use fortrabbit\Copy\Services\Git\RepositoryWrapper;
 use Gitonomy\Git\Admin;
 use Gitonomy\Git\Exception\ProcessException;
 use Gitonomy\Git\Exception\ReferenceNotFoundException;
@@ -152,7 +151,7 @@ class GitonomyClient implements Client
     public function init()
     {
         Admin::init($this->directory, false);
-        $this->repository = new \fortrabbit\Copy\Services\Git\RepositoryWrapper($this->directory);
+        $this->repository = new Repository($this->directory);
     }
 
     public function log(...$argsOrOptions): string
