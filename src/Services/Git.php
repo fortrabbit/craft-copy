@@ -9,6 +9,7 @@ use fortrabbit\Copy\Plugin;
 use fortrabbit\Copy\Services\Git\Client;
 use fortrabbit\Copy\Services\Git\GitonomyClient;
 use InvalidArgumentException;
+use Symfony\Component\Process\Process;
 
 /**
  * Git Service
@@ -51,9 +52,9 @@ final class Git
         return new self($client);
     }
 
-    public function push(string $upstream, string $branch = 'master'): string
+    public function push(string $upstream, string $branch = 'master'): Process
     {
-        return $this->gitClient->push($upstream, $branch);
+        return $this->gitClient->pushAndStream($upstream, $branch);
     }
 
     public function pull(string $upstream, string $branch = 'master'): string

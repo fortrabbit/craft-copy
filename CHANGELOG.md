@@ -1,5 +1,8 @@
 #  Changelog
 
+## 2.4.3 - 2023-10-13
+- Show git/composer output when using `copy/code/up`
+
 ## 2.4.2 - 2023-07-10
 - SSH check fails when no keys are SSH configured
 - `--interactive=0` works with all/up and all/down commands

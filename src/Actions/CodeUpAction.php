@@ -128,15 +128,15 @@ class CodeUpAction extends StageAwareBaseAction
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        try {
-            $this->section("git push ({$msg})");
-            $git->push($upstream, "{$branch}:master");
-        } catch (GitException $gitException) {
-            $lines = count(explode(PHP_EOL, $gitException->getMessage()));
-            $this->output->write(str_repeat("\x1B[1A\x1B[2K", $lines));
-            $this->errorBlock('Ooops.');
-            $this->output->write("<fg=red>{$gitException->getMessage()}</>");
+        $this->section("git push ({$msg})");
 
+        $process = $git->push($upstream, "{$branch}:master");
+
+        foreach ($process as $type => $data) {
+            $this->output->write($data);
+        }
+
+        if (! $process->isSuccessful()) {
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
