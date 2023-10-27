@@ -108,6 +108,7 @@ class Plugin extends BasePlugin
             'a' => 'app',
             'e' => 'env',
             'f' => 'force',
+            'm' => 'commitMessage',
         ];
 
         $group = (new ActionGroup('copy', 'Copy Craft between environments.'))
