@@ -40,7 +40,10 @@ class GitonomyClient implements Client
         $process = $this->getProcess(GitCommand::PUSH, [$upstream, $branch]);
 
         if ($this->repository->getLogger()) {
-            $this->repository->getLogger()->info(sprintf('run command: %s "%s" ', $command, implode(' ', $args)));
+            $this->repository->getLogger()->info(sprintf(
+                'run command: "git push %s %s" ',
+                $upstream,
+                $branch));
         }
 
         $process->start();
@@ -64,10 +67,8 @@ class GitonomyClient implements Client
 
             return $head->getFullName();
         } catch (ReferenceNotFoundException) {
-            return NULL;
+            return null;
         }
-
-        return NULL;
     }
 
     public function getLocalBranches(): array

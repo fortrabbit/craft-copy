@@ -1,5 +1,8 @@
 #  Changelog
 
+## 2.4.4 - 2023-10-27
+- Housekeeping
+
 ## 2.4.3 - 2023-10-13
 - Show git/composer output when using `copy/code/up`
 

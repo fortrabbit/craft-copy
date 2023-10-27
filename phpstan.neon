@@ -7,6 +7,8 @@ parameters:
         - src
     tmpDir: build/phpstan
     checkMissingIterableValueType: false
+    treatPhpDocTypesAsCertain: false
 
     ignoreErrors:
         - '#Constant CRAFT_BASE_PATH not found#'
+        - '#Call to an undefined method ostark\\Yii2ArtisanBridge\\ConsoleOutput::setInteractive\(\).#'
