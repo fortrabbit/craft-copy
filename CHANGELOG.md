@@ -1,5 +1,8 @@
 #  Changelog
 
+## 1.2.5 - 2023-10-27
+- support for custom commit messages for non-interactive mode, [see pull request](https://github.com/fortrabbit/craft-copy/pull/180)
+
 ## 1.2.4 - 2022-06-15
 - build docker image locally, [see pull request](https://github.com/fortrabbit/craft-copy/pull/139)
 
