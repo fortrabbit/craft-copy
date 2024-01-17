@@ -24,17 +24,12 @@ abstract class StageAwareBaseAction extends Action
 
     /**
      * @var string Name of the Environment (to apply multi staging configs)
+     * @deprecated deprecated since version 2.0
      */
-    public string $env;
+    public ?string $env = null;
 
-    /**
-     * @var \fortrabbit\Copy\Models\StageConfig|null
-     */
-    protected $stage;
+    protected ?StageConfig $stage;
 
-    /**
-     * @var \fortrabbit\Copy\Plugin
-     */
     protected Plugin $plugin;
 
     public function __construct(string $id, Commands $controller, array $config = [])
