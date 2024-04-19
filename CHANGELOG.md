@@ -1,5 +1,8 @@
 #  Changelog
 
+## 3.0.0 - 2024-04-19
+- Craft 5 support
+
 ## 2.4.4 - 2023-10-27
 - Housekeeping
 
