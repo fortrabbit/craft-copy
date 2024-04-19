@@ -12,7 +12,7 @@ This little command line tool helps to speed up common tasks around Craft CMS de
 
 ## Requirements
 
-* A local development environment including: Craft 3|4, PHP 8 and Composer. 
+* A local development environment including: Craft 5 (since version 3), PHP 8 and Composer. 
 * The following binaries should be executable: `php`, `mysqldump`, `git` and `rsync`
 * A SSH key installed should with your fortrabbit Account (no password auth so far)
 * You need to have an App with fortrabbit
