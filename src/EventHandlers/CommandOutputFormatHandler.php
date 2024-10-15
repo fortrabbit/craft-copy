@@ -14,7 +14,7 @@ class CommandOutputFormatHandler
 {
     public function __invoke(ActionEvent $event): void
     {
-        /** @var \ostark\Yii2ArtisanBridge\base\Action $action */
+        /** @var \fortrabbit\Yii2ArtisanBridge\base\Action $action */
         $action = $event->action;
 
         $style = new OutputFormatterStyle('blue');

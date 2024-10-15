@@ -8,7 +8,7 @@ use fortrabbit\Copy\Exceptions\VolumeNotFound;
 use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Helpers\PathHelper;
 use fortrabbit\Copy\Services\LocalFilesystem;
-use ostark\Yii2ArtisanBridge\base\Commands;
+use fortrabbit\Yii2ArtisanBridge\base\Commands;
 use yii\console\ExitCode;
 
 class VolumesUpAction extends StageAwareBaseAction

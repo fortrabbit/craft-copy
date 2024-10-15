@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace fortrabbit\Copy\Helpers;
 
-use ostark\Yii2ArtisanBridge\OutputStyle;
+use fortrabbit\Yii2ArtisanBridge\OutputStyle;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\TableSeparator;
 
