@@ -9,7 +9,7 @@ use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Helpers\PathHelper;
 use fortrabbit\Copy\Models\StageConfig;
 use fortrabbit\Copy\Plugin;
-use ostark\Yii2ArtisanBridge\base\Action;
+use fortrabbit\Yii2ArtisanBridge\base\Action;
 use Symfony\Component\Process\Process;
 use yii\console\ExitCode;
 use yii\helpers\Inflector;

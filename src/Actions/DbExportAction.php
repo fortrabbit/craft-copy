@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace fortrabbit\Copy\Actions;
 
-use Craft;
 use craft\errors\ShellCommandException;
 use fortrabbit\Copy\Helpers\MysqlConfigFile;
 use fortrabbit\Copy\Plugin;
-use ostark\Yii2ArtisanBridge\base\Action;
+use fortrabbit\Yii2ArtisanBridge\base\Action;
 use yii\base\Exception;
 use yii\console\ExitCode;
 

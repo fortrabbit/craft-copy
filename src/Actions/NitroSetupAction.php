@@ -6,7 +6,7 @@ namespace fortrabbit\Copy\Actions;
 
 use Craft;
 use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
-use ostark\Yii2ArtisanBridge\base\Action;
+use fortrabbit\Yii2ArtisanBridge\base\Action;
 use yii\console\ExitCode;
 
 class NitroSetupAction extends Action

@@ -11,4 +11,4 @@ parameters:
 
     ignoreErrors:
         - '#Constant CRAFT_BASE_PATH not found#'
-        - '#Call to an undefined method ostark\\Yii2ArtisanBridge\\ConsoleOutput::setInteractive\(\).#'
+        - '#Call to an undefined method fortrabbit\\Yii2ArtisanBridge\\ConsoleOutput::setInteractive\(\).#'

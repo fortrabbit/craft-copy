@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace fortrabbit\Copy\Actions;
 
 use Composer\Factory;
-use Craft;
 use craft\helpers\App;
 use craft\helpers\FileHelper;
 use Exception;
-use fortrabbit\Copy\Exceptions\GitException;
 use fortrabbit\Copy\Services\Git;
 use fortrabbit\Copy\Services\LocalFilesystem;
-use ostark\Yii2ArtisanBridge\base\Commands;
+use fortrabbit\Yii2ArtisanBridge\base\Commands;
 use Throwable;
 use yii\console\ExitCode;
 

@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace fortrabbit\Copy\Actions;
 
-use Craft;
 use fortrabbit\Copy\Exceptions\RemoteException;
 use fortrabbit\Copy\Helpers\ConsoleOutputHelper;
 use fortrabbit\Copy\Plugin;
-use ostark\Yii2ArtisanBridge\base\Action;
-use Symfony\Component\Process\Process;
 use yii\console\ExitCode;
 
 class NitroDebugAction extends StageAwareBaseAction
