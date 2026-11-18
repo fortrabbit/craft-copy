@@ -180,7 +180,8 @@ class GitonomyClient implements Client
         if (isset($argsOrOptions[0]) && is_string($argsOrOptions[0]) && !isset($argsOrOptions[1])) {
             $argsOrOptions = [
                 '-a',
-                '-m ' . $argsOrOptions[0],
+                '-m',
+                $argsOrOptions[0],
             ];
         }
 

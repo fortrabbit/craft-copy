@@ -66,9 +66,20 @@ class Rsync
         $this->rsync->{$setter}($value);
     }
 
-    public function sync(string $dir): void
+    /**
+     * @return bool Whether rsync succeeded, rsync-lib drops the exit code
+     */
+    public function sync(string $dir): bool
     {
-        $this->buildCommand($dir)->execute($this->rsync->getShowOutput());
+        $command = $this->buildCommand($dir)->getCommand();
+
+        if ($this->rsync->getShowOutput()) {
+            passthru($command, $exitCode);
+        } else {
+            exec($command, $output, $exitCode);
+        }
+
+        return $exitCode === 0;
     }
 
     public function getCommand(string $dir): string

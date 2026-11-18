@@ -6,6 +6,12 @@
 - Add read permissions for everyone to uploaded volumes and folders, files from the host had 600/700 in DDEV ([#183](https://github.com/fortrabbit/craft-copy/issues/183))
 - Show the message of remote errors, like a missing Craft installation
 - `db/down` stops when the export on the fortrabbit App fails
+- Read `DEFAULT_STAGE` from `.env` files that Craft loads without `putenv()`, like the Craft 5 starter
+- Exit with an error code when the stage config is missing
+- `volumes` and `folder` commands report a failed rsync and exit with an error code
+- Commit messages from `code/up` no longer start with a space
+- Database dumps include `imagetransformindex` and skip `resourcepaths` again, and work with a `false` or Closure `backupCommand`
+- `copy/setup` reports an unknown App instead of a DNS warning
 
 ## 3.0.0 - 2024-04-19
 - Craft 5 support

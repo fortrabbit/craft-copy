@@ -69,13 +69,19 @@ class Database extends Component
                                      'file' => $file,
                                      'ignoreTables' => $this->db->getIgnoredBackupTables(),
                                  ]);
-        $this->trigger(Connection::EVENT_BEFORE_CREATE_BACKUP, $event);
+        // On the connection, so class level handlers like IgnoredBackupTablesHandler run
+        $this->db->trigger(Connection::EVENT_BEFORE_CREATE_BACKUP, $event);
 
         // Determine the command that should be executed
         $backupCommand = Craft::$app->getConfig()->getGeneral()->backupCommand;
 
         if ($backupCommand === null) {
             $backupCommand = $this->db->getSchema()->getDefaultBackupCommand($event->ignoreTables);
+        }
+
+        // false (no backups) and a Closure are handled by Craft
+        if (! is_string($backupCommand)) {
+            return;
         }
 
         // The actual overwrite to allow .my.cnf again
