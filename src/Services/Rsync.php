@@ -14,10 +14,11 @@ use InvalidArgumentException;
 class Rsync
 {
     /**
-     * Permissions of uploaded files and folders (755/644), so the web server can read them.
+     * Make uploaded files and folders readable by the web server. Only adds
+     * permissions, so execute bits and owner permissions stay as they are.
      * Mutagen (DDEV) shows files created on the host as 0600/0700 inside the container.
      */
-    public const UPLOAD_CHMOD = 'Du=rwx,Dgo=rx,Fu=rw,Fgo=r';
+    public const UPLOAD_CHMOD = 'Du+rwx,Dgo+rx,Fu+rw,Fgo+r';
 
     protected bool $remoteOrigin = false;
 

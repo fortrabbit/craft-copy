@@ -126,6 +126,7 @@ class SetupAction extends Action
         $config->app = $app;
         $config->sshUrl = "{$app}@deploy.{$region}.frbit.com";
         $config->gitRemote = "{$app}/master";
+        $config->craftPath = StageConfig::detectCraftPath();
         $config->setName($stageName);
         Plugin::getInstance()->stage->setName($stageName);
 

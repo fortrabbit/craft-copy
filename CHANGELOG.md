@@ -2,8 +2,8 @@
 
 ## 3.1.0 - unreleased
 - Support Symfony 7 (`symfony/process` and `symfony/yaml`), requires `fortrabbit/yii2-artisan-bridge` 1.6 for Symfony 7
-- Support Craft in a subfolder of the Git repository with the new `craft_path` config, detected from Git ([#190](https://github.com/fortrabbit/craft-copy/issues/190))
-- Upload volumes and folders with 755/644 permissions, files from the host had 600/700 in DDEV ([#183](https://github.com/fortrabbit/craft-copy/issues/183))
+- Support Craft in a subfolder of the Git repository with the new `craft_path` config, detected from Git by `copy/setup`. Existing configs keep running in the SSH home dir ([#190](https://github.com/fortrabbit/craft-copy/issues/190))
+- Add read permissions for everyone to uploaded volumes and folders, files from the host had 600/700 in DDEV ([#183](https://github.com/fortrabbit/craft-copy/issues/183))
 - Show the message of remote errors, like a missing Craft installation
 - `db/down` stops when the export on the fortrabbit App fails
 

@@ -137,7 +137,7 @@ Craft Copy supports [DDEV](https://ddev.com/). Once you got the container runnin
   
 See our slighlty old [blog post](https://blog.fortrabbit.com/local-craft-dev-site-ddev-development-tool) on how to set it up together.
 
-Files created on the host show up in the DDEV container as readable by the owner only. Craft Copy uploads volumes and folders with `755` for folders and `644` for files, so the web server can read them on the fortrabbit App.
+Files created on the host show up in the DDEV container as readable by the owner only. Craft Copy adds read permissions for everyone when it uploads volumes and folders (like `755` for folders and `644` for files), so the web server can read them on the fortrabbit App. Execute bits are kept.
 
 ## Craft Nitro support (deprecated)
 
@@ -154,7 +154,7 @@ The `setup` command creates a configuration file within the Craft `/config` fold
 
 ### Craft in a subfolder
 
-When Craft is in a subfolder of your Git repository, for example `cms/`, Craft Copy runs its commands in the same subfolder on the fortrabbit App. The subfolder is detected from Git and stored as `craft_path` in the config file. Set it yourself when your fortrabbit App has a different layout:
+When Craft is in a subfolder of your Git repository, for example `cms/`, Craft Copy runs its commands in the same subfolder on the fortrabbit App. The `setup` command detects the subfolder from Git and stores it as `craft_path` in the config file. For config files created before version 3.1, or when your fortrabbit App has a different layout, set it yourself:
 
 ```yml
 craft_path: cms

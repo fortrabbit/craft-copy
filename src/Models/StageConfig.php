@@ -31,7 +31,7 @@ class StageConfig extends Model implements \Stringable
 
     /**
      * @var string|null Path to Craft on the fortrabbit App, relative to the SSH home dir.
-     * Defaults to the subfolder of Craft in the local Git repository.
+     * Empty for the SSH home dir. The setup command detects it from Git.
      */
     public $craftPath;
 
@@ -83,15 +83,19 @@ class StageConfig extends Model implements \Stringable
     {
         parent::init();
 
-        // Code is deployed with Git, so Craft lives in the same
-        // subfolder of the repository on the fortrabbit App
-        if ($this->craftPath === null) {
-            $process = new Process(['git', 'rev-parse', '--show-prefix'], CRAFT_BASE_PATH);
-            $process->run();
-            $this->craftPath = $process->isSuccessful() ? $process->getOutput() : '';
-        }
-
         $this->craftPath = trim((string) $this->craftPath, "/ \n");
+    }
+
+    /**
+     * Subfolder of Craft in the local Git repository. Code is deployed
+     * with Git, so Craft lives in the same subfolder on the fortrabbit App.
+     */
+    public static function detectCraftPath(): string
+    {
+        $process = new Process(['git', 'rev-parse', '--show-prefix'], CRAFT_BASE_PATH);
+        $process->run();
+
+        return $process->isSuccessful() ? trim($process->getOutput(), "/ \n") : '';
     }
 
     public function __toString(): string
