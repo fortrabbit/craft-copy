@@ -137,6 +137,8 @@ Craft Copy supports [DDEV](https://ddev.com/). Once you got the container runnin
   
 See our slighlty old [blog post](https://blog.fortrabbit.com/local-craft-dev-site-ddev-development-tool) on how to set it up together.
 
+Files created on the host show up in the DDEV container as readable by the owner only. Craft Copy uploads volumes and folders with `755` for folders and `644` for files, so the web server can read them on the fortrabbit App.
+
 ## Craft Nitro support (deprecated)
 
 **This feature will be removed with the next major version** since Craft Nitro is retired.
@@ -149,6 +151,14 @@ Don't stop. Read on to fully understand Craft Copy!
 ### Config file
 
 The `setup` command creates a configuration file within the Craft `/config` folder. The file name pattern is `fortrabbit.{stage}.yml`, where `{stage}` is how you have defined the fortrabbit App environment in the [setup](#setup). The default for `{stage}` is the App name, commonly this can also be `production`. The file is version controlled and can be shared with the team and includes all basic settings, plus some extras, like [before/after](#beforeafter-commands) commands. When using [multi-staging](#multi-staging) a configuration file will be created for each fortrabbit App. Also see the [example file](https://github.com/fortrabbit/craft-copy/blob/master/src/fortrabbit.example.yaml).
+
+### Craft in a subfolder
+
+When Craft is in a subfolder of your Git repository, for example `cms/`, Craft Copy runs its commands in the same subfolder on the fortrabbit App. The subfolder is detected from Git and stored as `craft_path` in the config file. Set it yourself when your fortrabbit App has a different layout:
+
+```yml
+craft_path: cms
+```
 
 ### Automatic migrations
 

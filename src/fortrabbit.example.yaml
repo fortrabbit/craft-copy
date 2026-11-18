@@ -3,6 +3,9 @@ app: your_app
 ssh_url: your_app@deploy.us1.frbit.com
 git_remote: your_app/master
 
+# Path to Craft on the fortrabbit App, when Craft is in a subfolder of the Git repository
+# craft_path: cms
+
 # Scripts
 before:
   code/up:

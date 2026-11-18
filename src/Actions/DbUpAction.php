@@ -117,7 +117,7 @@ class DbUpAction extends StageAwareBaseAction
         if (! $this->force) {
             $this->section('Rollback?');
             $this->line(
-                "ssh {$plugin->ssh->remote} 'php craft copy/db/from-file {$backupFile}'" . PHP_EOL
+                "ssh {$plugin->ssh->remote} 'cd {$plugin->ssh->remotePath('.')} && php craft copy/db/from-file {$backupFile}'" . PHP_EOL
             );
         }
 

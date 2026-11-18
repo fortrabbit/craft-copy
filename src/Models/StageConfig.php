@@ -6,6 +6,7 @@ namespace fortrabbit\Copy\Models;
 
 use craft\base\Model;
 use craft\helpers\StringHelper;
+use Symfony\Component\Process\Process;
 
 /**
  * Class that represents the yml config
@@ -27,6 +28,12 @@ class StageConfig extends Model implements \Stringable
      * @var string SSH endpoint
      */
     public $sshUrl;
+
+    /**
+     * @var string|null Path to Craft on the fortrabbit App, relative to the SSH home dir.
+     * Defaults to the subfolder of Craft in the local Git repository.
+     */
+    public $craftPath;
 
     /**
      * @var string Git remote/branch
@@ -70,6 +77,21 @@ class StageConfig extends Model implements \Stringable
         }
 
         parent::__construct($config);
+    }
+
+    public function init(): void
+    {
+        parent::init();
+
+        // Code is deployed with Git, so Craft lives in the same
+        // subfolder of the repository on the fortrabbit App
+        if ($this->craftPath === null) {
+            $process = new Process(['git', 'rev-parse', '--show-prefix'], CRAFT_BASE_PATH);
+            $process->run();
+            $this->craftPath = $process->isSuccessful() ? $process->getOutput() : '';
+        }
+
+        $this->craftPath = trim((string) $this->craftPath, "/ \n");
     }
 
     public function __toString(): string

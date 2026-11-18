@@ -57,6 +57,8 @@ class DbDownAction extends StageAwareBaseAction
             $bar->advance();
         } catch (PluginNotInstalledException) {
             $this->errorBlock('Make sure to deploy the plugin first.');
+
+            return ExitCode::UNSPECIFIED_ERROR;
         }
 
         // Step 2: Download that dump from remote

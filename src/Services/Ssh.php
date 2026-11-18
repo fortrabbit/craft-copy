@@ -37,6 +37,11 @@ class Ssh extends Component
 
     public string $remote;
 
+    /**
+     * @var string Path to Craft on the remote, relative to the SSH home dir
+     */
+    public string $path = '';
+
     protected string $output;
 
     protected bool $verbose = false;
@@ -103,6 +108,10 @@ class Ssh extends Component
      */
     public function exec(string $cmd): bool
     {
+        if ($this->path !== '') {
+            $cmd = 'cd ' . escapeshellarg($this->path) . " && {$cmd}";
+        }
+
         $tokens = [
             '{remote}' => $this->remote,
             '{command}' => $cmd,
@@ -160,11 +169,23 @@ class Ssh extends Component
         $cmd = self::UPLOAD_COMMAND;
         $tokens = [
             '{src}' => $src,
-            '{target}' => $target,
+            '{target}' => $this->remotePath($target),
             '{remote}' => $this->remote,
         ];
 
         return str_replace(array_keys($tokens), array_values($tokens), $cmd);
+    }
+
+    /**
+     * Prefix a relative remote path with the path to Craft
+     */
+    public function remotePath(string $path): string
+    {
+        if ($this->path === '' || str_starts_with($path, '/')) {
+            return $path;
+        }
+
+        return "{$this->path}/{$path}";
     }
 
     public function setVerbose(bool $verbose = true): void
@@ -176,7 +197,7 @@ class Ssh extends Component
     {
         $cmd = self::DOWNLOAD_COMMAND;
         $tokens = [
-            '{src}' => $src,
+            '{src}' => $this->remotePath($src),
             '{target}' => $target,
             '{remote}' => $this->remote,
         ];
