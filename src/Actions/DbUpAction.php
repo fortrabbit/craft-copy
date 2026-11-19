@@ -54,7 +54,19 @@ class DbUpAction extends StageAwareBaseAction
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        if ($plugin->ssh->exec('ls vendor/bin/craft-copy-import-db.php | wc -l') && trim($plugin->ssh->getOutput()) !== '1') {
+        try {
+            $plugin->ssh->exec('test -f craft && echo craft; test -f vendor/bin/craft-copy-import-db.php && echo plugin; true');
+        } catch (RemoteException $remoteException) {
+            return $this->printAndExit($remoteException);
+        }
+
+        $found = preg_split('/\s+/', trim($plugin->ssh->getOutput()));
+
+        if (! in_array('craft', $found, true)) {
+            return $this->printAndExit(new CraftNotInstalledException());
+        }
+
+        if (! in_array('plugin', $found, true)) {
             return $this->printAndExit(new PluginNotInstalledException());
         }
 
@@ -117,7 +129,7 @@ class DbUpAction extends StageAwareBaseAction
         if (! $this->force) {
             $this->section('Rollback?');
             $this->line(
-                "ssh {$plugin->ssh->remote} 'php craft copy/db/from-file {$backupFile}'" . PHP_EOL
+                "ssh {$plugin->ssh->remote} 'cd {$plugin->ssh->remotePath('.')} && php craft copy/db/from-file {$backupFile}'" . PHP_EOL
             );
         }
 
@@ -129,7 +141,8 @@ class DbUpAction extends StageAwareBaseAction
         if ($exception instanceof CraftNotInstalledException) {
             $this->errorBlock(
                 [
-                    'Unable to import database. Deploy code first using this command:',
+                    $exception->getMessage(),
+                    'If Craft is not deployed yet, deploy code first using this command:',
                     'php craft copy/code/up',
                 ]
             );

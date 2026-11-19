@@ -110,7 +110,8 @@ class SetupAction extends Action
      */
     protected function guessRegion(string $app): ?string
     {
-        if ($records = dns_get_record("{$app}.frb.io", DNS_CNAME)) {
+        // Some resolvers (like Docker's) warn instead of returning no records for unknown names
+        if ($records = @dns_get_record("{$app}.frb.io", DNS_CNAME)) {
             return explode('.', $records[0]['target'])[1];
         }
 
@@ -126,6 +127,7 @@ class SetupAction extends Action
         $config->app = $app;
         $config->sshUrl = "{$app}@deploy.{$region}.frbit.com";
         $config->gitRemote = "{$app}/master";
+        $config->craftPath = StageConfig::detectCraftPath();
         $config->setName($stageName);
         Plugin::getInstance()->stage->setName($stageName);
 

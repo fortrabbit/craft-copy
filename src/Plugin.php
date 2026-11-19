@@ -145,9 +145,13 @@ class Plugin extends BasePlugin
                                                               'db' => Craft::$app->getDb(),
                                                           ]),
                 'git' => fn() => GitService::fromDirectory(Craft::getAlias('@root') ?: CRAFT_BASE_PATH),
-                'rsync' => fn() => RsyncService::remoteFactory($this->stage->get()->sshUrl),
+                'rsync' => fn() => RsyncService::remoteFactory(
+                    $this->stage->get()->sshUrl,
+                    $this->stage->get()->craftPath
+                ),
                 'ssh' => fn() => new SshService([
                                                     'remote' => $this->stage->get()->sshUrl,
+                                                    'path' => $this->stage->get()->craftPath,
                                                 ]),
             ]
         );

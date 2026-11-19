@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace fortrabbit\Copy\Actions;
 
+use craft\helpers\App;
 use fortrabbit\Copy\Exceptions\StageConfigNotFoundException;
 use fortrabbit\Copy\Helpers\DeployHooksHelper;
 use fortrabbit\Copy\Models\StageConfig;
@@ -97,6 +98,14 @@ abstract class StageAwareBaseAction extends Action
         return true;
     }
 
+    /**
+     * Exit with an error when beforeRun() stops the command, Yii would exit with 0
+     */
+    public function runWithParams($params)
+    {
+        return parent::runWithParams($params) ?? ExitCode::UNSPECIFIED_ERROR;
+    }
+
     protected function afterRun()
     {
         Event::on(
@@ -136,9 +145,10 @@ abstract class StageAwareBaseAction extends Action
             throw new InvalidArgumentException('First parameter of run() is not $stage.');
         }
 
-        return Yii::$app->requestedParams[0]
-            ?? getenv(Plugin::ENV_DEFAULT_STAGE)
-                ?: 'production';
+        // App::env() also sees .env values loaded without putenv(), like the Craft 5 starter does
+        $stage = Yii::$app->requestedParams[0] ?? App::env(Plugin::ENV_DEFAULT_STAGE);
+
+        return is_scalar($stage) && (string) $stage !== '' ? (string) $stage : 'production';
     }
 
 }

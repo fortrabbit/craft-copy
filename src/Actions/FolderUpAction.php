@@ -57,7 +57,12 @@ class FolderUpAction extends StageAwareBaseAction
 
         // Execute
         $this->section($this->dryRun ? 'Rsync dry-run' : 'Rsync started');
-        $this->plugin->rsync->sync($folder);
+        if (! $this->plugin->rsync->sync($folder)) {
+            $this->errorBlock("rsync failed for {$folder}");
+
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+
         $this->section(PHP_EOL . 'done');
 
         return ExitCode::OK;

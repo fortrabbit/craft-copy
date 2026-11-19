@@ -58,6 +58,8 @@ class VolumesUpAction extends StageAwareBaseAction
             return ExitCode::OK;
         }
 
+        $failed = false;
+
         foreach ($fs as $filesystem) {
             $path = $this->prepareForRsync($filesystem->path);
 
@@ -85,7 +87,13 @@ class VolumesUpAction extends StageAwareBaseAction
 
             // Execute
             $this->section($this->dryRun ? 'Rsync dry-run' : 'Rsync started');
-            $this->plugin->rsync->sync($path);
+            if (! $this->plugin->rsync->sync($path)) {
+                $this->errorBlock("rsync failed for {$path}");
+                $failed = true;
+
+                continue;
+            }
+
             $this->line(PHP_EOL);
             $this->line(
                 $filesystem === $lastFs ? 'All done.' : "{$filesystem->name} done, next volume:"
@@ -93,6 +101,6 @@ class VolumesUpAction extends StageAwareBaseAction
             $this->line(PHP_EOL);
         }
 
-        return ExitCode::OK;
+        return $failed ? ExitCode::UNSPECIFIED_ERROR : ExitCode::OK;
     }
 }
