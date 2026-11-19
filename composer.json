@@ -1,6 +1,7 @@
 {
     "name": "fortrabbit/craft-copy",
     "description": "Tooling for Craft on fortrabbit",
+    "homepage": "https://www.fortrabbit.com/software/craft-cms",
     "type": "craft-plugin",
     "keywords": [
         "craft",
