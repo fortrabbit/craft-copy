@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace fortrabbit\Copy\Actions;
 
+use fortrabbit\Copy\Exceptions\CraftNotInstalledException;
 use fortrabbit\Copy\Exceptions\PluginNotInstalledException;
 use fortrabbit\Copy\Plugin;
 use yii\console\ExitCode;
@@ -57,6 +58,10 @@ class DbDownAction extends StageAwareBaseAction
             $bar->advance();
         } catch (PluginNotInstalledException) {
             $this->errorBlock('Make sure to deploy the plugin first.');
+
+            return ExitCode::UNSPECIFIED_ERROR;
+        } catch (CraftNotInstalledException $craftNotInstalledException) {
+            $this->errorBlock($craftNotInstalledException->getMessage());
 
             return ExitCode::UNSPECIFIED_ERROR;
         }

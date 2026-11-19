@@ -142,6 +142,11 @@ class Ssh extends Component
             throw new CraftNotInstalledException();
         }
 
+        // craft_path points to a directory that doesn't exist on the App
+        if ($this->path !== '' && preg_match('/\bcd: /', $err)) {
+            throw new CraftNotInstalledException();
+        }
+
         if (stristr($err, 'Unknown command')) {
             throw new PluginNotInstalledException();
         }
